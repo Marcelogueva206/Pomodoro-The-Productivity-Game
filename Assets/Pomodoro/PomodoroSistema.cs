@@ -104,7 +104,6 @@ public class PomodoroSistema : MonoBehaviour
                     numeroTempoActual++;
                     if(_cicloActual.TemposCiclo[numeroTempoActual] == null)
                     {
-                        Debug.Log("Tolleador cara");
                         //se ha terminado todos los tempos del ciclo, por ende debe elegir el primero del ciclo si aún se debe repetir
                         _tempoActual = pomodoro.ciclosPomodoro[numeroCicloActual + 1].TemposCiclo[0];
                     }
