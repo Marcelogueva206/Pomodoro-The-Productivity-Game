@@ -84,22 +84,29 @@ public class PomodoroSistema : MonoBehaviour
         }
     }
 
+    private Tempos ultimoTempoDeCiclo = null;
+
     public void EjecutarPomodoro(Pomodoro pomodoro, Sesion sesionPerteneciente)
     {
-        if (pomodoro.GetEstadoCompletado() == false)
+        if (pomodoro.GetEstadoCompletado() == false) //¿el pomodoro está terminado?
         {
-            if (pomodoro.ciclosPomodoro[numeroCicloActual].TryGetEstadoCompletado() == false)
+            if (pomodoro.ciclosPomodoro[numeroCicloActual].TryGetEstadoCompletado() == false) //NO : el ciclo está terminado?
             {
                 _cicloActual = pomodoro.ciclosPomodoro[numeroCicloActual];
 
-                if (_cicloActual.TemposCiclo[numeroTempoActual].GetEstadoCompletado() == false)
+                if (_cicloActual.TemposCiclo[numeroTempoActual].GetEstadoCompletado() == false)// NO: el tempo está terminado?
                 {
-
+                                     //NO: entonces usalo
                     _tempoActual = _cicloActual.TemposCiclo[numeroTempoActual];
+                    if (numeroTempoActual + 1 >= _cicloActual.TemposCiclo.Count) //el es último tempo de la lista
+                    {
+                        ultimoTempoDeCiclo = _tempoActual;
+                    }
                     UsarTempo(_tempoActual);
                 }
                 else
                 {
+                    //SI: entonces pasa el siguiente tempo
                     TemposTerminado?.Invoke(_tempoActual);
                     numeroTempoActual++;
                     if(_cicloActual.TemposCiclo[numeroTempoActual] == null)
@@ -113,7 +120,7 @@ public class PomodoroSistema : MonoBehaviour
                     }
                    
 
-                    TemposIniciado.Invoke(_tempoActual);
+                    //TemposIniciado.Invoke(_tempoActual);
 
                 }
 
@@ -122,6 +129,8 @@ public class PomodoroSistema : MonoBehaviour
             }
             else
             {
+                TemposTerminado?.Invoke(ultimoTempoDeCiclo);
+                //sí: comienza el siguiente ciclo
                 CicloTerminado.Invoke(_cicloActual);
                 numeroCicloActual++;           
                 _cicloActual = pomodoro.ciclosPomodoro[numeroCicloActual];

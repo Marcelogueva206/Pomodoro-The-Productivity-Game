@@ -19,6 +19,8 @@ public class Contador : MonoBehaviour
     [SerializeField] private TextMeshProUGUI textoTempoNombre;
     [SerializeField] private TextMeshProUGUI textoCicloNombre;
     [SerializeField] private TextMeshProUGUI textoPomodoroNombre;
+    [SerializeField] private TextMeshProUGUI textoPuntuacionTempo;
+    [SerializeField] public static float PuntuacionTempo = 0;
     [HideInInspector] private float _tiempoRestante;
     [HideInInspector] private float _tiempoTotal;
     [SerializeField] private Vector3 TiempoQueFalta;
@@ -52,7 +54,8 @@ public class Contador : MonoBehaviour
         //PomodoroSistema.TemposIniciado += MostrarNombreTempoUI;
         //PomodoroSistema.CicloIniciado += MostrarNombreCicloUI;
         //PomodoroSistema.PomodoroIniciado += MostrarNombrePomodoroUI;
-
+        OnTerminadoContador = ReiniciarPuntuaciónTempo;
+       
     }
     public void MostrarNombreTempoUI(Tempos tempo)
     {
@@ -97,6 +100,9 @@ public class Contador : MonoBehaviour
     private void ContandoTiempo()
     {
         TiempoRestanteStatic -= Time.deltaTime;
+        PuntuacionTempo += Time.deltaTime * (360 / 100);
+        float value = Mathf.Round(PuntuacionTempo);
+        textoPuntuacionTempo.text = value.ToString();
     }
 
     private void Start()
@@ -185,7 +191,10 @@ public class Contador : MonoBehaviour
         }
     }
 
-
+    private void ReiniciarPuntuaciónTempo()
+    {
+        PuntuacionTempo = 0;
+    }
 
 
     private void SetStatic()
@@ -260,6 +269,8 @@ public class Contador : MonoBehaviour
         {
             CambiarFaseContador(FasesContador.Inicio);
         }
+
+        ReiniciarContador();
     }
 
 

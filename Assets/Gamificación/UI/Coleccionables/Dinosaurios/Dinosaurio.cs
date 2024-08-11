@@ -25,7 +25,6 @@ public class Dinosaurio : MonoBehaviour
     public string Nombre { get => _nombre; set => _nombre = value; }
     [SerializeField] private Especie _specie;
     [SerializeField] private Rareza _rareza;
-    [SerializeField] private Genero _genero;
     [SerializeField] private Personalidad _personalidad;
     [SerializeField] private Comportamiento _comportamiento;
     [SerializeField] private TextMeshProUGUI textoDialogo;
@@ -67,7 +66,6 @@ public class Dinosaurio : MonoBehaviour
     [HideInInspector] private bool moverse = true;
 
 
-    public enum Genero {Femenino, Masculino}
     public enum Personalidad { Optimista, Tonta, Orgullosa, Molestosa, Deprimida, Timida, Peresosa, Cariñosa }
 
     /// <summary>
@@ -84,8 +82,9 @@ public class Dinosaurio : MonoBehaviour
     public enum Rareza {Comun, Especial, Epica, Legendaria }
     public enum Especie { TiranosaurioRex, Estegosaurio, Triceratops, Velociraptor, Espinosaurus, Allosaurus, Megalosaurio, Diplodocus, Anquilosaurio }
 
-    public enum Comportamiento {Merodear, Hablar, Dormir, Jugar, Quieto }
+    public enum Comportamiento {Merodear, Hablar, Dormir, Quieto, Negociación }
 
+    public enum EstadoAnimo {Feliz, Triste, Enojado, Euforico }
 
     private void Comportarse(Comportamiento comportamiento)
     {
@@ -101,9 +100,9 @@ public class Dinosaurio : MonoBehaviour
                 break;
             case Comportamiento.Dormir:
                 break;
-            case Comportamiento.Jugar:
-                break;
             case Comportamiento.Quieto:
+                break;
+            case Comportamiento.Negociación:
                 break;
         }
 
