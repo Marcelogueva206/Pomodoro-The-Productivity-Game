@@ -2,9 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using Unity.Collections.LowLevel.Unsafe;
+using Unity.VisualScripting;
 using UnityEditor.U2D.Aseprite;
 using UnityEngine;
 
+
+
+//RECUERDA QUE DEBES AHCER QUE EL LOS LIMITES SE ACTUALICEN SEGUN LA RESOLUCIOn de lA PANTALLA
 public class Gamificacion : MonoBehaviour
 {
     [Header("Productivity")]
@@ -15,26 +19,58 @@ public class Gamificacion : MonoBehaviour
     [SerializeField] public static float ProductivityPointsMinGoal = 1000;// 1000 pp
     [SerializeField] public static float ProductivityPointsMaxGoal = 2000; // 2000 pp
 
-    // Porcentajes para ganar estrellas, configurables desde el Inspector
-    [Range(0, 100)] public static float firstStarPercentage = 10f; //recompensa por iniciar sesión
-    [Range(0, 100)] public static float secondStarPercentage = 60f; //mínimo
-    [Range(0, 100)] public static float thirdStarPercentage = 90f; //superar siguiente CE
+
+    public static EstrellaRecompensa PrimeraEstrella;
+    public static EstrellaRecompensa SegundaEstrella;
+    public static EstrellaRecompensa TerceraEstrella;
+    [SerializeField] private RectTransform cuerpoPrimeraEstrella;
+    [SerializeField] private RectTransform cuerpoSegundaEstrella;
+    [SerializeField] private RectTransform cuerpoTerceraEstrella;
+
+    public static List<MarcaBasicaRecompensa> marcasSimples;
+
+    public static MarcaBasicaRecompensa Marca0Porciento;
+    public static MarcaBasicaRecompensa Marca10Porciento;
+    public static MarcaBasicaRecompensa Marca20Porciento;
+    public static MarcaBasicaRecompensa Marca30Porciento;
+    public static MarcaBasicaRecompensa Marca40Porciento;
+    public static MarcaBasicaRecompensa Marca50Porciento;
+    public static MarcaBasicaRecompensa Marca60Porciento;
+    public static MarcaBasicaRecompensa Marca70Porciento;
+    public static MarcaBasicaRecompensa Marca80Porciento;
+    public static MarcaBasicaRecompensa Marca90Porciento;
+    public static MarcaBasicaRecompensa Marca100Porciento;
+    [SerializeField] private RectTransform cuerpoMarca0;
+    [SerializeField] private RectTransform cuerpoMarca10;
+    [SerializeField] private RectTransform cuerpoMarca20;
+    [SerializeField] private RectTransform cuerpoMarca30;
+    [SerializeField] private RectTransform cuerpoMarca40;
+    [SerializeField] private RectTransform cuerpoMarca50;
+    [SerializeField] private RectTransform cuerpoMarca60;
+    [SerializeField] private RectTransform cuerpoMarca70;
+    [SerializeField] private RectTransform cuerpoMarca80;
+    [SerializeField] private RectTransform cuerpoMarca90;
+    [SerializeField] private RectTransform cuerpoMarca100;
 
 
-    public  static float ProgresoTotalMeta { get 
+    public static float ProgresoTotalMeta
+    {
+        get
         {
             float value = ProductivityPointsDaily / ProductivityPointsMaxGoal * 100;
-            if(value < 0)
+            if (value < 0)
             {
                 return 0;
-            } 
-            if(value > 100) { 
-            
+            }
+            if (value > 100)
+            {
+
                 return 100;
             }
-            return value; 
+            return value;
         }
-        set { } }
+        set { }
+    }
 
     /// <summary>
     /// 6 minutos => 100 pp
@@ -72,8 +108,6 @@ public class Gamificacion : MonoBehaviour
     [SerializeField] private GameObject Limite1;
     [SerializeField] private GameObject Limite2;
     public static Gamificacion gamificacionManager;
-    [SerializeField] private TextMeshProUGUI textoProductivityPointsTotal;
-    [SerializeField] private TextMeshProUGUI textoProductivityPointsDaily;
     public static float MinY { get => Mathf.Min(gamificacionManager.Limite1.transform.position.y, gamificacionManager.Limite2.transform.position.y); }
     public static float MaxY { get => Mathf.Max(gamificacionManager.Limite1.transform.position.y, gamificacionManager.Limite2.transform.position.y); }
     public static float MaxX { get => Mathf.Max(gamificacionManager.Limite1.transform.position.x, gamificacionManager.Limite2.transform.position.x); }
@@ -82,15 +116,33 @@ public class Gamificacion : MonoBehaviour
 
     private void Awake()
     {
+        gamificacionManager = this;
         PomodoroSistema.TemposTerminado += AcumularPPs;
         PomodoroSistema.TemposTerminado += AumentarProgresoDiarioPPs;
         PomodoroSistema.PomodoroTerminado += RecibirAcumuladoPPS;
+
+        PrimeraEstrella = new EstrellaRecompensa("Primera estrella de la productividad", gamificacionManager.cuerpoPrimeraEstrella, 10f, TipoEstrella.EstrellaPorInicio);
+        SegundaEstrella = new EstrellaRecompensa("Segunda estrella de la productividad", gamificacionManager.cuerpoSegundaEstrella, 60f, TipoEstrella.EstrellaMinima);
+        TerceraEstrella = new EstrellaRecompensa("Tercera máxima estrella de la productividad", gamificacionManager.cuerpoTerceraEstrella, 100f, TipoEstrella.EstrellaMaxima);
+
+        Marca0Porciento = new MarcaBasicaRecompensa("Marca del mínimo esfuerzo", gamificacionManager.cuerpoMarca0, 1f);
+        Marca10Porciento = new MarcaBasicaRecompensa("Marca del 10%", gamificacionManager.cuerpoMarca10, 10f);
+        Marca20Porciento = new MarcaBasicaRecompensa("Marca del 20%", gamificacionManager.cuerpoMarca20, 20f);
+        Marca30Porciento = new MarcaBasicaRecompensa("Marca del 30%", gamificacionManager.cuerpoMarca30, 30f);
+        Marca40Porciento = new MarcaBasicaRecompensa("Marca del 40%", gamificacionManager.cuerpoMarca40, 40f);
+        Marca50Porciento = new MarcaBasicaRecompensa("Marca de la mitad de progreso", gamificacionManager.cuerpoMarca50, 50f);
+        Marca60Porciento = new MarcaBasicaRecompensa("Marca del 60%", gamificacionManager.cuerpoMarca60, 60f);
+        Marca70Porciento = new MarcaBasicaRecompensa("Marca del 70%", gamificacionManager.cuerpoMarca70, 70f);
+        Marca80Porciento = new MarcaBasicaRecompensa("Marca del 80%", gamificacionManager.cuerpoMarca80, 80f);
+        Marca90Porciento = new MarcaBasicaRecompensa("Marca del 90%", gamificacionManager.cuerpoMarca90, 90f);
+        Marca100Porciento = new MarcaBasicaRecompensa("Marca del éxito%", gamificacionManager.cuerpoMarca100, 100f);
+        marcasSimples = new List<MarcaBasicaRecompensa> { Marca0Porciento, Marca10Porciento, Marca20Porciento, Marca30Porciento, Marca40Porciento, Marca50Porciento, Marca60Porciento, Marca70Porciento, Marca80Porciento, Marca90Porciento, Marca100Porciento };
     }
 
-    
+
     private void AcumularPPs(Tempos tempo)
     {
-        ProductivityPointsHolded += (tempo.TiempoTotal.x * 3600 + tempo.TiempoTotal.y * 60 + tempo.TiempoTotal.z)*(360/100);
+        ProductivityPointsHolded += (tempo.TiempoTotal.x * 3600 + tempo.TiempoTotal.y * 60 + tempo.TiempoTotal.z) * (360 / 100);
     }
 
     private void AumentarProgresoDiarioPPs(Tempos tempo)
@@ -102,17 +154,5 @@ public class Gamificacion : MonoBehaviour
         ProductivityPointsTotal += ProductivityPointsHolded;
         ProductivityPointsHolded = 0;
     }
-    void Start()
-    {
-        gamificacionManager = this;
-    }
-
- 
-  
-
-    //private void MostrarProductivityPoints()
-    //{
-    //    textoProductivityPointsDaily.text = ProductivityPointsTotal.ToString();
-    //}
 
 }
