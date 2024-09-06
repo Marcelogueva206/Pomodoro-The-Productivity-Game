@@ -2572,6 +2572,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4556768628178502273, guid: b84a463a54bdec5418b17bd7b3b1eb38, type: 3}
+      propertyPath: m_hasFontAssetChanged
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6832471219070965915, guid: b84a463a54bdec5418b17bd7b3b1eb38, type: 3}
       propertyPath: estadoAnimo
       value: 2
@@ -2809,6 +2813,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4088203416111854925, guid: b84a463a54bdec5418b17bd7b3b1eb38, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4556768628178502273, guid: b84a463a54bdec5418b17bd7b3b1eb38, type: 3}
+      propertyPath: m_hasFontAssetChanged
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6940993005550648818, guid: b84a463a54bdec5418b17bd7b3b1eb38, type: 3}
@@ -4256,6 +4264,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1775657698}
   - component: {fileID: 1775657697}
+  - component: {fileID: 1775657699}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -4306,6 +4315,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1775657699
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1775657696}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca29561453804c9419be80be69c3a136, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1786648885
 GameObject:
   m_ObjectHideFlags: 0
@@ -5175,6 +5196,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4088203416111854925, guid: b84a463a54bdec5418b17bd7b3b1eb38, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4556768628178502273, guid: b84a463a54bdec5418b17bd7b3b1eb38, type: 3}
+      propertyPath: m_hasFontAssetChanged
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6832471219070965915, guid: b84a463a54bdec5418b17bd7b3b1eb38, type: 3}

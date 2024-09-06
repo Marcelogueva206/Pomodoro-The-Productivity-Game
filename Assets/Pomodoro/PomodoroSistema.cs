@@ -209,27 +209,18 @@ public class Pomodoro : IEstadoCompletado
     public string Nombre { get => _tipo.ToString(); }
     public bool Completado { get => _completado; set => _completado = value; }
 
-    public Vector3 DuracionTotal
+    public TimeSpan DuracionTotal
     {
         get
         {
-            Vector3 tiempoTotal = Vector3.zero;
+            TimeSpan tiempoTotal = new TimeSpan();
 
             foreach (Ciclo ciclo in ciclosPomodoro)
             {
                 tiempoTotal += ciclo.DuracionTotal;
 
             }
-            while (tiempoTotal.z > 60)
-            {
-                tiempoTotal.z -= 60;
-                tiempoTotal.y++;
-            }
-            while (tiempoTotal.y > 60)
-            {
-                tiempoTotal.y -= 60;
-                tiempoTotal.x++;
-            }
+     
 
             return tiempoTotal;
         }
@@ -264,9 +255,9 @@ public class Pomodoro : IEstadoCompletado
 
     private void CrearPomodoroPrueba()
     {
-        Tempos tempo1 = new Tempos("Tempo 1", new Vector3(0, 0, 3));
-        Tempos tempo2 = new Tempos("Tempo 2", new Vector3(0, 0, 2));
-        Tempos tempo3 = new Tempos("Tempo 3", new Vector3(0, 0, 1));
+        Tempos tempo1 = new Tempos("Tempo 1", new TimeSpan(0, 0, 3));
+        Tempos tempo2 = new Tempos("Tempo 2", new TimeSpan(0, 0, 2));
+        Tempos tempo3 = new Tempos("Tempo 3", new TimeSpan(0, 0, 1));
 
 
         Ciclo ciclo1 = new Ciclo(new List<Tempos> { tempo1, tempo2, tempo3 }, 1, "Ciclo 1");
@@ -278,9 +269,9 @@ public class Pomodoro : IEstadoCompletado
 
     private void CrearPomodoroNormal()
     {
-        Tempos trabajo = new Tempos("Trabajo", new Vector3(0, 30, 0));
-        Tempos descanso = new Tempos("Descanso", new Vector3(0, 5, 0));
-        Tempos descansoLargo = new Tempos("Descanso Largo", new Vector3(0, 45, 0));
+        Tempos trabajo = new Tempos("Trabajo", new TimeSpan(0, 30, 0));
+        Tempos descanso = new Tempos("Descanso", new TimeSpan(0, 5, 0), TiposTempos.descanso);
+        Tempos descansoLargo = new Tempos("Descanso Largo", new TimeSpan(0, 45, 0), TiposTempos.descanso);
 
 
         Ciclo cicloProductivo = new Ciclo(new List<Tempos> { trabajo, descanso }, 4, "Ciclo Productivo");
@@ -291,9 +282,9 @@ public class Pomodoro : IEstadoCompletado
 
     private void CrearPomodoroLargo()
     {
-        Tempos trabajo = new Tempos("Trabajo", new Vector3(0, 60, 0));
-        Tempos descanso = new Tempos("Descanso", new Vector3(0, 10, 0));
-        Tempos descansoLargo = new Tempos("Descanso Largo", new Vector3(0, 45, 0));
+        Tempos trabajo = new Tempos("Trabajo", new TimeSpan(0, 60, 0));
+        Tempos descanso = new Tempos("Descanso", new TimeSpan(0, 10, 0), TiposTempos.descanso);
+        Tempos descansoLargo = new Tempos("Descanso Largo", new TimeSpan(0, 45, 0), TiposTempos.descanso);
 
 
         Ciclo cicloProductivo = new Ciclo(new List<Tempos> { trabajo, descanso }, 2);
@@ -335,30 +326,20 @@ public class Ciclo : IEstadoCompletado
     public bool Completado { get => _completado; set => _completado = value; }
     public int RepeticionesRestantes { get => _repeticionesRestantes; set => _repeticionesRestantes = value; }
 
-    public Vector3 DuracionTotal
+    public TimeSpan DuracionTotal
     {
         get
         {
-            Vector3 tiempoTotal = Vector3.zero;
+            TimeSpan tiempoTotal = new TimeSpan();
 
             foreach (Tempos tempo in TemposCiclo)
             {
                 tiempoTotal += tempo.TiempoTotal;
 
             }
-            tiempoTotal*= RepeticionesTotales;
-            while (tiempoTotal.z > 60)
-            {
-                tiempoTotal.z -= 60;
-                tiempoTotal.y++;
-            }
-            while (tiempoTotal.y > 60)
-            {
-                tiempoTotal.y -= 60;
-                tiempoTotal.x++;
-            }
-          
-            return  tiempoTotal;
+            TimeSpan tiempoTotalFinal = new TimeSpan(tiempoTotal.Ticks * RepeticionesTotales);
+
+            return tiempoTotalFinal;
         }
     }
 
@@ -421,14 +402,8 @@ public class Ciclo : IEstadoCompletado
                 RepeticionesRestantes--;
             }
         }
-
-
-
         return Completado;
     }
-
-
-
     private void ReiniciarCiclo()
     {
         foreach (Tempos tempo in TemposCiclo)
@@ -440,42 +415,28 @@ public class Ciclo : IEstadoCompletado
     }
 }
 
+public enum TiposTempos {productivo,descanso}
 
 public class Tempos : IEstadoCompletado
 {
     private string _nombre;
-    private Vector3 _tiempoTotal;
+    public TimeSpan TiempoTotal;
     private bool _completado = false;
+    public TiposTempos tiposTempos;
 
-    public Tempos(string nombre, Vector3 tiempoTotal)
+
+
+    public Tempos(string nombre, TimeSpan tiempoTotal, TiposTempos tiposTempos=TiposTempos.productivo)
     {
         Nombre = nombre;
-        this._tiempoTotal = tiempoTotal;
+        this.TiempoTotal = tiempoTotal;
+        this.tiposTempos = tiposTempos;
     }
     public string Nombre { get => _nombre; set => _nombre = value; }
     public bool Completado
     {
         get => _completado; set => _completado = value;
 
-    }
-    public Vector3 TiempoTotal
-    {
-        get => _tiempoTotal; set
-        {
-
-            if (value.x < 0)
-            {
-                _tiempoTotal.x = 0;
-            }
-            if (value.y < 0)
-            {
-                _tiempoTotal.z = 0;
-            }
-            if (value.z < 0)
-            {
-                _tiempoTotal.z = 0;
-            }
-        }
     }
     public void AsignarEstadoCompletado(bool estado)
     {
@@ -486,6 +447,12 @@ public class Tempos : IEstadoCompletado
     {
         return Completado;
     }
+
+    //public float TiempoTotalEnFloat()
+    //{
+    //    return TiempoTotal.x * 3600 + TiempoTotal.y * 60 + TiempoTotal.z;
+    //}
+
 }
 
 

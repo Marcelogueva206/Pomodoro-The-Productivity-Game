@@ -18,8 +18,7 @@ public class Gamificacion : MonoBehaviour
     [SerializeField] public static float ProductivityPointsLoginGoal = 100;//  100 pp
     [SerializeField] public static float ProductivityPointsMinGoal = 1000;// 1000 pp
     [SerializeField] public static float ProductivityPointsMaxGoal = 2000; // 2000 pp
-
-
+ 
     public static EstrellaRecompensa PrimeraEstrella;
     public static EstrellaRecompensa SegundaEstrella;
     public static EstrellaRecompensa TerceraEstrella;
@@ -142,12 +141,12 @@ public class Gamificacion : MonoBehaviour
 
     private void AcumularPPs(Tempos tempo)
     {
-        ProductivityPointsHolded += (tempo.TiempoTotal.x * 3600 + tempo.TiempoTotal.y * 60 + tempo.TiempoTotal.z) * (360 / 100);
+        ProductivityPointsHolded +=(float) (tempo.TiempoTotal.TotalSeconds) * (360 / 100);
     }
 
     private void AumentarProgresoDiarioPPs(Tempos tempo)
     {
-        ProductivityPointsDaily += (tempo.TiempoTotal.x * 3600 + tempo.TiempoTotal.y * 60 + tempo.TiempoTotal.z) * (360 / 100);
+        ProductivityPointsDaily += (float)(tempo.TiempoTotal.TotalSeconds) * (360 / 100);
     }
     private void RecibirAcumuladoPPS(Pomodoro pomodoro)
     {

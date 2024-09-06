@@ -49,7 +49,7 @@ public class Contador : MonoBehaviour
         contador = this; // FLATA SINGLETON
 
 
-        AsignarContador(new Vector3(0, 10, 0));
+        AsignarContador(new TimeSpan(0, 10, 0));
         slider = barraProgreso.GetComponent<Slider>();
         //PomodoroSistema.TemposIniciado += MostrarNombreTempoUI;
         //PomodoroSistema.CicloIniciado += MostrarNombreCicloUI;
@@ -121,9 +121,9 @@ public class Contador : MonoBehaviour
     {
         TiempoTotalStatic = horas * 3600 + minutos * 60 + segundos;
     }
-    public static void AsignarContador(Vector3 tiempo)
+    public static void AsignarContador(TimeSpan tiempo)
     {
-        TiempoTotalStatic = tiempo.x * 3600 + tiempo.y * 60 + tiempo.z;
+        TiempoTotalStatic = (float)tiempo.TotalSeconds;
     }
 
 

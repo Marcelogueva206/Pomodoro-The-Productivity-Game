@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 8199393866593000442}
   - component: {fileID: 1295081840650281369}
   - component: {fileID: 3073092805797726778}
+  - component: {fileID: 8876624298858611936}
   m_Layer: 5
   m_Name: Fondo dialogo
   m_TagString: Untagged
@@ -65,7 +66,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: c31e4df4f5c40a14b9db2a8a9f40ad18, type: 3}
+  m_Sprite: {fileID: -381206504, guid: de415305d9e31434bae0d1800a7402cb, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -75,6 +76,27 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!95 &8876624298858611936
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 387987904513862318}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 3a2d671f3c1d8b241a4723fa3aff0a88, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &2499993509962315580
 GameObject:
   m_ObjectHideFlags: 0
@@ -109,8 +131,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 1.34, y: 9.63}
-  m_SizeDelta: {x: 128.66, y: 106.66}
+  m_AnchoredPosition: {x: 1.67, y: 14.21}
+  m_SizeDelta: {x: 129.31, y: 97.49}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6014125299283514973
 CanvasRenderer:
@@ -142,8 +164,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: f85d1ba63b248cc4e9541a5bd0d439c5, type: 2}
-  m_sharedMaterial: {fileID: 3657449922216756867, guid: f85d1ba63b248cc4e9541a5bd0d439c5, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: a6fe23a6defad5946aadccb259cd1d17, type: 2}
+  m_sharedMaterial: {fileID: -8472808053708101007, guid: a6fe23a6defad5946aadccb259cd1d17, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -167,12 +189,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 5
+  m_fontSize: 8
   m_fontSizeBase: 5
   m_fontWeight: 400
   m_enableAutoSizing: 1
-  m_fontSizeMin: 15
-  m_fontSizeMax: 40
+  m_fontSizeMin: 8
+  m_fontSizeMax: 30
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 256
@@ -206,7 +228,7 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 1
+  m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!1 &4221372241077156357
@@ -345,7 +367,7 @@ Canvas:
   m_VertexColorAlwaysGammaSpace: 0
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
-  m_SortingLayerID: 0
+  m_SortingLayerID: 134828459
   m_SortingOrder: 0
   m_TargetDisplay: 0
 --- !u!114 &4283057882435077710
@@ -443,6 +465,7 @@ MonoBehaviour:
   especie: 0
   rareza: 0
   estadoAnimo: 0
+  esperarParaMostrar: 0.5
   letterPerSeconds: 10
   TiempoExtraMostrarDialogo: 5
   comportamiento: 0
@@ -451,6 +474,7 @@ MonoBehaviour:
     m_Bits: 64
   rangoDetectarHablando: 8
   textoDialogo: {fileID: 4556768628178502273}
+  RectTransformTextoDialogo: {fileID: 0}
   PanelDialogo: {fileID: 1216017687534095421}
 --- !u!212 &4046951523895913634
 SpriteRenderer:
