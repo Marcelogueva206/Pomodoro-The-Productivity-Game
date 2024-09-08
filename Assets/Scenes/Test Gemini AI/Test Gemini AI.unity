@@ -152,8 +152,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b9090e066461ae459a0fcb3724f0c23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Proyect_ID: pomodoro-a-productivity-game
-  Location: us-central1
+  gasURL: https://script.google.com/macros/s/AKfycbxPLRvXPhBvVRBkgZAXthwZgDToSxW0aqt1JhXoXwbu8va3u4ePFTsUhAcajwG3B7FGcA/exec
+  prompt: Cuanto es 2 + 2
 --- !u!4 &47229406
 Transform:
   m_ObjectHideFlags: 0
