@@ -7,19 +7,26 @@ public class TestAI : MonoBehaviour
 {
     [SerializeField] private string gasURL;
     [SerializeField] private string prompt;
+    [SerializeField] public string response;
+    public static TestAI Gemini;
 
-    private IEnumerator sendDataToGas()
+    private void Awake()
+    {
+        Gemini = this;
+        gasURL = "https://script.google.com/macros/s/AKfycbxPLRvXPhBvVRBkgZAXthwZgDToSxW0aqt1JhXoXwbu8va3u4ePFTsUhAcajwG3B7FGcA/exec";
+    }
+    public IEnumerator UseGeminiAI(string input)
     {
         WWWForm form = new WWWForm();
 
-        form.AddField("parameter",prompt);
+        form.AddField("parameter", input);
 
-        UnityWebRequest www = UnityWebRequest.Post(gasURL,form);    
+        UnityWebRequest www = UnityWebRequest.Post(gasURL, form);
 
         yield return www.SendWebRequest();
-        string response = "";
+        response = "";
 
-        if(www.result == UnityWebRequest.Result.Success)
+        if (www.result == UnityWebRequest.Result.Success)
         {
             response = www.downloadHandler.text;
         }
@@ -28,15 +35,14 @@ public class TestAI : MonoBehaviour
 
             response = "hubo un error";
         }
-        Debug.Log(response);
     }
+    //public string UsarIA(string input)
+    //{
+    //    response = "jajaja";
+    //    StartCoroutine(UseGeminiAI(input));
+    //    return response;
 
-    private void Update()
-    {
-        if(Input.GetKeyDown(KeyCode.Space))
-        {
-            StartCoroutine(sendDataToGas());
-        }
-    }
+    //}
 
+   
 }
