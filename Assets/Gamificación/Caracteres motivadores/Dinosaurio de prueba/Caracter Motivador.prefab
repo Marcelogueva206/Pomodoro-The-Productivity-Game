@@ -248,7 +248,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1216017687534095421
 RectTransform:
   m_ObjectHideFlags: 0
@@ -476,6 +476,7 @@ MonoBehaviour:
   textoDialogo: {fileID: 4556768628178502273}
   RectTransformTextoDialogo: {fileID: 0}
   PanelDialogo: {fileID: 1216017687534095421}
+  AnimadorGloboDeTexto: {fileID: 8876624298858611936}
 --- !u!212 &4046951523895913634
 SpriteRenderer:
   m_ObjectHideFlags: 0

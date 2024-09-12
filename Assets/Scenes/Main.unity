@@ -4340,7 +4340,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b9090e066461ae459a0fcb3724f0c23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gasURL: 
   prompt: 
+  response: 
 --- !u!1 &1786648885
 GameObject:
   m_ObjectHideFlags: 0

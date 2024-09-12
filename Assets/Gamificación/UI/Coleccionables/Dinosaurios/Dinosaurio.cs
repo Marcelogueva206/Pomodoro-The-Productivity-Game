@@ -17,13 +17,14 @@ public class Dinosaurio : MonoBehaviour
     [SerializeField] private float _tamaño;
     [SerializeField] private float _velocidad;
     public string Nombre { get => _nombre; set => _nombre = value; }
-    [HideInInspector]public Especie _Especie { get => especie;}
+    [HideInInspector] public Especie _Especie { get => especie; }
 
     [SerializeField] private Especie especie;
     [SerializeField] private Rareza rareza;
 
     [HideInInspector] private Rigidbody2D rb;
-    [HideInInspector] private Animator ac;
+    [HideInInspector] private Animator AnimadorCaracter;
+  
     [HideInInspector] private bool LookAtRight;
     [HideInInspector] private SpriteRenderer spriteRenderer;
     #endregion
@@ -69,7 +70,7 @@ public class Dinosaurio : MonoBehaviour
 
     private void setEstadoAnimo()
     {
-        ac.SetInteger("Estado de Animo", (int)estadoAnimo);
+        AnimadorCaracter.SetInteger("Estado de Animo", (int)estadoAnimo);
     }
 
     public EstadoAnimo getEstadoDeAnimo()
@@ -92,7 +93,7 @@ public class Dinosaurio : MonoBehaviour
         PomodoroSistema.TemposTerminado += Felicitar;
 
         rb = GetComponent<Rigidbody2D>();
-        ac = GetComponent<Animator>();
+        AnimadorCaracter = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
@@ -104,6 +105,7 @@ public class Dinosaurio : MonoBehaviour
         PosicionOriginalPanelDeDialogo = PanelDialogo.anchoredPosition;
         RectTransformTextoDialogo = textoDialogo.GetComponent<RectTransform>();
         PosicionOriginalTextoDeDialogo = RectTransformTextoDialogo.anchoredPosition;
+        PanelDialogo.gameObject.SetActive(false);
     }
 
 
@@ -114,16 +116,31 @@ public class Dinosaurio : MonoBehaviour
         setEstadoAnimo();
         if (IsMoving())
         {
-            ac.SetBool("Moviendose", true);
+            AnimadorCaracter.SetBool("Moviendose", true);
         }
         else
         {
-            ac.SetBool("Moviendose", false);
+            AnimadorCaracter.SetBool("Moviendose", false);
         }
 
-        ac.SetInteger("Comportamiento", (int)comportamiento);
 
-        if(dialogosPorDecir.Count > 0) //¿tengo algoq ue decir?
+        if(AnimadorGloboDeTexto.gameObject.activeSelf)
+        {
+            if (PensandoDialogo == true)
+            {
+                AnimadorGloboDeTexto.SetBool("Pensando", true);
+            }
+            else
+            {
+                AnimadorGloboDeTexto.SetBool("Pensando", false);
+            }
+        }
+ 
+    
+
+        AnimadorCaracter.SetInteger("Comportamiento", (int)comportamiento);
+
+        if (dialogosPorDecir.Count > 0) //¿tengo algoq ue decir?
         {
             CambiarComportamiento(Comportamiento.Hablar);
         }
@@ -134,25 +151,17 @@ public class Dinosaurio : MonoBehaviour
     [SerializeField] private float esperarParaMostrar = 0.01f;
     [SerializeField] private float letterPerSeconds;
     [SerializeField] private float TiempoExtraMostrarDialogo = 5f;
-    private List<Dialogo> dialogosPorDecir = new List<Dialogo>();
+    public List<Dialogo> dialogosPorDecir = new List<Dialogo>();
     private Dialogo dialogoActualPorDecir;
+    [HideInInspector] private bool PensandoDialogo = false;
 
     private void Felicitar(Tempos tempos)
     {
         Dialogo dialogoNuevo = new Felicitacion(this, tempos); //proceso mental en analisar la situación y pensar en qué quieres decir
 
-        //if(dialogoNuevo != null)
-        //{
-        //    Debug.Log(dialogoNuevo.mensajeFinal);
-        //}
-        //IncluirDialogosPorDecir(dialogoNuevo); // SOLO POR AHORA
-
-        //StartCoroutine(TestAI.UseGeminiAI("hola"));
-
         StartCoroutine(IncluirDialogosPorDecir(dialogoNuevo));
+        PanelDialogo.gameObject.SetActive(true);
     }
-
-
     #region Experimentación dialogo
     //public void FelicitarTempoTerminado(Tempos tempo)
     //{
@@ -181,17 +190,11 @@ public class Dinosaurio : MonoBehaviour
     #endregion
 
 
-    //public void IncluirDialogosPorDecir(Dialogo dialogo)
-    //{
-
-    //    dialogosPorDecir.Add(dialogo);
-
-    //}
-
     public IEnumerator IncluirDialogosPorDecir(Dialogo dialogo)
     {
+        PensandoDialogo = true;
         yield return StartCoroutine(TestAI.Gemini.UseGeminiAI(dialogo.Prompt));
-
+       
         dialogo.mensajeFinal = TestAI.Gemini.response;
         dialogosPorDecir.Add(dialogo);
     }
@@ -201,7 +204,7 @@ public class Dinosaurio : MonoBehaviour
 
     public void MostrarDialogoActual(float tiempo)
     {
-       
+
         if (dialogosPorDecir.Count > 0)
         {
             dialogoActualPorDecir = dialogosPorDecir[0];
@@ -215,7 +218,7 @@ public class Dinosaurio : MonoBehaviour
         Felicitacion felicitacion;
         if (dialogoActualPorDecir is Felicitacion)
         {
-            felicitacion =  dialogoActualPorDecir as Felicitacion;
+            felicitacion = dialogoActualPorDecir as Felicitacion;
 
             switch (felicitacion.rareza)
             {
@@ -240,8 +243,7 @@ public class Dinosaurio : MonoBehaviour
             }
         }
 
-        PanelDialogo.gameObject.SetActive(true);
-        StartCoroutine(TypeDialog(dialogoActualPorDecir.mensajeFinal,esperarParaMostrar));
+        StartCoroutine(TypeDialog(dialogoActualPorDecir.mensajeFinal, esperarParaMostrar));
         StartCoroutine(StopDialogo(dialogoActualPorDecir.mensajeFinal.ToCharArray().Length / letterPerSeconds + tiempo));
     }
 
@@ -249,7 +251,7 @@ public class Dinosaurio : MonoBehaviour
     IEnumerator StopDialogo(float tiempo)
     {
         yield return new WaitForSeconds(tiempo);
-        textoDialogo.text = SubtractStrings(textoDialogo.text,dialogoActualPorDecir.mensajeFinal);
+        textoDialogo.text = SubtractStrings(textoDialogo.text, dialogoActualPorDecir.mensajeFinal);
 
         dialogosPorDecir.Remove(dialogoActualPorDecir);
         dialogoActualPorDecir = null;
@@ -275,7 +277,7 @@ public class Dinosaurio : MonoBehaviour
         // Retornar el string resultante
         return str1;
     }
-    public IEnumerator TypeDialog(string dialog,float firstWait)
+    public IEnumerator TypeDialog(string dialog, float firstWait)
     {
         yield return new WaitForSeconds(firstWait);
         foreach (var letter in dialog.ToCharArray())
@@ -287,9 +289,6 @@ public class Dinosaurio : MonoBehaviour
     }
 
     #endregion
-
-
-
     #endregion
     #region Sistema de comportamiento
     [Header("Sistema de comportamiento")]
@@ -390,13 +389,12 @@ public class Dinosaurio : MonoBehaviour
         {
             if (OtroEstaHablando() == true)
             {
-                //EsperandoParaHablar = true;
                 return;
             }
             else
             {
+                PensandoDialogo = false;
                 MostrarDialogoActual(TiempoExtraMostrarDialogo);
-                //EsperandoParaHablar = false;
             }
 
         }
@@ -528,6 +526,7 @@ public class Dinosaurio : MonoBehaviour
     [SerializeField] private RectTransform PanelDialogo;
     [HideInInspector] private RectTransform FondoDeDialogo;
     [HideInInspector] private GameObject Camara;
+    [SerializeField] public Animator AnimadorGloboDeTexto;
     #endregion
 }
 
@@ -537,47 +536,25 @@ public class Dinosaurio : MonoBehaviour
 public class Dialogo
 {
     public string mensajeFinal;
-    protected List<string> mensajesVariantes;
-    public Dinosaurio.EstadoAnimo animoDelDialogo;
+    protected Dinosaurio.EstadoAnimo animoDelDialogo;
+    protected string id;
 
     //Sistema de uso de AI Gemini
-    internal string contextoGeneral = "";
-    internal string contextoEspecifico = "";
-    internal string tarea = "";
-    internal string Prompt { get => contextoGeneral + contextoEspecifico + tarea; }
+    protected string contextoGeneral = "";
+    protected string contextoEspecifico = "";
+    protected string tarea = "";
+    public string Prompt { get => contextoGeneral + contextoEspecifico + tarea; }
+    public string Id { get => id; }
 
-/* Unmerged change from project 'Assembly-CSharp.Player'
-Before:
-    public bool cargaFinalizada; 
-After:
-    public bool cargaFinalizada;
-*/
-    private bool CargaFinalizada { get => cargaFinalizada;}
-
-    private bool cargaFinalizada;
-
-    public Dialogo(Dinosaurio emisor)
+    protected List<String> idValidadas;
+    public Dialogo(Dinosaurio emisor, string id = "")
     {
-        cargaFinalizada = false;
+        this.id = id;
         contextoGeneral = "Interpretas a una mascota que acompaña al usario en su trabajo. Te comportas feliz o triste según la productividad del usuario. Tú output no debe superar los 200 caracteres";
         contextoGeneral += ".Eres un pequeño " + emisor._Especie.ToString();
         contextoGeneral += ".Estás " + emisor.getEstadoDeAnimo().ToString();
-
         this.animoDelDialogo = emisor.getEstadoDeAnimo();
 
-    }
-
-
-    protected string SelectRandomElement(List<string> items)
-    {
-        if (items == null || items.Count == 0)
-        {
-            Debug.LogError("La lista no puede estar vacía o ser nula.");
-            return null;
-        }
-
-        int index = UnityEngine.Random.Range(0, items.Count); // Genera un índice aleatorio
-        return items[index];
     }
 
 }
@@ -588,175 +565,56 @@ public class Felicitacion : Dialogo
     public Rareza rareza;
     public Felicitacion(Dinosaurio emisor, Tempos tempoTerminado) : base(emisor)
     {
+        tarea = "Felicitalo por lo que logró el usuario, incluso si tu estadode ánimo es triste";
+
         if (tempoTerminado.tiposTempos == TiposTempos.productivo)
         {
-            //felicitar simplemente por terminar un tempo productivo
 
-            //rareza = Rareza.sencillo;
-            //#region Mensaje
-            //switch (animoDelDialogo)
-            //{
-            //    case Dinosaurio.EstadoAnimo.Euforia:
-            //        mensajesVariantes = new List<String> {
-            //      $"¡Estoy extasiado! ¡Has roto todos los récords de productividad! ¡Increíble!",
-            //$"¡Dino-destacado! ¡Superaste todas las expectativas! ¡Estoy muy emocionado!",
-            //$"¡Esto es histórico! ¡Tu productividad está por las nubes! ¡Sigue así!",
-            //$"¡Wow! ¡Terminaste ese tiempo productivo como un verdadero campeón!",
-            //$"¡Impresionante! ¡No puedo creer lo productivo que has sido!",
-            //$"¡Estás en racha! ¡Cada vez lo haces mejor!",
-            //$"¡Increíble energía! ¡Terminaste fuerte y con estilo!",
-            //$"¡Dino-épico! ¡Tu productividad hoy es algo digno de celebrar!",
-            //$"¡Bravo! ¡Lo lograste con un nivel de productividad excepcional!",
-            //$"¡Eres un titán de la productividad! ¡No hay quien te pare!"
-            //        };
-            //        mensajeFinal = SelectRandomElement(mensajesVariantes);
-            //        break;
-            //    case Dinosaurio.EstadoAnimo.Feliz:
-            //        mensajesVariantes = new List<String> {
-            //            $"¡Rugidos de alegría! Has superado tu tiempo productivo en un Pomodoro. ¡Bien hecho!",
-            //$"¡Rawr! ¡Eres imparable! Has superado tu marca de productividad en un Pomodoro.",
-            //$"¡Dino-genial! Has superado tu promedio de tiempo productivo. ¡Vamos por más!",
-            //$"¡Fantástico! ¡Terminaste tu tiempo productivo con gran éxito!",
-            //$"¡Qué bien lo has hecho! ¡Ese tiempo productivo fue excelente!",
-            //$"¡Rugido de felicidad! ¡Completaste tu sesión con gran dedicación!",
-            //$"¡Bravo! ¡Terminaste tu tiempo productivo sin perder el ritmo!",
-            //$"¡Maravilloso! ¡Tu productividad hoy ha sido de primera!",
-            //$"¡Qué logro! ¡Finalizaste tu tiempo productivo de forma brillante!",
-            //$"¡Excelente trabajo! ¡Cada minuto de productividad cuenta!"
-            //        };
-            //        mensajeFinal = SelectRandomElement(mensajesVariantes);
-            //        break;
-            //    case Dinosaurio.EstadoAnimo.Triste:
-            //        mensajesVariantes = new List<String> {
-            //        $"Hoy me siento un poco triste, pero ¡terminaste tu tiempo productivo! ¡Eso es lo importante!",
-            //$"Mi ánimo está bajo, pero estoy orgulloso de que hayas completado tu período de productividad. ¡Bien hecho!",
-            //$"Aunque me siento triste, no puedo evitar felicitarte por haber terminado tu tiempo productivo. ¡Lo lograste!",
-            //$"No estoy en mi mejor momento, pero ver tu esfuerzo me alegra un poco.",
-            //$"Estoy un poco triste, pero terminar tu tiempo productivo es algo digno de aplauso.",
-            //$"Hoy no es mi mejor día, pero ¡tú has completado el tuyo con éxito!",
-            //$"A pesar de mi tristeza, veo que has terminado tu tiempo productivo. ¡Eso me anima!",
-            //$"Aunque mi ánimo es bajo, felicitarte por tu productividad me da un poco de alegría.",
-            //$"Me siento algo decaído, pero ver tu logro productivo me da un poco de consuelo.",
-            //$"Hoy estoy triste, pero no puedo dejar de reconocer tu esfuerzo. ¡Buen trabajo!"
-            //        };
-            //        mensajeFinal = SelectRandomElement(mensajesVariantes);
-            //        break;
-
-            //}
-            //#endregion
-
-
+            //el usuario termino un pomodoro normal
+            idValidadas.Add("001");
+            if ("001" == id||"" == id)
+            {        
+                rareza = Rareza.sencillo;
+                contextoEspecifico += $".El usuario logró superar estar concentrado un total de {tempoTerminado.TiempoTotal.ToString(@"h\:mm\:ss")}";
+            }
+          
+         
             //Felicitar por superar de ser más productivo de lo normal
-            //if (EstadisticasManager.TiempoTempoProductivoPromedio < tempoTerminado.TiempoTotal)
+            if (EstadisticasManager.TiempoTempoProductivoPromedio < tempoTerminado.TiempoTotal)
+            {
+                idValidadas.Add("002");
+                if ("002" == id || "" == id)
+                {                 
+                    rareza = Rareza.desafiante;
+                    contextoEspecifico += $".El usuario logró superar su promedio productivo diario de {EstadisticasManager.TiempoTotalProductivoDiarioPromedio.ToString(@"h\:mm\:ss")}";
+                }
+
+               
+
+            }
+
+
+            //Felicitar por superar tu tiempo de productividad muy larga
+            if (tempoTerminado.TiempoTotal >= new TimeSpan(1, 30, 0))
+            {
+                idValidadas.Add("003");
+                if ("003" == id || "" == id)
+                {    
+                    rareza = Rareza.superior;
+                    contextoEspecifico += $".El usuario logró estar concentrado durante el largo periodo consecutivo de más 1 hora y 30 minutos. El usuario estuvo {tempoTerminado.TiempoTotal.ToString(@"h\:mm\:ss")} en total";
+                }
+              
+
+
+            }
+            //else if (tempoTerminado.TiempoTotal >= new TimeSpan(0, 45, 0))    //Felicitar por terminar un tempo productivo de duración larga
             //{
-                rareza = Rareza.desafiante;
-                contextoEspecifico += $".El usuario logró superar su promedio productivo diario de {EstadisticasManager.TiempoTotalProductivoDiarioPromedio}";
-                tarea = "Felicitalo por ello";
-
-
-            //mensajeFinal = StartCoroutine(UseGeminiAI(input));
-
-
-
-
-                //#region Mensaje
-                //switch (animoDelDialogo)
-                //{
-                //    case Dinosaurio.EstadoAnimo.Euforia:
-                //        mensajesVariantes = new List<String> {
-                //        $"¡Estoy extasiado! ¡Has roto todos los récords de productividad! ¡Increíble!",
-                //        $"¡Dino-destacado! ¡Superaste todas las expectativas! ¡Estoy muy emocionado!",
-                //        $"¡Esto es histórico! ¡Tu productividad está por las nubes! ¡Sigue así!"
-                //    };
-                //        mensajeFinal = SelectRandomElement(mensajesVariantes);
-                //        break;
-                //    case Dinosaurio.EstadoAnimo.Feliz:
-                //        mensajesVariantes = new List<String> {
-                //        $"¡Rugidos de alegría! Has superado tu tiempo productivo en un Pomodoro. ¡Bien hecho!",
-                //        $"¡Rawr! ¡Eres imparable! Has superado tu marca de productividad en un Pomodoro.",
-                //        $"¡Dino-genial! Has superado tu promedio de tiempo productivo. ¡Vamos por más!"
-                //    };
-                //        mensajeFinal = SelectRandomElement(mensajesVariantes);
-                //        break;
-                //    case Dinosaurio.EstadoAnimo.Triste:
-                //        mensajesVariantes = new List<String> {
-                //        $"Oh no, parece que hoy no fue tu mejor día. ¡Pero mañana será mejor!",
-                //        $"No siempre se puede ganar, pero puedes intentarlo otra vez. ¡No te rindas!",
-                //        "Sé que puedes hacerlo mejor. ¡Vamos a intentarlo de nuevo!"
-                //    };
-                //        mensajeFinal = SelectRandomElement(mensajesVariantes);
-                //        break;
-                //}
-                //#endregion
+            //    id = "004";
+            //    rareza = Rareza.desafiante;
+            //    contextoEspecifico += $".El usuario logró estar concentrado durante el largo periodo consecutivo de más 45 minutos. El usuario estuvo {tempoTerminado.TiempoTotal.ToString(@"h\:mm\:ss")} en total";
 
             //}
-
-            //    //Felicitar por superar tu tiempo de productividad muy larga
-            //    if (tempoTerminado.TiempoTotal >= new TimeSpan(1, 30, 0))
-            //    {
-            //        rareza = Rareza.superior;
-            //        switch (animoDelDialogo)
-            //        {
-            //            case Dinosaurio.EstadoAnimo.Euforia:
-            //                mensajesVariantes = new List<String> {
-            //    $"¡No me puedo creer que pasaste {EstadisticasManager.TiempoTotalProductivoHoy.ToString(@"h\:mm\:ss")} concentrado! ¡Eso es demasiado!",
-            //    $"¡Increíble! Has estado enfocado por {EstadisticasManager.TiempoTotalProductivoHoy.ToString(@"h\:mm\:ss")}. ¡Estás a otro nivel!",
-            //    $"¡Eres imparable! Mantener la concentración durante {EstadisticasManager.TiempoTotalProductivoHoy.ToString(@"h\:mm\:ss")} es algo fuera de serie."
-            //};
-            //                mensajeFinal = SelectRandomElement(mensajesVariantes);
-            //                break;
-            //            case Dinosaurio.EstadoAnimo.Feliz:
-            //                mensajesVariantes = new List<String> {
-            //    $"¡Wow! Te concentraste durante {EstadisticasManager.TiempoTotalProductivoHoy.ToString(@"h\:mm\:ss")} ¡Eso es muchísimo! ¡Felicidades!",
-            //    $"¡Gran trabajo! Lograste mantenerte concentrado por {EstadisticasManager.TiempoTotalProductivoHoy.ToString(@"h\:mm\:ss")} ¡Sigue así!",
-            //    $"¡Impresionante! {EstadisticasManager.TiempoTotalProductivoHoy.ToString(@"h\:mm\:ss")} de pura productividad. ¡Estás logrando grandes cosas!"
-            //};
-            //                mensajeFinal = SelectRandomElement(mensajesVariantes);
-            //                break;
-            //            case Dinosaurio.EstadoAnimo.Triste:
-            //                mensajesVariantes = new List<String> {
-            //    $"¿Acabaste de estar concentrado durante {EstadisticasManager.TiempoTotalProductivoHoy.ToString(@"h\:mm\:ss")}? ¡Eso es fascinante!",
-            //    $"Aunque estés cansado, mantuviste la concentración por {EstadisticasManager.TiempoTotalProductivoHoy.ToString(@"h\:mm\:ss")}. ¡No te desanimes!",
-            //    $"Sé que fue difícil, pero lograste concentrarte durante {EstadisticasManager.TiempoTotalProductivoHoy.ToString(@"h\:mm\:ss")}. ¡Eso es admirable!"
-            //};
-            //                mensajeFinal = SelectRandomElement(mensajesVariantes);
-            //                break;
-            //        }
-            //    }
-            //    else if (tempoTerminado.TiempoTotal >= new TimeSpan(0, 45, 0))    //Felicitar por terminar un tempo productivo de duración larga
-            //    {
-            //        rareza = Rareza.desafiante;
-            //        #region Mensaje
-            //        switch (animoDelDialogo)
-            //        {
-            //            case Dinosaurio.EstadoAnimo.Euforia:
-            //                mensajesVariantes = new List<String> {
-            //                $"¡ROOOAR! ¡Has alcanzado {tempoTerminado.TiempoTotal.TotalMinutes} minutos de pura concentración! ¡Eso es asombroso! Estoy tan emocionado que casi no puedo contenerme. ¡Eres el mejor cuidador!",
-            //                $"¡WOW! ¡{tempoTerminado.TiempoTotal.TotalMinutes} minutos de productividad sin parar! ¡Estoy tan eufórico que no puedo dejar de saltar! ¡Eres un campeón, cuidador!",
-            //                $"¡ROOOAR! ¡Increíble, lograste más de 45 minutos de concentración! ¡Estoy tan emocionado que casi puedo volar! ¡Gracias por darme tanta energía, juntos somos invencibles!"
-            //            };
-            //                mensajeFinal = SelectRandomElement(mensajesVariantes);
-            //                break;
-            //            case Dinosaurio.EstadoAnimo.Feliz:
-            //                mensajesVariantes = new List<String> {
-            //                $"¡Roar! ¡Qué felicidad ver que has estado concentrado por {tempoTerminado.TiempoTotal.TotalMinutes} minutos! Gracias por ser tan productivo, cuidador. ¡Juntos estamos creciendo más fuertes!",
-            //                $"¡Rooaar! ¡Has trabajado más de 45 minutos! Eso es increíble. ¡Estoy tan feliz de que me alimentes con tu dedicación y concentración!",
-            //                $"¡Qué alegría! ¡Has superado el promedio con {tempoTerminado.TiempoTotal.TotalMinutes} minutos de enfoque! Estoy tan feliz de que sigas siendo tan productivo. ¡Gracias por cuidarme tan bien!"
-            //            };
-            //                mensajeFinal = SelectRandomElement(mensajesVariantes);
-            //                break;
-            //            case Dinosaurio.EstadoAnimo.Triste:
-            //                mensajesVariantes = new List<String> {
-            //                $"Sniff... aunque me pone un poquito triste que hayas pasado tanto tiempo sin descansar, estoy muy orgulloso de que te hayas mantenido concentrado por {tempoTerminado.TiempoTotal.TotalMinutes} minutos. ¡Eso es más que el promedio! Cuida también de ti, cuidador.",
-            //                $"Grrr... me da un poco de pena verte trabajar tan duro sin una pausa, pero {tempoTerminado.TiempoTotal.TotalMinutes} minutos es un gran logro. ¡Sigue así, pero no olvides recargar energías!",
-            //                "Oh... aunque me pone triste que estés tan ocupado, sé que {tempoTerminado.TiempoTotal.TotalMinutes} minutos de enfoque es algo impresionante. No olvides que también es importante descansar."
-            //            };
-            //                mensajeFinal = SelectRandomElement(mensajesVariantes);
-            //                break;
-            //        }
-            //        #endregion
-            //    }
-
+            #region Anterior trabajo
 
             //    //Fecilitar por conseguir mucho tiempo siendo productivo hoy (más que el promedio)
 
@@ -847,9 +705,10 @@ public class Felicitacion : Dialogo
             //    }
 
 
-            //Comparar y felicitar por progreso de tempo dedicado a tempos
-
+            //Comparar y felicitar por progreso de tempo dedicado a tempos 
+            #endregion
         }
+        #region Anterior version
         //else if (tempoTerminado.tiposTempos == TiposTempos.descanso)
         //{
         //    rareza = Rareza.nula;
@@ -885,7 +744,8 @@ public class Felicitacion : Dialogo
         //    }
         //    #endregion
 
-        //}
+        //} 
+        #endregion
     }
 
 
