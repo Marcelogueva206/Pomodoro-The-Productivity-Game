@@ -159,7 +159,9 @@ public class Dinosaurio : MonoBehaviour
     {
         Dialogo dialogoNuevo = new Felicitacion(this, tempos); //proceso mental en analisar la situación y pensar en qué quieres decir
 
-        StartCoroutine(IncluirDialogosPorDecir(dialogoNuevo));
+
+       
+        StartCoroutine(ProcesarDialogoAI(dialogoNuevo));
         PanelDialogo.gameObject.SetActive(true);
     }
     #region Experimentación dialogo
@@ -190,7 +192,7 @@ public class Dinosaurio : MonoBehaviour
     #endregion
 
 
-    public IEnumerator IncluirDialogosPorDecir(Dialogo dialogo)
+    public IEnumerator ProcesarDialogoAI(Dialogo dialogo)
     {
         PensandoDialogo = true;
         yield return StartCoroutine(TestAI.Gemini.UseGeminiAI(dialogo.Prompt));
@@ -546,7 +548,7 @@ public class Dialogo
     public string Prompt { get => contextoGeneral + contextoEspecifico + tarea; }
     public string Id { get => id; }
 
-    protected List<String> idValidadas;
+    public List<String> idValidadas = new List<string>();
     public Dialogo(Dinosaurio emisor, string id = "")
     {
         this.id = id;

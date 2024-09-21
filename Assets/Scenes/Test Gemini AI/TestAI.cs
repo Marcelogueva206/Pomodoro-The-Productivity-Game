@@ -6,22 +6,75 @@ using UnityEngine.Networking;
 public class TestAI : MonoBehaviour
 {
     [Range(0 ,1)]private float indiceDeInputs; //0 a 1: 0 es ningún comentario y 1 es siempre
-    Dictionary<GameObject, List<Dialogo>> DialogosPorCharacter = new Dictionary<GameObject, List<Dialogo>>();
-    [SerializeField] private List<GameObject> CharacterMotivadoresActivos;
+    static Dictionary<Dinosaurio, List<Dialogo>> DialogosPorCharacter = new Dictionary<Dinosaurio, List<Dialogo>>();
+    //[SerializeField] private List<GameObject> CharacterMotivadoresActivos;
 
 
 
     private void Start()
     {
-        if(CharacterMotivadoresActivos.Count > 0)
-        {
-            foreach (GameObject characterMotivador in CharacterMotivadoresActivos)
-            {
-                DialogosPorCharacter.Add(characterMotivador, characterMotivador.GetComponent<Dinosaurio>().dialogosPorDecir);
-            }
-        }
+        //if(CharacterMotivadoresActivos.Count > 0)
+        //{
+        //    foreach (Dinosaurio characterMotivador in CharacterMotivadoresActivos)
+        //    {
+        //        DialogosPorCharacter.Add(characterMotivador, characterMotivador.GetComponent<Dinosaurio>().dialogosPorDecir);
+        //    }
+        //}
      
     }
+
+    private void Update()
+    {
+        if( Input.GetKeyDown(KeyCode.Space) )
+        {
+            //seleciona la lista
+            foreach (KeyValuePair<Dinosaurio, List<Dialogo>> entry in DialogosPorCharacter)
+            {
+                //elige los componentes
+                Dinosaurio character = entry.Key;
+                List<Dialogo> dialogos = entry.Value;
+
+                Debug.Log($"Diálogos para {character.name}:");
+                // imprime al priemr componente
+                foreach (Dialogo dialogo in dialogos)
+                {
+                    //imprime todos sus sub componentes
+                    Debug.Log($"cantidad de id validadas: {dialogo.idValidadas.Count}");
+                }
+
+      ; // Línea en blanco para separar personajes
+            }
+
+        }
+  
+    }
+
+    public IEnumerator FiltrarDialogos(Dinosaurio emisor)
+    {
+        //absrove los dialogos de cada
+        DialogosPorCharacter.Clear();
+        DialogosPorCharacter.Add(emisor, emisor.dialogosPorDecir);
+
+        //se espera para analisar todos los posibles
+        yield return new WaitForSeconds(1);
+        //quedar con una sola id validada
+
+        foreach (KeyValuePair<Dinosaurio, List<Dialogo>> entry in DialogosPorCharacter)
+        {
+            Dinosaurio character = entry.Key;
+            List<Dialogo> dialogos = entry.Value;
+
+            Debug.Log($"Diálogos para {character.name}:");
+
+            foreach (Dialogo dialogo in dialogos)
+            {
+                Debug.Log($"cantidad de id validadas: {dialogo.idValidadas.Count}");
+            }
+
+      ; // Línea en blanco para separar personajes
+        }
+    }
+
     private int cantidadDeInputsDiario;
 
     private static int cantidadDeOutputsConsumidos;
