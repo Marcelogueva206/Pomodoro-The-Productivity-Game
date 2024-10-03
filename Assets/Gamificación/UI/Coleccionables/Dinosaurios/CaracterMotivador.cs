@@ -9,7 +9,7 @@ using UnityEngine.UIElements;
 using UnityEngine.Windows;
 using static UnityEngine.EventSystems.EventTrigger;
 
-public class Dinosaurio : MonoBehaviour
+public class CaracterMotivador : MonoBehaviour
 {
     #region Caracteristicas generales
     [Header("Caracteristicas generales")]
@@ -89,6 +89,8 @@ public class Dinosaurio : MonoBehaviour
         //Contador.TempoIniciadoPorUsuario += MotivarTempoIniciado;
         //Contador.CicloIniciadoPorUsuario += MotivarCicloIniciado;
         //Contador.PomodoroIniciadoPorUsuario += MotivarPomodoroIniciado;
+
+
 
         PomodoroSistema.TemposTerminado += Felicitar;
 
@@ -336,7 +338,7 @@ public class Dinosaurio : MonoBehaviour
 
         foreach (Collider2D collider in hitColliders)
         {
-            if (collider.GetComponent<Dinosaurio>().comportamiento == Comportamiento.Hablar)
+            if (collider.GetComponent<CaracterMotivador>().comportamiento == Comportamiento.Hablar)
             {
                 return true;
             }
@@ -538,7 +540,7 @@ public class Dinosaurio : MonoBehaviour
 public class Dialogo
 {
     public string mensajeFinal;
-    protected Dinosaurio.EstadoAnimo animoDelDialogo;
+    protected CaracterMotivador.EstadoAnimo animoDelDialogo;
     protected string id;
 
     //Sistema de uso de AI Gemini
@@ -549,7 +551,7 @@ public class Dialogo
     public string Id { get => id; }
 
     public List<String> idValidadas = new List<string>();
-    public Dialogo(Dinosaurio emisor, string id = "")
+    public Dialogo(CaracterMotivador emisor, string id = "")
     {
         this.id = id;
         contextoGeneral = "Interpretas a una mascota que acompaña al usario en su trabajo. Te comportas feliz o triste según la productividad del usuario. Tú output no debe superar los 200 caracteres";
@@ -565,7 +567,7 @@ public class Felicitacion : Dialogo
 {
     public enum Rareza { nula, sencillo, desafiante, superior, Top }
     public Rareza rareza;
-    public Felicitacion(Dinosaurio emisor, Tempos tempoTerminado) : base(emisor)
+    public Felicitacion(CaracterMotivador emisor, Tempos tempoTerminado) : base(emisor)
     {
         tarea = "Felicitalo por lo que logró el usuario, incluso si tu estadode ánimo es triste";
 

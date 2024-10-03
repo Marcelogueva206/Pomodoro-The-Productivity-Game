@@ -6,7 +6,7 @@ using UnityEngine.Networking;
 public class TestAI : MonoBehaviour
 {
     [Range(0 ,1)]private float indiceDeInputs; //0 a 1: 0 es ningún comentario y 1 es siempre
-    static Dictionary<Dinosaurio, List<Dialogo>> DialogosPorCharacter = new Dictionary<Dinosaurio, List<Dialogo>>();
+    static Dictionary<CaracterMotivador, List<Dialogo>> DialogosPorCharacter = new Dictionary<CaracterMotivador, List<Dialogo>>();
     //[SerializeField] private List<GameObject> CharacterMotivadoresActivos;
 
 
@@ -28,10 +28,10 @@ public class TestAI : MonoBehaviour
         if( Input.GetKeyDown(KeyCode.Space) )
         {
             //seleciona la lista
-            foreach (KeyValuePair<Dinosaurio, List<Dialogo>> entry in DialogosPorCharacter)
+            foreach (KeyValuePair<CaracterMotivador, List<Dialogo>> entry in DialogosPorCharacter)
             {
                 //elige los componentes
-                Dinosaurio character = entry.Key;
+                CaracterMotivador character = entry.Key;
                 List<Dialogo> dialogos = entry.Value;
 
                 Debug.Log($"Diálogos para {character.name}:");
@@ -49,7 +49,7 @@ public class TestAI : MonoBehaviour
   
     }
 
-    public IEnumerator FiltrarDialogos(Dinosaurio emisor)
+    public IEnumerator FiltrarDialogos(CaracterMotivador emisor)
     {
         //absrove los dialogos de cada
         DialogosPorCharacter.Clear();
@@ -59,9 +59,9 @@ public class TestAI : MonoBehaviour
         yield return new WaitForSeconds(1);
         //quedar con una sola id validada
 
-        foreach (KeyValuePair<Dinosaurio, List<Dialogo>> entry in DialogosPorCharacter)
+        foreach (KeyValuePair<CaracterMotivador, List<Dialogo>> entry in DialogosPorCharacter)
         {
-            Dinosaurio character = entry.Key;
+            CaracterMotivador character = entry.Key;
             List<Dialogo> dialogos = entry.Value;
 
             Debug.Log($"Diálogos para {character.name}:");

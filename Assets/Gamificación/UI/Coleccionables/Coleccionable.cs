@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static Dinosaurio;
+using static CaracterMotivador;
 
 public class Coleccionable : MonoBehaviour
 {

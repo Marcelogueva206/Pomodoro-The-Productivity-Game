@@ -456,7 +456,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6940993005550648818}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a4ff8f011de6fab4aa3605ce383dc857, type: 3}
+  m_Script: {fileID: 11500000, guid: 3b15c57e5bca3b54a85fa5f15d85369b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _nombre: 
@@ -465,14 +465,14 @@ MonoBehaviour:
   especie: 0
   rareza: 0
   estadoAnimo: 0
-  esperarParaMostrar: 0.5
-  letterPerSeconds: 10
+  esperarParaMostrar: 0.01
+  letterPerSeconds: 0
   TiempoExtraMostrarDialogo: 5
   comportamiento: 0
   detectionLayer:
     serializedVersion: 2
-    m_Bits: 64
-  rangoDetectarHablando: 8
+    m_Bits: 0
+  rangoDetectarHablando: 0
   textoDialogo: {fileID: 4556768628178502273}
   RectTransformTextoDialogo: {fileID: 0}
   PanelDialogo: {fileID: 1216017687534095421}
