@@ -19,6 +19,7 @@ public class Dinosaurio : MonoBehaviour
     public string Nombre { get => _nombre; set => _nombre = value; }
     [HideInInspector] public Especie _Especie { get => especie; }
 
+
     [SerializeField] private Especie especie;
     [SerializeField] private Rareza rareza;
 
@@ -27,42 +28,52 @@ public class Dinosaurio : MonoBehaviour
   
     [HideInInspector] private bool LookAtRight;
     [HideInInspector] private SpriteRenderer spriteRenderer;
+   
     #endregion
     #region Sistema de emociones
+
     [Header("Sistema de Emociones")]
-    [SerializeField] private EstadoAnimo estadoAnimo;
-
-    public void MejorarEstadoAnimo(bool QuieresMejorar)
+    [Range(-0.5f, 1.5f)][SerializeField] private float emocionalidad;
+    [HideInInspector] private EstadoAnimo estadoAnimo;
+    public float Emocionalidad
     {
-        if (QuieresMejorar == true)
+        get
         {
-            if (estadoAnimo == EstadoAnimo.Feliz)
-            {
-                CambiarEstadoAnimo(EstadoAnimo.Euforia);
-            }
-            if (estadoAnimo == EstadoAnimo.Triste)
-            {
-                CambiarEstadoAnimo(EstadoAnimo.Feliz);
-            }
-        }
-        else
-        {
-            if (estadoAnimo == EstadoAnimo.Euforia || estadoAnimo == EstadoAnimo.Feliz)
-            {
-                CambiarEstadoAnimo(EstadoAnimo.Triste);
-            }
+            return emocionalidad;
 
-            if (estadoAnimo == EstadoAnimo.Triste)
-            {
-                CambiarEstadoAnimo(EstadoAnimo.Deprimido);
-            }
+        }
+        set { emocionalidad = value;
+        ActualizarEstadoDeAnimo(); 
         }
     }
+
+    [SerializeField] private float sensibilidad; 
+
+
+    public void ActualizarEstadoDeAnimo()
+    {
+        if(Emocionalidad >=1)
+        {
+            CambiarEstadoAnimo(EstadoAnimo.Euforia);
+        } else if (Emocionalidad >= 0.5)
+        {
+            CambiarEstadoAnimo(EstadoAnimo.Feliz);
+        } else if(emocionalidad > 0)
+        {
+            CambiarEstadoAnimo(EstadoAnimo.Triste);
+        } else if(Emocionalidad <= 0)
+        {
+            CambiarEstadoAnimo(EstadoAnimo.Deprimido);
+        }
+    }
+
+
+ 
 
     private void CambiarEstadoAnimo(EstadoAnimo estado)
     {
         estadoAnimo = estado;
-        if (estadoAnimo == EstadoAnimo.Deprimido)
+        if(estadoAnimo == EstadoAnimo.Deprimido)
         {
             CambiarComportamiento(Comportamiento.Deprimirse);
         }
@@ -144,6 +155,12 @@ public class Dinosaurio : MonoBehaviour
         {
             CambiarComportamiento(Comportamiento.Hablar);
         }
+    }
+
+    private void OnValidate()
+    {
+        // Aquí forzamos la llamada a la propiedad cada vez que cambie desde el Inspector.
+        Emocionalidad = emocionalidad;
     }
     #endregion
     #region Sistema de dialogo 
@@ -455,7 +472,10 @@ public class Dinosaurio : MonoBehaviour
 
     private void DetenerseInstantaneamente()
     {
-        rb.velocity = Vector2.zero; rb.angularVelocity = 0;
+        if (this != null)
+        {
+            rb.velocity = Vector2.zero; rb.angularVelocity = 0;
+        }
     }
 
     private bool IsMoving()
@@ -537,19 +557,19 @@ public class Dialogo
 {
     public string mensajeFinal;
     protected Dinosaurio.EstadoAnimo animoDelDialogo;
-    protected string id;
+    //protected string id;
 
     //Sistema de uso de AI Gemini
     protected string contextoGeneral = "";
     protected string contextoEspecifico = "";
     protected string tarea = "";
     public string Prompt { get => contextoGeneral + contextoEspecifico + tarea; }
-    public string Id { get => id; }
+    //public string Id { get => id; }
 
-    protected List<String> idValidadas;
-    public Dialogo(Dinosaurio emisor, string id = "")
+    //protected List<String> idValidadas;
+    public Dialogo(Dinosaurio emisor)
     {
-        this.id = id;
+        //this.id = id;
         contextoGeneral = "Interpretas a una mascota que acompaña al usario en su trabajo. Te comportas feliz o triste según la productividad del usuario. Tú output no debe superar los 200 caracteres";
         contextoGeneral += ".Eres un pequeño " + emisor._Especie.ToString();
         contextoGeneral += ".Estás " + emisor.getEstadoDeAnimo().ToString();
@@ -570,24 +590,19 @@ public class Felicitacion : Dialogo
         if (tempoTerminado.tiposTempos == TiposTempos.productivo)
         {
 
-            //el usuario termino un pomodoro normal
-            idValidadas.Add("001");
-            if ("001" == id||"" == id)
-            {        
+               
                 rareza = Rareza.sencillo;
                 contextoEspecifico += $".El usuario logró superar estar concentrado un total de {tempoTerminado.TiempoTotal.ToString(@"h\:mm\:ss")}";
-            }
+        
           
          
             //Felicitar por superar de ser más productivo de lo normal
             if (EstadisticasManager.TiempoTempoProductivoPromedio < tempoTerminado.TiempoTotal)
             {
-                idValidadas.Add("002");
-                if ("002" == id || "" == id)
-                {                 
+                       
                     rareza = Rareza.desafiante;
                     contextoEspecifico += $".El usuario logró superar su promedio productivo diario de {EstadisticasManager.TiempoTotalProductivoDiarioPromedio.ToString(@"h\:mm\:ss")}";
-                }
+            
 
                
 
@@ -597,12 +612,10 @@ public class Felicitacion : Dialogo
             //Felicitar por superar tu tiempo de productividad muy larga
             if (tempoTerminado.TiempoTotal >= new TimeSpan(1, 30, 0))
             {
-                idValidadas.Add("003");
-                if ("003" == id || "" == id)
-                {    
+         
                     rareza = Rareza.superior;
                     contextoEspecifico += $".El usuario logró estar concentrado durante el largo periodo consecutivo de más 1 hora y 30 minutos. El usuario estuvo {tempoTerminado.TiempoTotal.ToString(@"h\:mm\:ss")} en total";
-                }
+          
               
 
 

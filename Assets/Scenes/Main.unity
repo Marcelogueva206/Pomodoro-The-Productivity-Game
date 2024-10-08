@@ -2580,6 +2580,10 @@ PrefabInstance:
       propertyPath: estadoAnimo
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 6832471219070965915, guid: b84a463a54bdec5418b17bd7b3b1eb38, type: 3}
+      propertyPath: emocionalidad
+      value: 0.78
+      objectReference: {fileID: 0}
     - target: {fileID: 6940993005550648818, guid: b84a463a54bdec5418b17bd7b3b1eb38, type: 3}
       propertyPath: m_Name
       value: Pepe
@@ -2818,6 +2822,10 @@ PrefabInstance:
     - target: {fileID: 4556768628178502273, guid: b84a463a54bdec5418b17bd7b3b1eb38, type: 3}
       propertyPath: m_hasFontAssetChanged
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6832471219070965915, guid: b84a463a54bdec5418b17bd7b3b1eb38, type: 3}
+      propertyPath: emocionalidad
+      value: 1.31
       objectReference: {fileID: 0}
     - target: {fileID: 6940993005550648818, guid: b84a463a54bdec5418b17bd7b3b1eb38, type: 3}
       propertyPath: m_Name
@@ -4340,6 +4348,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b9090e066461ae459a0fcb3724f0c23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  CharacterMotivadoresActivos: []
   gasURL: 
   prompt: 
   response: 
@@ -5221,6 +5230,10 @@ PrefabInstance:
     - target: {fileID: 6832471219070965915, guid: b84a463a54bdec5418b17bd7b3b1eb38, type: 3}
       propertyPath: estadoAnimo
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6832471219070965915, guid: b84a463a54bdec5418b17bd7b3b1eb38, type: 3}
+      propertyPath: emocionalidad
+      value: 0.23
       objectReference: {fileID: 0}
     - target: {fileID: 6940993005550648818, guid: b84a463a54bdec5418b17bd7b3b1eb38, type: 3}
       propertyPath: m_Name
