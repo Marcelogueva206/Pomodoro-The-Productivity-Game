@@ -11,9 +11,10 @@ using UnityEngine;
 public class Gamificacion : MonoBehaviour
 {
     [Header("Productivity")]
-    [SerializeField] public static float ProductivityPointsTotal = 500; // 0 pp
+    [SerializeField] public static float ProductivityPointsTotal = 0; // 0 pp
     [SerializeField] public static float ProductivityPointsDaily = 0;
-    [SerializeField] public static float ProductivityPointsHolded = 0; //acumulas hasta que termines el último pomodoro que tengas o ciclo de descanso
+    [SerializeField] public static float ProductivityPointsHolded = 500; //acumulas hasta que termines el último pomodoro que tengas o ciclo de descanso
+
     [SerializeField] public static float ProductivityPointsLoginGoal = 100;//  100 pp
     [SerializeField] public static float ProductivityPointsMinGoal = 1000;// 1000 pp
     [SerializeField] public static float ProductivityPointsMaxGoal = 2000; // 2000 pp
@@ -151,6 +152,16 @@ public class Gamificacion : MonoBehaviour
     {
         ProductivityPointsTotal += ProductivityPointsHolded;
         ProductivityPointsHolded = 0;
+    }
+
+    public static bool TryConsumirPPS(float cantidad)
+    {
+        if (ProductivityPointsHolded - cantidad >= 0)
+        {
+            ProductivityPointsHolded -= cantidad;
+            return true;
+        }
+        return false;
     }
 
 }
