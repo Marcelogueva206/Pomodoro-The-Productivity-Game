@@ -9,6 +9,52 @@ public class EstadisticasManager : MonoBehaviour
     // Singleton Instance
     public static EstadisticasManager Instance { get; private set; }
 
+    #region Sistema de integración de motivadores
+    [SerializeField] private List<Dinosaurio> CaracteresMotivadoresEnSistema;
+    public List<Dinosaurio> getCaracteresMotivadoresEnSistema()
+    {
+        return CaracteresMotivadoresEnSistema;
+    }
+    public void AñadirCaracterMotivadorAlSistema(Dinosaurio motivador)
+    {
+        if (!CaracteresMotivadoresEnSistema.Contains(motivador))
+        {
+            CaracteresMotivadoresEnSistema.Add(motivador);
+        }
+    }
+    public void EliminarCaracterMotivadorDelSistema(Dinosaurio motivador)
+    {
+        if (CaracteresMotivadoresEnSistema.Contains(motivador))
+        {
+            CaracteresMotivadoresEnSistema.Remove(motivador);
+        }
+    }
+    #endregion
+
+
+    public DateTime fechaUltimaVezSesionIniciada;
+
+    private const string KeyUltimaFecha = "UltimaFecha";
+
+
+    private void Start()
+    {
+        DateTime fechaActual = DateTime.Now;
+
+        if (PlayerPrefs.HasKey(KeyUltimaFecha))
+        {
+            string ultimaFecha = PlayerPrefs.GetString(KeyUltimaFecha);
+            Debug.Log("Última vez que se abrió la aplicación: " + ultimaFecha);
+        }else
+        {
+            Debug.Log("Es la primera vez que abres la aplicación.");
+        }
+
+        PlayerPrefs.SetString(KeyUltimaFecha, fechaActual.ToString("yyyy-MM-dd HH:mm:ss"));
+        PlayerPrefs.Save(); // Asegura que los datos se guarden en disco
+
+        Debug.Log("Fecha actual guardada: " + fechaActual.ToString("yyyy-MM-dd HH:mm:ss"));
+    }
 
 
     private void Awake()
@@ -22,9 +68,10 @@ public class EstadisticasManager : MonoBehaviour
         }
         Instance = this; 
         #endregion
-
-
         PomodoroSistema.TemposTerminado += RegistrarTempoTerminado;
+
+
+
 
         #region ExtraB
         DontDestroyOnLoad(gameObject); //evita que se destruya entre otras escenas 
@@ -44,9 +91,6 @@ public class EstadisticasManager : MonoBehaviour
 
 
     }
-
-
-
 
     private void OnDestroy()
     {

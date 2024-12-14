@@ -13,43 +13,20 @@ public class Gamificacion : MonoBehaviour
     [Header("Productivity")]
     [SerializeField] public static float ProductivityPointsTotal = 0; // 0 pp
     [SerializeField] public static float ProductivityPointsDaily = 0;
-    [SerializeField] public static float ProductivityPointsHolded = 500; //acumulas hasta que termines el último pomodoro que tengas o ciclo de descanso
+    [SerializeField] public static float ProductivityPointsHolded = 60; //acumulas hasta que termines el último pomodoro que tengas o ciclo de descanso
 
     [SerializeField] public static float ProductivityPointsLoginGoal = 100;//  100 pp
     [SerializeField] public static float ProductivityPointsMinGoal = 1000;// 1000 pp
     [SerializeField] public static float ProductivityPointsMaxGoal = 2000; // 2000 pp
  
-    public static EstrellaRecompensa PrimeraEstrella;
-    public static EstrellaRecompensa SegundaEstrella;
-    public static EstrellaRecompensa TerceraEstrella;
-    [SerializeField] private RectTransform cuerpoPrimeraEstrella;
-    [SerializeField] private RectTransform cuerpoSegundaEstrella;
-    [SerializeField] private RectTransform cuerpoTerceraEstrella;
+    //public static MetaProgresoRecompensa PrimeraMeta;
+    //public static MetaProgresoRecompensa SegundaMeta;
+    //public static MetaProgresoRecompensa TerceraMeta;
+    //[SerializeField] private RectTransform cuerpoPrimeraEstrella;
+    //[SerializeField] private RectTransform cuerpoSegundaEstrella;
+    //[SerializeField] private RectTransform cuerpoTerceraEstrella;
 
-    public static List<MarcaBasicaRecompensa> marcasSimples;
-
-    public static MarcaBasicaRecompensa Marca0Porciento;
-    public static MarcaBasicaRecompensa Marca10Porciento;
-    public static MarcaBasicaRecompensa Marca20Porciento;
-    public static MarcaBasicaRecompensa Marca30Porciento;
-    public static MarcaBasicaRecompensa Marca40Porciento;
-    public static MarcaBasicaRecompensa Marca50Porciento;
-    public static MarcaBasicaRecompensa Marca60Porciento;
-    public static MarcaBasicaRecompensa Marca70Porciento;
-    public static MarcaBasicaRecompensa Marca80Porciento;
-    public static MarcaBasicaRecompensa Marca90Porciento;
-    public static MarcaBasicaRecompensa Marca100Porciento;
-    [SerializeField] private RectTransform cuerpoMarca0;
-    [SerializeField] private RectTransform cuerpoMarca10;
-    [SerializeField] private RectTransform cuerpoMarca20;
-    [SerializeField] private RectTransform cuerpoMarca30;
-    [SerializeField] private RectTransform cuerpoMarca40;
-    [SerializeField] private RectTransform cuerpoMarca50;
-    [SerializeField] private RectTransform cuerpoMarca60;
-    [SerializeField] private RectTransform cuerpoMarca70;
-    [SerializeField] private RectTransform cuerpoMarca80;
-    [SerializeField] private RectTransform cuerpoMarca90;
-    [SerializeField] private RectTransform cuerpoMarca100;
+  
 
 
     public static float ProgresoTotalMeta
@@ -116,45 +93,40 @@ public class Gamificacion : MonoBehaviour
     private void Awake()
     {
         gamificacionManager = this;
-        PomodoroSistema.TemposTerminado += AcumularPPs;
-        PomodoroSistema.TemposTerminado += AumentarProgresoDiarioPPs;
-        PomodoroSistema.PomodoroTerminado += RecibirAcumuladoPPS;
+        PomodoroSistema.TemposTerminado += AcumularTiempo;
+        PomodoroSistema.TemposTerminado += AumentarProgresoDiarioTiempo;
+        PomodoroSistema.PomodoroTerminado += RecibirAcumuladoTiempo;
 
-        PrimeraEstrella = new EstrellaRecompensa("Primera estrella de la productividad", gamificacionManager.cuerpoPrimeraEstrella, 10f, TipoEstrella.EstrellaPorInicio);
-        SegundaEstrella = new EstrellaRecompensa("Segunda estrella de la productividad", gamificacionManager.cuerpoSegundaEstrella, 60f, TipoEstrella.EstrellaMinima);
-        TerceraEstrella = new EstrellaRecompensa("Tercera máxima estrella de la productividad", gamificacionManager.cuerpoTerceraEstrella, 100f, TipoEstrella.EstrellaMaxima);
-
-        Marca0Porciento = new MarcaBasicaRecompensa("Marca del mínimo esfuerzo", gamificacionManager.cuerpoMarca0, 1f);
-        Marca10Porciento = new MarcaBasicaRecompensa("Marca del 10%", gamificacionManager.cuerpoMarca10, 10f);
-        Marca20Porciento = new MarcaBasicaRecompensa("Marca del 20%", gamificacionManager.cuerpoMarca20, 20f);
-        Marca30Porciento = new MarcaBasicaRecompensa("Marca del 30%", gamificacionManager.cuerpoMarca30, 30f);
-        Marca40Porciento = new MarcaBasicaRecompensa("Marca del 40%", gamificacionManager.cuerpoMarca40, 40f);
-        Marca50Porciento = new MarcaBasicaRecompensa("Marca de la mitad de progreso", gamificacionManager.cuerpoMarca50, 50f);
-        Marca60Porciento = new MarcaBasicaRecompensa("Marca del 60%", gamificacionManager.cuerpoMarca60, 60f);
-        Marca70Porciento = new MarcaBasicaRecompensa("Marca del 70%", gamificacionManager.cuerpoMarca70, 70f);
-        Marca80Porciento = new MarcaBasicaRecompensa("Marca del 80%", gamificacionManager.cuerpoMarca80, 80f);
-        Marca90Porciento = new MarcaBasicaRecompensa("Marca del 90%", gamificacionManager.cuerpoMarca90, 90f);
-        Marca100Porciento = new MarcaBasicaRecompensa("Marca del éxito%", gamificacionManager.cuerpoMarca100, 100f);
-        marcasSimples = new List<MarcaBasicaRecompensa> { Marca0Porciento, Marca10Porciento, Marca20Porciento, Marca30Porciento, Marca40Porciento, Marca50Porciento, Marca60Porciento, Marca70Porciento, Marca80Porciento, Marca90Porciento, Marca100Porciento };
+       
+        
     }
 
-
-    private void AcumularPPs(Tempos tempo)
+    private void Start()
     {
-        ProductivityPointsHolded +=(float) (tempo.TiempoTotal.TotalSeconds) * (360 / 100);
+        //PrimeraMeta = new MetaProgresoRecompensa("Primera meta de la productividad", gamificacionManager.cuerpoPrimeraEstrella, GestorMetas.Instance.getMetaMinimaPor(), TipoEstrella.MetaMinima);
+        //SegundaMeta = new MetaProgresoRecompensa("Segunda meta de la productividad", gamificacionManager.cuerpoSegundaEstrella, GestorMetas.Instance.getMetaDeIntermedioPor(), TipoEstrella.MetaIntermedia);
+        //TerceraMeta = new MetaProgresoRecompensa("Tercera máxima meta de la productividad", gamificacionManager.cuerpoTerceraEstrella, GestorMetas.Instance.getMetaDeSuperacionPor(), TipoEstrella.MetaDeSuperación);
+
     }
 
-    private void AumentarProgresoDiarioPPs(Tempos tempo)
+
+
+
+
+    private void AcumularTiempo(Tempos tempo)
     {
-        ProductivityPointsDaily += (float)(tempo.TiempoTotal.TotalSeconds) * (360 / 100);
+        ProductivityPointsHolded +=(float) (tempo.TiempoTotal.TotalSeconds) * (1 / 60);
     }
-    private void RecibirAcumuladoPPS(Pomodoro pomodoro)
+    private void AumentarProgresoDiarioTiempo(Tempos tempo)
+    {
+        ProductivityPointsDaily += (float)(tempo.TiempoTotal.TotalSeconds) * (1 / 60);
+    }
+    private void RecibirAcumuladoTiempo(Pomodoro pomodoro)
     {
         ProductivityPointsTotal += ProductivityPointsHolded;
         ProductivityPointsHolded = 0;
     }
-
-    public static bool TryConsumirPPS(float cantidad)
+    public static bool TryConsumirTiempo(float cantidad)
     {
         if (ProductivityPointsHolded - cantidad >= 0)
         {

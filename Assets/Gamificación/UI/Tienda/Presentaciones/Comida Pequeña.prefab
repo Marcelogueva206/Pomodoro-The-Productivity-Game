@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 5487573952910413366}
   - component: {fileID: -8670847383093831272}
   m_Layer: 0
-  m_Name: ComidaPrueba
+  m_Name: "Comida Peque\xF1a"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -98,8 +98,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 51accf65c578b7146a9d6af38f916ead, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cantidad: 125
-  coeficienteSatisfactor: 0.0002
+  satisfacionTiempo: 1
   TiposComida: 0
 --- !u!70 &-8670847383093831272
 CapsuleCollider2D:

@@ -26,8 +26,14 @@ public class InteraccionUsuario : MonoBehaviour
     [SerializeField] private GameObject MostrarDescripcionUI1;
     [SerializeField] private GameObject MostrarDescripcionUI2;
     [SerializeField] private GameObject MostrarDescripcionUI3;
+    [SerializeField] private GameObject MostrarNombre;
 
+    [SerializeField] private GameObject MostrarDescripcionEmocionalidad;
 
+    public void ActualizarNombre()
+    {
+        MostrarNombre.GetComponent<TMP_Text>().text = interactuado.Nombre;
+    }
     public void ActualizarMostrarDescripcionExigencias()
     {
         foreach (Exigencia exigencia in interactuado.exigencias)
@@ -52,6 +58,10 @@ public class InteraccionUsuario : MonoBehaviour
         }
     }
 
+    public void ActualizarMostrarDescripcionEmocionalidad()
+    {
+        MostrarDescripcionEmocionalidad.GetComponentInChildren<TMP_Text>().text = Mathf.FloorToInt(interactuado.Emocionalidad*100).ToString()+" %";
+    }
     public void AbrirDescripcionUI1()
     {
         ActualizarMostrarDescripcionExigencias();
@@ -120,11 +130,15 @@ public class InteraccionUsuario : MonoBehaviour
 
     }
 
-
-    void Start()
+    private void Awake()
     {
         interactuado = GetComponent<Dinosaurio>();
-
+        spriteRenderer = GetComponent<SpriteRenderer>();
+    }
+    void Start()
+    {
+       
+        ActualizarNombre();
 
 
 
@@ -144,7 +158,7 @@ public class InteraccionUsuario : MonoBehaviour
 
         }
 
-        spriteRenderer = GetComponent<SpriteRenderer>();
+        
         originalColor = spriteRenderer.color; // Guardar el color original
     }
 

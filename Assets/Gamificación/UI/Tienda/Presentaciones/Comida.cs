@@ -10,7 +10,7 @@ public class Comida : MonoBehaviour
     //[SerializeField]private float cantidad;// 500 gramos == 500 pps == 0.1
     //[SerializeField] private float coeficienteSatisfactor; //  1/5000
 
-    [SerializeField] private float satisfacion = 50f;
+    [SerializeField] private float satisfacionTiempo = 1f;
     [SerializeField] private TiposComidas TiposComida;
     /// <summary>
     /// 6 minutos => 100 pp
@@ -82,20 +82,20 @@ public class Comida : MonoBehaviour
     //    return Camera.main.ScreenToViewportPoint(posicionMouse);
     //}
 
-
+    // 1 minuto aumenta 1% el estado de animo
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.CompareTag("Caracter Motivador"))
         {
             Dinosaurio consumidor = collision.gameObject.GetComponent<Dinosaurio>();
-            consumidor.AlterarEmocionalidad(satisfacion*(0.1f/50));
+            consumidor.AlterarEmocionalidad(satisfacionTiempo);
 
 
             foreach (ExigenciaTiempoProductivo exigencia in consumidor.exigencias)
             {
                 if (TiposComida == exigencia.tiposComidaRequerida||exigencia.tiposComidaRequerida == TiposComidas.cualquierTipo)
                 {
-                    exigencia.ProgresoMeta += satisfacion;
+                    exigencia.ProgresoMeta += satisfacionTiempo;
                 }
             }
 

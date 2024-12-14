@@ -19,9 +19,6 @@ public class ContadorProgreso : MonoBehaviour
 
         Debug.Log("Progreso de META:" + progreso + "%");
     };
-
-
-
     private float progresoUsuario;
     private float progresoUsuarioAcumulado;
     [SerializeField] private GameObject barraProgreso;
@@ -29,24 +26,40 @@ public class ContadorProgreso : MonoBehaviour
     [SerializeField] private Slider sliderBarraProgresoAcumulado;
     [SerializeField] private TextMeshProUGUI TextoPPsAcumulados;
     [SerializeField] private TextMeshProUGUI TextoPPsTotales;
+
+    public RectTransform cuerpoPrimeraMeta;
+    public RectTransform cuerpoSegundaMeta;
+    public RectTransform cuerpoTerceraMeta;
+
+    [SerializeField] private RectTransform cuerpoMarca0;
+    [SerializeField] private RectTransform cuerpoMarca10;
+    [SerializeField] private RectTransform cuerpoMarca20;
+    [SerializeField] private RectTransform cuerpoMarca30;
+    [SerializeField] private RectTransform cuerpoMarca40;
+    [SerializeField] private RectTransform cuerpoMarca50;
+    [SerializeField] private RectTransform cuerpoMarca60;
+    [SerializeField] private RectTransform cuerpoMarca70;
+    [SerializeField] private RectTransform cuerpoMarca80;
+    [SerializeField] private RectTransform cuerpoMarca90;
+    [SerializeField] private RectTransform cuerpoMarca100;
     public void ActualizarMarcas()
     {
 
-        ActualizarMarca(Gamificacion.PrimeraEstrella.Cuerpo, Gamificacion.PrimeraEstrella.PorcentajeRequeridoMeta);
-        ActualizarMarca(Gamificacion.SegundaEstrella.Cuerpo, Gamificacion.SegundaEstrella.PorcentajeRequeridoMeta);
-        ActualizarMarca(Gamificacion.TerceraEstrella.Cuerpo, Gamificacion.TerceraEstrella.PorcentajeRequeridoMeta);
+        ActualizarMarca(cuerpoPrimeraMeta, GestorMetas.Instance.MetaMinima.PorcentajeRequeridoMeta);
+        ActualizarMarca(cuerpoSegundaMeta, GestorMetas.Instance.MetaDeIntermedio.PorcentajeRequeridoMeta);
+        ActualizarMarca(cuerpoTerceraMeta, GestorMetas.Instance.MetaDeSuperacion.PorcentajeRequeridoMeta);
 
-        ActualizarMarca(Gamificacion.Marca0Porciento.Cuerpo, Gamificacion.Marca0Porciento.PorcentajeRequeridoMeta);
-        ActualizarMarca(Gamificacion.Marca10Porciento.Cuerpo, Gamificacion.Marca10Porciento.PorcentajeRequeridoMeta);
-        ActualizarMarca(Gamificacion.Marca20Porciento.Cuerpo, Gamificacion.Marca20Porciento.PorcentajeRequeridoMeta);
-        ActualizarMarca(Gamificacion.Marca30Porciento.Cuerpo, Gamificacion.Marca30Porciento.PorcentajeRequeridoMeta);
-        ActualizarMarca(Gamificacion.Marca40Porciento.Cuerpo, Gamificacion.Marca40Porciento.PorcentajeRequeridoMeta);
-        ActualizarMarca(Gamificacion.Marca50Porciento.Cuerpo, Gamificacion.Marca50Porciento.PorcentajeRequeridoMeta);
-        ActualizarMarca(Gamificacion.Marca60Porciento.Cuerpo, Gamificacion.Marca60Porciento.PorcentajeRequeridoMeta);
-        ActualizarMarca(Gamificacion.Marca70Porciento.Cuerpo, Gamificacion.Marca70Porciento.PorcentajeRequeridoMeta);
-        ActualizarMarca(Gamificacion.Marca80Porciento.Cuerpo, Gamificacion.Marca80Porciento.PorcentajeRequeridoMeta);
-        ActualizarMarca(Gamificacion.Marca90Porciento.Cuerpo, Gamificacion.Marca90Porciento.PorcentajeRequeridoMeta);
-        ActualizarMarca(Gamificacion.Marca100Porciento.Cuerpo, Gamificacion.Marca100Porciento.PorcentajeRequeridoMeta);
+        ActualizarMarca(cuerpoMarca0, GestorMetas.Instance.Marca0Porciento.PorcentajeRequeridoMeta);
+        ActualizarMarca(cuerpoMarca10, GestorMetas.Instance.Marca10Porciento.PorcentajeRequeridoMeta);
+        ActualizarMarca(cuerpoMarca20, GestorMetas.Instance.Marca20Porciento.PorcentajeRequeridoMeta);
+        ActualizarMarca(cuerpoMarca30, GestorMetas.Instance.Marca30Porciento.PorcentajeRequeridoMeta);
+        ActualizarMarca(cuerpoMarca40, GestorMetas.Instance.Marca40Porciento.PorcentajeRequeridoMeta);
+        ActualizarMarca(cuerpoMarca50, GestorMetas.Instance.Marca50Porciento.PorcentajeRequeridoMeta);
+        ActualizarMarca(cuerpoMarca60, GestorMetas.Instance.Marca60Porciento.PorcentajeRequeridoMeta);
+        ActualizarMarca(cuerpoMarca70, GestorMetas.Instance.Marca70Porciento.PorcentajeRequeridoMeta);
+        ActualizarMarca(cuerpoMarca80, GestorMetas.Instance.Marca80Porciento.PorcentajeRequeridoMeta);
+        ActualizarMarca(cuerpoMarca90, GestorMetas.Instance.Marca90Porciento.PorcentajeRequeridoMeta);
+        ActualizarMarca(cuerpoMarca100,GestorMetas.Instance.Marca100Porciento.PorcentajeRequeridoMeta);
     }
 
     private void ActualizarMarca(RectTransform marca, float porcentaje)
@@ -70,12 +83,12 @@ public class ContadorProgreso : MonoBehaviour
 
     private void Start()
     {
-        foreach (EstrellaRecompensa estrellaRecompensa in new EstrellaRecompensa[] { Gamificacion.PrimeraEstrella, Gamificacion.SegundaEstrella, Gamificacion.TerceraEstrella })
-        {
+        //foreach (MetaProgresoRecompensa MetaRecompensa in new MetaProgresoRecompensa[] { GestorMetas.Instance.MetaMinima, GestorMetas.Instance.MetaDeIntermedio, GestorMetas.Instance.MetaDeSuperacion })
+        //{
 
-          estrellaRecompensa.textoCuerpoMeta.text = estrellaRecompensa.PorcentajeRequeridoMeta.ToString();
+        //  MetaRecompensa.textoCuerpoMeta.text = MetaRecompensa.PorcentajeRequeridoMeta.ToString();
 
-        }
+        //}
     }
     void Update()
     {
@@ -105,7 +118,7 @@ public class ContadorProgreso : MonoBehaviour
 
     private void VerificarLogrosDeMarcas()
     {
-        foreach (MarcaBasicaRecompensa marca in Gamificacion.marcasSimples)
+        foreach (MarcaBasicaRecompensa marca in GestorMetas.Instance.marcasSimples)
         {
             if (marca.PorcentajeRequeridoMeta < progresoUsuario)
             {
@@ -120,12 +133,12 @@ public class ContadorProgreso : MonoBehaviour
 
     private void VerificarLogroDeEstrellas()
     {
-        foreach (EstrellaRecompensa estrellaRecompensa in new EstrellaRecompensa[] { Gamificacion.PrimeraEstrella, Gamificacion.SegundaEstrella, Gamificacion.TerceraEstrella })
+        foreach (MetaProgresoRecompensa MetaRecompensa in new MetaProgresoRecompensa[] { GestorMetas.Instance.MetaMinima, GestorMetas.Instance.MetaDeIntermedio, GestorMetas.Instance.MetaDeSuperacion })
         {
 
-            if (estrellaRecompensa.PorcentajeRequeridoMeta < progresoUsuario)
+            if (MetaRecompensa.PorcentajeRequeridoMeta < progresoUsuario)
             {
-                estrellaRecompensa.MarcaCompletada(true);
+                MetaRecompensa.MarcaCompletada(true);
             }
             else
             {
@@ -159,79 +172,7 @@ public class ContadorProgreso : MonoBehaviour
 
 
 
-public class MarcaBasicaRecompensa
-{
-    public string Nombre;
-    protected bool Completado = false;
-    public RectTransform Cuerpo;
-    public TextMeshProUGUI textoCuerpoMeta;
-    protected float PuntuacionRequerida { get => (PorcentajeRequeridoMeta / 100) * Gamificacion.ProductivityPointsMaxGoal; set { } }
-    protected float porcentajeRequeridoMeta;
-    public float PorcentajeRequeridoMeta
-    {
-        get => porcentajeRequeridoMeta; set
-        {
-
-            if (value >= 0 && value <= 100)
-            {
-                porcentajeRequeridoMeta = value;
-            }
-            else
-            {
-                // Puedes manejar el caso en que el valor esté fuera del rango, por ejemplo:
-                porcentajeRequeridoMeta = 0;
-                throw new ArgumentOutOfRangeException("PorcentajeRequeridoMeta", "El valor debe estar entre 0 y 100.");
-            }
-        }
-    }
-
-    public MarcaBasicaRecompensa(string nombre, RectTransform cuerpo, float porcentajeRequerido)
-    {
-        this.Nombre = nombre;
-        Cuerpo = cuerpo;
-        PorcentajeRequeridoMeta = porcentajeRequerido;
-        textoCuerpoMeta = cuerpo.gameObject.GetComponentInChildren<TextMeshProUGUI>();
-
-    }
-
-    public event ProgresoMarcaUsuario PremioPorMarcaLograda = (marca) =>
-    {
-
-        Debug.Log($"¡Marca {marca.Nombre} logarado!:" + marca.PorcentajeRequeridoMeta + "%");
-    };
-
-
-    public void SetPorcentajeRequeridoSegunPuntuacion(float puntuacion)
-    {
-
-    }
-
-
-    public void MarcaCompletada(bool estado)
-    {
-        Completado = estado;
-        if (Completado == true)
-        {
-            PremioPorMarcaLograda?.Invoke(this);
-        }
-
-    }
-
-}
 
 
 
-public enum TipoEstrella { EstrellaPorInicio, EstrellaMinima, EstrellaMaxima }
-public class EstrellaRecompensa : MarcaBasicaRecompensa
-{
-    readonly TipoEstrella tipoEstrella;
-    
-    public EstrellaRecompensa(string nombre, RectTransform cuerpo, float porcentajeRequerido, TipoEstrella tipoEstrella) : base(nombre ,cuerpo, porcentajeRequerido) 
-    {
-        this.tipoEstrella = tipoEstrella;
-    }
 
-  
-
-
-}

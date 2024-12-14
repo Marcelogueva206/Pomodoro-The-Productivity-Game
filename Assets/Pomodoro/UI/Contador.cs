@@ -99,7 +99,7 @@ public class Contador : MonoBehaviour
     private void ContandoTiempo()
     {
         TiempoRestanteStatic -= Time.deltaTime;
-        PuntuacionTempo += Time.deltaTime * (360 / 100);
+        PuntuacionTempo += Time.deltaTime * (1 / 60);
         float value = Mathf.Round(PuntuacionTempo);
         textoPuntuacionTempo.text = value.ToString();
     }
