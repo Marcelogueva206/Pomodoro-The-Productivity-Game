@@ -8,6 +8,7 @@ public class EstadisticasManager : MonoBehaviour
 
     // Singleton Instance
     public static EstadisticasManager Instance { get; private set; }
+    [SerializeField]private GameObject MotivadorPrefab;
 
     #region Sistema de integración de motivadores
     [SerializeField] private List<Dinosaurio> CaracteresMotivadoresEnSistema;
@@ -21,6 +22,9 @@ public class EstadisticasManager : MonoBehaviour
         {
             CaracteresMotivadoresEnSistema.Add(motivador);
         }
+
+        PlayerPrefs.SetInt("CantidadMotivadores", CaracteresMotivadoresEnSistema.Count);
+        GuardarInformarciónMotivadores();
     }
     public void EliminarCaracterMotivadorDelSistema(Dinosaurio motivador)
     {
@@ -28,6 +32,8 @@ public class EstadisticasManager : MonoBehaviour
         {
             CaracteresMotivadoresEnSistema.Remove(motivador);
         }
+        PlayerPrefs.SetInt("CantidadMotivadores", CaracteresMotivadoresEnSistema.Count);
+        GuardarInformarciónMotivadores();
     }
     #endregion
 
@@ -54,6 +60,8 @@ public class EstadisticasManager : MonoBehaviour
         PlayerPrefs.Save(); // Asegura que los datos se guarden en disco
 
         Debug.Log("Fecha actual guardada: " + fechaActual.ToString("yyyy-MM-dd HH:mm:ss"));
+
+        PlayerPrefs.GetInt("CantidadMotivadores", 0);
     }
 
 
@@ -100,5 +108,54 @@ public class EstadisticasManager : MonoBehaviour
 
 
 
+    public void GuardarInformarciónMotivadores()
+    {
+        ListaMotivadoresData data = new ListaMotivadoresData();
+        data.motivadores = CaracteresMotivadoresEnSistema;
 
+        string json = JsonUtility.ToJson(data, true);
+
+        System.IO.File.WriteAllText("lista_motivadores_data", json);
+    }
+
+    public void CargarInformaciónMotivadores()
+    {
+        List <Dinosaurio> motivadoresCargados = new List <Dinosaurio>();
+        if (System.IO.File.Exists("lista_motivadores_data"))
+        {
+            string json = System.IO.File.ReadAllText("lista_motivadores_data");
+            ListaMotivadoresData lista = JsonUtility.FromJson<ListaMotivadoresData>(json);
+            motivadoresCargados = lista.motivadores;
+        }
+        CaracteresMotivadoresEnSistema.Clear();
+        foreach (Dinosaurio motivadorCargado in motivadoresCargados)
+        {
+            GameObject MotivadorNuevo= Instantiate(MotivadorPrefab);
+            Dinosaurio componenteDinosaurioNuevo = MotivadorNuevo.GetComponent<Dinosaurio>();
+            if (componenteDinosaurioNuevo != null)
+            {
+                // Copia las propiedades del motivador cargado al componente del prefab
+                componenteDinosaurioNuevo.Nombre = motivadorCargado.Nombre;
+                componenteDinosaurioNuevo.Emocionalidad = motivadorCargado.Emocionalidad;
+                componenteDinosaurioNuevo.exigencias = motivadorCargado.exigencias;
+                componenteDinosaurioNuevo.gameObject.transform.position = motivadorCargado.transform.position;
+
+                // Copia otras propiedades necesarias aquí
+            } 
+
+
+        }
+
+        
+
+    }
 }
+
+
+#region Data
+[System.Serializable]
+public class ListaMotivadoresData
+{
+    public List<Dinosaurio> motivadores;
+}
+#endregion

@@ -99,7 +99,6 @@ public class AdopcionManager : MonoBehaviour
 
     public void CrearMotivador( string nombre)
     {
-        Debug.Log("xdxd");
         GameObject motivadorNuevo = Instantiate(MotivadorPrefab);
         motivadorNuevo.GetComponent<Dinosaurio>().SerAdoptado(adoptadoEspecie, adoptadoRareza, nombre);
         motivadorNuevo.transform.position = new Vector3(0, 0, 0);

@@ -25,7 +25,7 @@ public class PomodoroSistema : MonoBehaviour
     #region UnityMethods
     private void Awake()
     {
-        Pomodoro pomodoro1 = new Pomodoro(Pomodoro.PomodorosTipos.prueba);
+        Pomodoro pomodoro1 = new Pomodoro(Pomodoro.PomodorosTipos.normal);
         Pomodoro pomodoro2 = new Pomodoro(Pomodoro.PomodorosTipos.normal);
 
         _sesionActual = new Sesion(new List<Pomodoro> { pomodoro1, pomodoro2 }, "Sesion de prueba");

@@ -4123,6 +4123,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Pepe
       objectReference: {fileID: 0}
+    - target: {fileID: 6940993005550648818, guid: b84a463a54bdec5418b17bd7b3b1eb38, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7472583511014587502, guid: b84a463a54bdec5418b17bd7b3b1eb38, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -4982,6 +4986,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Juan
       objectReference: {fileID: 0}
+    - target: {fileID: 6940993005550648818, guid: b84a463a54bdec5418b17bd7b3b1eb38, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7472583511014587502, guid: b84a463a54bdec5418b17bd7b3b1eb38, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -5020,7 +5028,7 @@ GameObject:
   - component: {fileID: 1284835047}
   - component: {fileID: 1284835046}
   m_Layer: 5
-  m_Name: Mostrar productivityPoints totales
+  m_Name: Mostrar tiempo totales
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6080,7 +6088,7 @@ GameObject:
   - component: {fileID: 1537899728}
   - component: {fileID: 1537899727}
   m_Layer: 5
-  m_Name: Mostrar productivityPoints acumulados
+  m_Name: Mostrar tiempo por adquirir
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6941,6 +6949,7 @@ GameObject:
   - component: {fileID: 1775657701}
   - component: {fileID: 1775657702}
   - component: {fileID: 1775657700}
+  - component: {fileID: 1775657703}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -6960,6 +6969,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e953c94e6e8cd334b8d21c62f63f468c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  TiempoTotal: 0
+  TiempoTotalDiario: 0
+  TiempoPorAdquirir: 0
   Limite1: {fileID: 1762149923}
   Limite2: {fileID: 668614181}
 --- !u!4 &1775657698
@@ -6989,6 +7001,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca29561453804c9419be80be69c3a136, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  MotivadorPrefab: {fileID: 6940993005550648818, guid: b84a463a54bdec5418b17bd7b3b1eb38, type: 3}
   CaracteresMotivadoresEnSistema: []
 --- !u!114 &1775657700
 MonoBehaviour:
@@ -7032,6 +7045,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MotivadorPrefab: {fileID: 6940993005550648818, guid: b84a463a54bdec5418b17bd7b3b1eb38, type: 3}
+--- !u!114 &1775657703
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1775657696}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f7564ac84e6319469e0abd12922d482, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  timeScale: 1
 --- !u!1 &1786648885
 GameObject:
   m_ObjectHideFlags: 0
@@ -8635,6 +8661,10 @@ PrefabInstance:
     - target: {fileID: 6940993005550648818, guid: b84a463a54bdec5418b17bd7b3b1eb38, type: 3}
       propertyPath: m_Name
       value: Luis
+      objectReference: {fileID: 0}
+    - target: {fileID: 6940993005550648818, guid: b84a463a54bdec5418b17bd7b3b1eb38, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7472583511014587502, guid: b84a463a54bdec5418b17bd7b3b1eb38, type: 3}
       propertyPath: m_AnchorMax.x

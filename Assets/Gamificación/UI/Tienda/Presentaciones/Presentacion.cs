@@ -16,7 +16,7 @@ public class Presentacion : MonoBehaviour
 
     public void ComprarItem()
     {
-        if (Gamificacion.TryConsumirTiempo(precio))
+        if (Gamificacion.Instance.TryConsumirTiempo(precio))
         {
             Debug.Log($"Compraste un {nombreProducto} a {precio}");
 

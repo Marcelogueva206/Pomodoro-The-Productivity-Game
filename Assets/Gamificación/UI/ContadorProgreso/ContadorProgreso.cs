@@ -92,8 +92,8 @@ public class ContadorProgreso : MonoBehaviour
     }
     void Update()
     {
-        progresoUsuario = Gamificacion.ProgresoTotalMeta / 100;
-
+        progresoUsuario = Gamificacion.Instance.ProgresoTotalMetaPor / 100f;
+        Debug.Log(progresoUsuario);
         MostrarProgresoUI();
         ActualizarMarcas();
 
@@ -160,10 +160,10 @@ public class ContadorProgreso : MonoBehaviour
 
     private void MostrarProgresoUI()
     {
-        TextoPPsAcumulados.text = Gamificacion.ProductivityPointsHolded.ToString();
-        TextoPPsTotales.text = Gamificacion.ProductivityPointsTotal.ToString();
+        TextoPPsAcumulados.text = Gamificacion.Instance.TiempoPorAdquirir.ToString();
+        TextoPPsTotales.text = Gamificacion.Instance.TiempoTotal.ToString();
         sliderBarraProgreso.value = progresoUsuario;
-        sliderBarraProgresoAcumulado.value = progresoUsuario + (Contador.PuntuacionTempo / Gamificacion.ProductivityPointsMaxGoal);
+        sliderBarraProgresoAcumulado.value = progresoUsuario + (Contador.PuntuacionTempo / GestorMetas.Instance.GetMetaSuperaciónValor());
     }
 
 

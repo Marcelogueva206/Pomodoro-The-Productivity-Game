@@ -11,37 +11,24 @@ using UnityEngine;
 public class Gamificacion : MonoBehaviour
 {
     [Header("Productivity")]
-    [SerializeField] public static float ProductivityPointsTotal = 0; // 0 pp
-    [SerializeField] public static float ProductivityPointsDaily = 0;
-    [SerializeField] public static float ProductivityPointsHolded = 60; //acumulas hasta que termines el último pomodoro que tengas o ciclo de descanso
-
-    [SerializeField] public static float ProductivityPointsLoginGoal = 100;//  100 pp
-    [SerializeField] public static float ProductivityPointsMinGoal = 1000;// 1000 pp
-    [SerializeField] public static float ProductivityPointsMaxGoal = 2000; // 2000 pp
- 
-    //public static MetaProgresoRecompensa PrimeraMeta;
-    //public static MetaProgresoRecompensa SegundaMeta;
-    //public static MetaProgresoRecompensa TerceraMeta;
-    //[SerializeField] private RectTransform cuerpoPrimeraEstrella;
-    //[SerializeField] private RectTransform cuerpoSegundaEstrella;
-    //[SerializeField] private RectTransform cuerpoTerceraEstrella;
-
-  
+    [SerializeField] public float TiempoTotal = 0; //Tiempo acumulado de varios días
+    [SerializeField] public float TiempoTotalDiario = 0; //Tiempo total del día
+    [SerializeField] public float TiempoPorAdquirir = 0; //Tiempo total de
 
 
-    public static float ProgresoTotalMeta
+    public float ProgresoTotalMetaPor
     {
         get
         {
-            float value = ProductivityPointsDaily / ProductivityPointsMaxGoal * 100;
-            if (value < 0)
+            float value = TiempoTotalDiario / GestorMetas.Instance.GetMetaSuperaciónValor() * 100f;
+            if (value < 0f)
             {
-                return 0;
+                return 0f;
             }
-            if (value > 100)
+            if (value > 100f)
             {
 
-                return 100;
+                return 100f;
             }
             return value;
         }
@@ -83,22 +70,24 @@ public class Gamificacion : MonoBehaviour
     [Header("Extra")]
     [SerializeField] private GameObject Limite1;
     [SerializeField] private GameObject Limite2;
-    public static Gamificacion gamificacionManager;
-    public static float MinY { get => Mathf.Min(gamificacionManager.Limite1.transform.position.y, gamificacionManager.Limite2.transform.position.y); }
-    public static float MaxY { get => Mathf.Max(gamificacionManager.Limite1.transform.position.y, gamificacionManager.Limite2.transform.position.y); }
-    public static float MaxX { get => Mathf.Max(gamificacionManager.Limite1.transform.position.x, gamificacionManager.Limite2.transform.position.x); }
-    public static float MinX { get => Mathf.Min(gamificacionManager.Limite1.transform.position.x, gamificacionManager.Limite2.transform.position.x); }
+    public static Gamificacion Instance;
+    public static float MinY { get => Mathf.Min(Instance.Limite1.transform.position.y, Instance.Limite2.transform.position.y); }
+    public static float MaxY { get => Mathf.Max(Instance.Limite1.transform.position.y, Instance.Limite2.transform.position.y); }
+    public static float MaxX { get => Mathf.Max(Instance.Limite1.transform.position.x, Instance.Limite2.transform.position.x); }
+    public static float MinX { get => Mathf.Min(Instance.Limite1.transform.position.x, Instance.Limite2.transform.position.x); }
     #endregion
 
     private void Awake()
     {
-        gamificacionManager = this;
+        Instance = this;
         PomodoroSistema.TemposTerminado += AcumularTiempo;
         PomodoroSistema.TemposTerminado += AumentarProgresoDiarioTiempo;
         PomodoroSistema.PomodoroTerminado += RecibirAcumuladoTiempo;
 
-       
-        
+         PlayerPrefs.GetFloat("TiempoTotal", 0);
+         PlayerPrefs.GetFloat("TiempoTotalDiario", 0);
+         PlayerPrefs.GetFloat("TiempoPorAdquirir", 0);
+
     }
 
     private void Start()
@@ -106,7 +95,9 @@ public class Gamificacion : MonoBehaviour
         //PrimeraMeta = new MetaProgresoRecompensa("Primera meta de la productividad", gamificacionManager.cuerpoPrimeraEstrella, GestorMetas.Instance.getMetaMinimaPor(), TipoEstrella.MetaMinima);
         //SegundaMeta = new MetaProgresoRecompensa("Segunda meta de la productividad", gamificacionManager.cuerpoSegundaEstrella, GestorMetas.Instance.getMetaDeIntermedioPor(), TipoEstrella.MetaIntermedia);
         //TerceraMeta = new MetaProgresoRecompensa("Tercera máxima meta de la productividad", gamificacionManager.cuerpoTerceraEstrella, GestorMetas.Instance.getMetaDeSuperacionPor(), TipoEstrella.MetaDeSuperación);
-
+        TiempoTotal = PlayerPrefs.GetFloat("TiempoTotal");
+        TiempoTotalDiario = PlayerPrefs.GetFloat("TiempoTotalDiario");
+        TiempoPorAdquirir = PlayerPrefs.GetFloat("TiempoPorAdquirir");
     }
 
 
@@ -115,25 +106,47 @@ public class Gamificacion : MonoBehaviour
 
     private void AcumularTiempo(Tempos tempo)
     {
-        ProductivityPointsHolded +=(float) (tempo.TiempoTotal.TotalSeconds) * (1 / 60);
+        TiempoPorAdquirir += (float)(tempo.TiempoTotal.TotalSeconds) * (1f / 60f);
+        GuardarTiempo();
     }
     private void AumentarProgresoDiarioTiempo(Tempos tempo)
     {
-        ProductivityPointsDaily += (float)(tempo.TiempoTotal.TotalSeconds) * (1 / 60);
+        TiempoTotalDiario += (float)(tempo.TiempoTotal.TotalSeconds) * (1f / 60f);
+
+        GuardarTiempo();
     }
     private void RecibirAcumuladoTiempo(Pomodoro pomodoro)
     {
-        ProductivityPointsTotal += ProductivityPointsHolded;
-        ProductivityPointsHolded = 0;
+        TiempoTotal += TiempoPorAdquirir;
+        TiempoPorAdquirir = 0;
+        GuardarTiempo();
     }
-    public static bool TryConsumirTiempo(float cantidad)
+    public bool TryConsumirTiempo(float cantidad)
     {
-        if (ProductivityPointsHolded - cantidad >= 0)
+        if (TiempoPorAdquirir - cantidad >= 0)
         {
-            ProductivityPointsHolded -= cantidad;
+            TiempoPorAdquirir -= cantidad;
             return true;
         }
-        return false;
+        GuardarTiempo();
+        return false;     
     }
 
+    public void GuardarTiempo()
+    {
+        PlayerPrefs.SetFloat("TiempoTotal", TiempoTotal);
+        PlayerPrefs.SetFloat("TiempoTotalDiario", TiempoTotalDiario);
+        PlayerPrefs.SetFloat("TiempoPorAdquirir", TiempoPorAdquirir);
+    }
+
+    void OnApplicationQuit()
+    {
+        GuardarTiempo();
+    }
+    void OnApplicationPause()
+    {
+        GuardarTiempo();
+    }
 }
+
+

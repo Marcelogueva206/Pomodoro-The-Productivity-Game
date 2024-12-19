@@ -95,25 +95,30 @@ public class GestorMetas : MonoBehaviour
         ValorMetaDeSuperacion = ValorMetaDeIntermedio + cantidadDeMotivadores * rangoAleatorioDeIncrementoDeMetaDeSuperación;
 
 
-        MetaMinima = new MetaProgresoRecompensa("Primera meta de la productividad", Mathf.FloorToInt(getMetaMinimaPor()), TipoMeta.MetaMinima);
-        MetaDeIntermedio = new MetaProgresoRecompensa("Segunda meta de la productividad", Mathf.FloorToInt(getMetaDeIntermedioPor()), TipoMeta.MetaIntermedia);
-        MetaDeSuperacion = new MetaProgresoRecompensa("Tercera máxima meta de la productividad", Mathf.FloorToInt(getMetaDeSuperacionPor()), TipoMeta.MetaDeSuperación);
+        MetaMinima = new MetaProgresoRecompensa("Primera meta de la productividad", Mathf.FloorToInt(GetMetaMinimaPor()), TipoMeta.MetaMinima);
+        MetaDeIntermedio = new MetaProgresoRecompensa("Segunda meta de la productividad", Mathf.FloorToInt(GetMetaDeIntermedioPor()), TipoMeta.MetaIntermedia);
+        MetaDeSuperacion = new MetaProgresoRecompensa("Tercera máxima meta de la productividad", Mathf.FloorToInt(GetMetaDeSuperacionPor()), TipoMeta.MetaDeSuperación);
 
 
 
     }
 
-    public float getMetaMinimaPor()
+    public float GetMetaMinimaPor()
     {
         return (ValorMetaMinima/ValorMetaDeSuperacion)*100;
     }
-    public float getMetaDeIntermedioPor()
+    public float GetMetaDeIntermedioPor()
     {
         return (ValorMetaDeIntermedio/ValorMetaDeSuperacion)*100;
     }
-    public float getMetaDeSuperacionPor()
+    public float GetMetaDeSuperacionPor()
     {
         return 100;
+    }
+
+    public float GetMetaSuperaciónValor()
+    {
+        return ValorMetaDeSuperacion;
     }
 
     public ContadorProgreso contadorProgreso;
@@ -140,7 +145,7 @@ public class MarcaBasicaRecompensa
 {
     public string Nombre;
     protected bool Completado = false;
-    protected float PuntuacionRequerida { get => (PorcentajeRequeridoMeta / 100) * Gamificacion.ProductivityPointsMaxGoal; set { } }
+    protected float PuntuacionRequerida { get => (PorcentajeRequeridoMeta / 100) * GestorMetas.Instance.GetMetaSuperaciónValor(); set { } }
     protected float porcentajeRequeridoMeta;
     public float PorcentajeRequeridoMeta
     {
