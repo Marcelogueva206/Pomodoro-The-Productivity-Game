@@ -76,29 +76,40 @@ public class GestorMetas : MonoBehaviour
 
     public void RegenerarMetasDiarias()
     {
-        TotalMinutosDeExigencias = 0;
-        foreach (Dinosaurio motivador in EstadisticasManager.Instance.getCaracteresMotivadoresEnSistema())
+
+
+        if(EstadisticasManager.Instance.getCaracteresMotivadoresEnSistema().Count != 0)
         {
-            TotalMinutosDeExigencias += motivador.GetTiempoTotalExigido();
+            TotalMinutosDeExigencias = 0;
+            foreach (Dinosaurio motivador in EstadisticasManager.Instance.getCaracteresMotivadoresEnSistema())
+            {
+                TotalMinutosDeExigencias += motivador.GetTiempoTotalExigido();
 
-            MinimoMinutosDeExigencias += motivador.GetMinimoSostenible();
+                MinimoMinutosDeExigencias += motivador.GetMinimoSostenible();
+            }
+
+            ValorMetaMinima = MinimoMinutosDeExigencias;
+
+            float rangoAleatorioDeIncrementoDeMetaIntermedio = UnityEngine.Random.Range(IncrementoDeMetaIntermedio.x, IncrementoDeMetaIntermedio.y);
+            int cantidadDeMotivadores = EstadisticasManager.Instance.getCaracteresMotivadoresEnSistema().Count;
+
+            ValorMetaDeIntermedio = MinimoMinutosDeExigencias + cantidadDeMotivadores * rangoAleatorioDeIncrementoDeMetaIntermedio;
+
+            float rangoAleatorioDeIncrementoDeMetaDeSuperación = UnityEngine.Random.Range(IncrementoDeMetaSuperacion.x, IncrementoDeMetaSuperacion.y);
+            ValorMetaDeSuperacion = ValorMetaDeIntermedio + cantidadDeMotivadores * rangoAleatorioDeIncrementoDeMetaDeSuperación;
         }
-
-        ValorMetaMinima = MinimoMinutosDeExigencias;
-
-        float rangoAleatorioDeIncrementoDeMetaIntermedio = UnityEngine.Random.Range(IncrementoDeMetaIntermedio.x, IncrementoDeMetaIntermedio.y);
-        int cantidadDeMotivadores = EstadisticasManager.Instance.getCaracteresMotivadoresEnSistema().Count;
-
-        ValorMetaDeIntermedio = MinimoMinutosDeExigencias + cantidadDeMotivadores * rangoAleatorioDeIncrementoDeMetaIntermedio;
-
-        float rangoAleatorioDeIncrementoDeMetaDeSuperación = UnityEngine.Random.Range(IncrementoDeMetaSuperacion.x, IncrementoDeMetaSuperacion.y);
-        ValorMetaDeSuperacion = ValorMetaDeIntermedio + cantidadDeMotivadores * rangoAleatorioDeIncrementoDeMetaDeSuperación;
+        else
+        {
+            ValorMetaMinima = 5;
+            ValorMetaDeIntermedio = 10;
+            ValorMetaDeSuperacion = 15;
 
 
+
+        }
         MetaMinima = new MetaProgresoRecompensa("Primera meta de la productividad", Mathf.FloorToInt(GetMetaMinimaPor()), TipoMeta.MetaMinima);
         MetaDeIntermedio = new MetaProgresoRecompensa("Segunda meta de la productividad", Mathf.FloorToInt(GetMetaDeIntermedioPor()), TipoMeta.MetaIntermedia);
         MetaDeSuperacion = new MetaProgresoRecompensa("Tercera máxima meta de la productividad", Mathf.FloorToInt(GetMetaDeSuperacionPor()), TipoMeta.MetaDeSuperación);
-
 
 
     }
@@ -124,10 +135,10 @@ public class GestorMetas : MonoBehaviour
     public ContadorProgreso contadorProgreso;
    
 
-    private IEnumerator EsperarParaIniciarGeneraciónDeMetas()
+    public IEnumerator EsperarParaIniciarGeneraciónDeMetas()
     {
         // Espera hasta que el objeto requerido no sea null y esté activo en la jerarquía.
-        while (EstadisticasManager.Instance == null&& contadorProgreso == null)
+        while (EstadisticasManager.Instance == null&& contadorProgreso == null&&ConfirmarMotivadoresCompletamenteCargados())
         {
             Debug.Log("Esperando a que carge los elemntos necesarios para generar metas");
             yield return null; // Espera un frame.
@@ -137,6 +148,21 @@ public class GestorMetas : MonoBehaviour
         RegenerarMetasDiarias();
     }
 
+    public bool ConfirmarMotivadoresCompletamenteCargados()
+    {
+        foreach(Dinosaurio motivador in EstadisticasManager.Instance.getCaracteresMotivadoresEnSistema())
+        {
+            foreach(Exigencia exigencia in motivador.exigencias)
+            {
+                if(exigencia == null)
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
  
 
 }
@@ -145,7 +171,7 @@ public class MarcaBasicaRecompensa
 {
     public string Nombre;
     protected bool Completado = false;
-    protected float PuntuacionRequerida { get => (PorcentajeRequeridoMeta / 100) * GestorMetas.Instance.GetMetaSuperaciónValor(); set { } }
+    public float PuntuacionRequerida { get => (PorcentajeRequeridoMeta / 100) * GestorMetas.Instance.GetMetaSuperaciónValor(); set { } }
     protected float porcentajeRequeridoMeta;
     public float PorcentajeRequeridoMeta
     {

@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,7 +9,9 @@ public class EstadisticasManager : MonoBehaviour
 
     // Singleton Instance
     public static EstadisticasManager Instance { get; private set; }
-    [SerializeField]private GameObject MotivadorPrefab;
+    [SerializeField] private GameObject MotivadorPrefab;
+
+    public string keyCantidadMotivadores = "CantidadMotivadores";
 
     #region Sistema de integración de motivadores
     [SerializeField] private List<Dinosaurio> CaracteresMotivadoresEnSistema;
@@ -16,24 +19,27 @@ public class EstadisticasManager : MonoBehaviour
     {
         return CaracteresMotivadoresEnSistema;
     }
+
+
     public void AñadirCaracterMotivadorAlSistema(Dinosaurio motivador)
     {
         if (!CaracteresMotivadoresEnSistema.Contains(motivador))
         {
             CaracteresMotivadoresEnSistema.Add(motivador);
+            StartCoroutine(GestorMetas.Instance.EsperarParaIniciarGeneraciónDeMetas());
         }
-
-        PlayerPrefs.SetInt("CantidadMotivadores", CaracteresMotivadoresEnSistema.Count);
         GuardarInformarciónMotivadores();
+
     }
     public void EliminarCaracterMotivadorDelSistema(Dinosaurio motivador)
     {
         if (CaracteresMotivadoresEnSistema.Contains(motivador))
         {
             CaracteresMotivadoresEnSistema.Remove(motivador);
+            StartCoroutine(GestorMetas.Instance.EsperarParaIniciarGeneraciónDeMetas());
         }
-        PlayerPrefs.SetInt("CantidadMotivadores", CaracteresMotivadoresEnSistema.Count);
         GuardarInformarciónMotivadores();
+
     }
     #endregion
 
@@ -45,23 +51,30 @@ public class EstadisticasManager : MonoBehaviour
 
     private void Start()
     {
+        //if (!PlayerPrefs.HasKey(keyCantidadMotivadores))
+        //{
+        //    PlayerPrefs.SetInt(keyCantidadMotivadores, 0);
+        //    PlayerPrefs.Save();
+        //}
+
+
         DateTime fechaActual = DateTime.Now;
 
         if (PlayerPrefs.HasKey(KeyUltimaFecha))
         {
             string ultimaFecha = PlayerPrefs.GetString(KeyUltimaFecha);
             Debug.Log("Última vez que se abrió la aplicación: " + ultimaFecha);
-        }else
+        }
+        else
         {
             Debug.Log("Es la primera vez que abres la aplicación.");
         }
 
         PlayerPrefs.SetString(KeyUltimaFecha, fechaActual.ToString("yyyy-MM-dd HH:mm:ss"));
+
+        //Debug.Log("Cnaitdad de motivadores:"+PlayerPrefs.GetInt(keyCantidadMotivadores));
+        CargarInformaciónMotivadores();
         PlayerPrefs.Save(); // Asegura que los datos se guarden en disco
-
-        Debug.Log("Fecha actual guardada: " + fechaActual.ToString("yyyy-MM-dd HH:mm:ss"));
-
-        PlayerPrefs.GetInt("CantidadMotivadores", 0);
     }
 
 
@@ -74,7 +87,7 @@ public class EstadisticasManager : MonoBehaviour
             Destroy(gameObject); // Elimina duplicados.
             return;
         }
-        Instance = this; 
+        Instance = this;
         #endregion
         PomodoroSistema.TemposTerminado += RegistrarTempoTerminado;
 
@@ -110,45 +123,150 @@ public class EstadisticasManager : MonoBehaviour
 
     public void GuardarInformarciónMotivadores()
     {
-        ListaMotivadoresData data = new ListaMotivadoresData();
-        data.motivadores = CaracteresMotivadoresEnSistema;
+        PlayerPrefs.SetInt(keyCantidadMotivadores, CaracteresMotivadoresEnSistema.Count);
+        ListaMotivadoresData DataPorGuardar = new ListaMotivadoresData();
 
-        string json = JsonUtility.ToJson(data, true);
+        foreach (Dinosaurio motivador in CaracteresMotivadoresEnSistema) // para cada motivador existente en la aplciación
+        {
+            DinosaurioData motivadorDataPorGuardar = new DinosaurioData(); // creamos un cartucho para guardar la información
+            motivadorDataPorGuardar.Nombre = motivador.Nombre;
+            motivadorDataPorGuardar.Emocionalidad = motivador.Emocionalidad;
+            motivadorDataPorGuardar.position = motivador.gameObject.transform.position;
+            DataPorGuardar.motivadoresData.Add(motivadorDataPorGuardar);
+
+            if(motivador.exigencias != null)
+            {
+                foreach (Exigencia exigencia in motivador.exigencias) // para cada exigencia que tenga el motivador
+                {
+                   
+                    if (exigencia is ExigenciaTiempoProductivo) //si la exigencia que estamos guardando es de tipo Tiempo productivo
+                    {
+                        ExigenciaTiempoProductivo exigenciaTiempoProductivo = exigencia as ExigenciaTiempoProductivo; // Convertimos la exigencia original
+                        if (exigenciaTiempoProductivo != null)
+                        {
+                            // Creamos una instancia específica para este tipo
+                            ExigenciaTiempoProductivoData exigenciaTiempoProductivoDataPorGuardar = new ExigenciaTiempoProductivoData();
+
+                            exigenciaTiempoProductivoDataPorGuardar.ProgresoMeta = exigenciaTiempoProductivo.ProgresoMeta;
+                            exigenciaTiempoProductivoDataPorGuardar.MetaTiempoProductivo = exigenciaTiempoProductivo.metaTiempoProductivo;
+                            exigenciaTiempoProductivoDataPorGuardar.dificultadValor = (int)exigenciaTiempoProductivo.dificultad;
+
+                            // Agregamos al motivador
+                            motivadorDataPorGuardar.Exigencias.Add(exigenciaTiempoProductivoDataPorGuardar);
+                        }
+
+                    }
+                    else // solo soportar guardar para un el tipo ExigenciaTiempoProductivoData
+                    {
+                        //ExigenciaData exigenciaPorGuardar = new ExigenciaData(); //creamos un cartucho para guardarlo
+
+                        //exigenciaPorGuardar.dificultadValor = (int)exigencia.dificultad;
+
+                        //motivadorDataPorGuardar.Exigencias.Add(exigenciaPorGuardar);
+                    }
+
+
+
+                }
+            }
+            
+        }
+
+        string json = JsonUtility.ToJson(DataPorGuardar, true);
 
         System.IO.File.WriteAllText("lista_motivadores_data", json);
+        PlayerPrefs.Save();
     }
 
     public void CargarInformaciónMotivadores()
     {
-        List <Dinosaurio> motivadoresCargados = new List <Dinosaurio>();
-        if (System.IO.File.Exists("lista_motivadores_data"))
+        if (PlayerPrefs.GetInt(keyCantidadMotivadores) != 0)
         {
-            string json = System.IO.File.ReadAllText("lista_motivadores_data");
-            ListaMotivadoresData lista = JsonUtility.FromJson<ListaMotivadoresData>(json);
-            motivadoresCargados = lista.motivadores;
-        }
-        CaracteresMotivadoresEnSistema.Clear();
-        foreach (Dinosaurio motivadorCargado in motivadoresCargados)
-        {
-            GameObject MotivadorNuevo= Instantiate(MotivadorPrefab);
-            Dinosaurio componenteDinosaurioNuevo = MotivadorNuevo.GetComponent<Dinosaurio>();
-            if (componenteDinosaurioNuevo != null)
+            List<DinosaurioData> motivadoresCargados = new List<DinosaurioData>();
+            if (System.IO.File.Exists("lista_motivadores_data"))
             {
-                // Copia las propiedades del motivador cargado al componente del prefab
-                componenteDinosaurioNuevo.Nombre = motivadorCargado.Nombre;
-                componenteDinosaurioNuevo.Emocionalidad = motivadorCargado.Emocionalidad;
-                componenteDinosaurioNuevo.exigencias = motivadorCargado.exigencias;
-                componenteDinosaurioNuevo.gameObject.transform.position = motivadorCargado.transform.position;
+                string json = System.IO.File.ReadAllText("lista_motivadores_data");
+                ListaMotivadoresData lista = JsonUtility.FromJson<ListaMotivadoresData>(json);
+                motivadoresCargados = lista.motivadoresData;
+            }
+            CaracteresMotivadoresEnSistema.Clear();
+            foreach (DinosaurioData motivadorCargado in motivadoresCargados) // para cada motivador guardado en los archivos
+            {
+                GameObject MotivadorNuevo = Instantiate(MotivadorPrefab); // creamos un motivador nuevo
+                Dinosaurio componenteDinosaurioNuevo = MotivadorNuevo.GetComponent<Dinosaurio>(); //extraemos su compoenente
+                if (componenteDinosaurioNuevo != null) // confirmamos que este componeente del nuevo moivador existe existe
+                {
+                    if (motivadorCargado != null)
+                    {
+                        // Le brindamos todas las propiedades del nuevo motivador del motivador guaraddo en archivos
+                        componenteDinosaurioNuevo.Nombre = motivadorCargado.Nombre;
+                        componenteDinosaurioNuevo.Emocionalidad = motivadorCargado.Emocionalidad;
+                        componenteDinosaurioNuevo.gameObject.transform.position = motivadorCargado.position;
+                    }           
+                    List<Exigencia> ExigenciasDinosaurioNuevo = componenteDinosaurioNuevo.exigencias;
 
-                // Copia otras propiedades necesarias aquí
-            } 
+                    foreach (ExigenciaData exigenciaCargada in motivadorCargado.Exigencias) // para cada exigencia guradado en el motivador guardado en archivos
+                    {
+                        switch (exigenciaCargada.dificultadValor) // comprobamos que tipo de dificultad tiene para saignarle a su respectivo exigencia del nuevo motivador cargado
+                        {
+
+                            case (int)Exigencia.Dificultad.facil:
+                                if (exigenciaCargada is ExigenciaTiempoProductivoData) // la exigencia guardad esde tipo tiempo productivo?
+                                {
+                                    ExigenciaTiempoProductivo ExigenciasTiempoProductivoDinosaurioNuevo = ExigenciasDinosaurioNuevo[0] as ExigenciaTiempoProductivo; //convertimos la exigencia del dinosaurio nuevo en una exigencia especificamente del tipo de tiempo productivo
+                                    ExigenciaTiempoProductivoData ExigenciaCargadaTiempoProductivo = exigenciaCargada as ExigenciaTiempoProductivoData;
+                                    ExigenciasTiempoProductivoDinosaurioNuevo.dificultad = (Exigencia.Dificultad)ExigenciaCargadaTiempoProductivo.dificultadValor;
+                                    ExigenciasTiempoProductivoDinosaurioNuevo.metaTiempoProductivo = ExigenciaCargadaTiempoProductivo.MetaTiempoProductivo;
+                                    ExigenciasTiempoProductivoDinosaurioNuevo.progresoMeta = ExigenciaCargadaTiempoProductivo.ProgresoMeta;
+                                    
+                                }           
+
+                                break;
+                            case (int)Exigencia.Dificultad.moderado:
+                                if (exigenciaCargada is ExigenciaTiempoProductivoData) // la exigencia guardad esde tipo tiempo productivo?
+                                {
+                                    ExigenciaTiempoProductivo ExigenciasTiempoProductivoDinosaurioNuevo = ExigenciasDinosaurioNuevo[1] as ExigenciaTiempoProductivo; //convertimos la exigencia del dinosaurio nuevo en una exigencia especificamente del tipo de tiempo productivo
+                                    ExigenciaTiempoProductivoData ExigenciaCargadaTiempoProductivo = exigenciaCargada as ExigenciaTiempoProductivoData;
+                                    ExigenciasTiempoProductivoDinosaurioNuevo.dificultad = (Exigencia.Dificultad)ExigenciaCargadaTiempoProductivo.dificultadValor;
+                                    ExigenciasTiempoProductivoDinosaurioNuevo.metaTiempoProductivo = ExigenciaCargadaTiempoProductivo.MetaTiempoProductivo;
+                                    ExigenciasTiempoProductivoDinosaurioNuevo.progresoMeta = ExigenciaCargadaTiempoProductivo.ProgresoMeta;
+                                }
+                                break;
+                            case (int)Exigencia.Dificultad.dificil:
+                                if (exigenciaCargada is ExigenciaTiempoProductivoData) // la exigencia guardad esde tipo tiempo productivo?
+                                {
+                                    ExigenciaTiempoProductivo ExigenciasTiempoProductivoDinosaurioNuevo = ExigenciasDinosaurioNuevo[2] as ExigenciaTiempoProductivo; //convertimos la exigencia del dinosaurio nuevo en una exigencia especificamente del tipo de tiempo productivo
+                                    ExigenciaTiempoProductivoData ExigenciaCargadaTiempoProductivo = exigenciaCargada as ExigenciaTiempoProductivoData;
+                                    ExigenciasTiempoProductivoDinosaurioNuevo.dificultad = (Exigencia.Dificultad)ExigenciaCargadaTiempoProductivo.dificultadValor;
+                                    ExigenciasTiempoProductivoDinosaurioNuevo.metaTiempoProductivo = ExigenciaCargadaTiempoProductivo.MetaTiempoProductivo;
+                                    ExigenciasTiempoProductivoDinosaurioNuevo.progresoMeta = ExigenciaCargadaTiempoProductivo.ProgresoMeta;
+                                }
+                                break;
+
+
+
+                        }
+                    }
+
+                
+                }
+
+               
+
+            }
 
 
         }
 
-        
+
 
     }
+
+    private void OnApplicationQuit()
+    {
+        GuardarInformarciónMotivadores();
+    }
+
 }
 
 
@@ -156,6 +274,32 @@ public class EstadisticasManager : MonoBehaviour
 [System.Serializable]
 public class ListaMotivadoresData
 {
-    public List<Dinosaurio> motivadores;
+    [SerializeField] public List<DinosaurioData> motivadoresData = new List<DinosaurioData>();
+}
+
+[System.Serializable]
+public class DinosaurioData
+{
+    public string Nombre;
+    public float Emocionalidad;
+    public Vector3 position;
+    public List<ExigenciaTiempoProductivoData> Exigencias = new List<ExigenciaTiempoProductivoData>();
+}
+[System.Serializable]
+public class ExigenciaData
+{
+    public int dificultadValor;
+
+}
+
+
+[System.Serializable]
+public class ExigenciaTiempoProductivoData : ExigenciaData
+{
+
+    public float MetaTiempoProductivo = 0;
+    public float ProgresoMeta = 0;
+
+
 }
 #endregion

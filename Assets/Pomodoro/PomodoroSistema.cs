@@ -21,6 +21,7 @@ public class PomodoroSistema : MonoBehaviour
     [HideInInspector] public static Tempos _tempoActual;
     [SerializeField] private static int numeroCicloActual = 0;
     [SerializeField] private static int numeroTempoActual = 0;
+    [SerializeField] private static int numeroPomodoroActual = 0;
     [SerializeField] private TextMeshProUGUI textoPomodorosRestantes;
     #region UnityMethods
     private void Awake()
@@ -29,15 +30,17 @@ public class PomodoroSistema : MonoBehaviour
         Pomodoro pomodoro2 = new Pomodoro(Pomodoro.PomodorosTipos.normal);
 
         _sesionActual = new Sesion(new List<Pomodoro> { pomodoro1, pomodoro2 }, "Sesion de prueba");
+
+        CargarDatosPomodoro();
     }
     void Start()
     {
         // necesario crear un metodo instanciador
-        _pomodoroActual = _sesionActual._pomodorosSesion[0];
-        _cicloActual = _sesionActual._pomodorosSesion[0].ciclosPomodoro[0];
-        _tempoActual = _sesionActual._pomodorosSesion[0].ciclosPomodoro[0].TemposCiclo[0];
+        _pomodoroActual = _sesionActual._pomodorosSesion[numeroPomodoroActual];
+        _cicloActual = _sesionActual._pomodorosSesion[numeroPomodoroActual].ciclosPomodoro[numeroCicloActual];
+        _tempoActual = _sesionActual._pomodorosSesion[numeroPomodoroActual].ciclosPomodoro[numeroCicloActual].TemposCiclo[numeroTempoActual];
         //solo para probar
- 
+
     }
     void Update()
     {
@@ -48,7 +51,50 @@ public class PomodoroSistema : MonoBehaviour
     }
     #endregion
 
+    private void OnApplicationQuit()
+    {
+        GuardarDatosPomodoro();
+    }
+    public void GuardarDatosPomodoro()
+    {
+        PlayerPrefs.SetInt("NumeroCicloActual", numeroCicloActual);
+        PlayerPrefs.SetInt("NumeroTempoActual", numeroTempoActual);
+        PlayerPrefs.SetInt("NumeroPomodoroActual", _sesionActual.numeroPomodoroActual);
+        PlayerPrefs.Save(); // Asegura que los datos se escriben inmediatamente
 
+
+
+    }
+
+    public void CargarDatosPomodoro()
+    {
+        if (!PlayerPrefs.HasKey("NumeroCicloActual"))
+        {
+            PlayerPrefs.SetInt("NumeroCicloActual", 0); // Valor predeterminado
+        }
+        else
+        {
+            numeroCicloActual = PlayerPrefs.GetInt("NumeroCicloActual");
+        }
+
+        if (!PlayerPrefs.HasKey("NumeroTempoActual"))
+        {
+            PlayerPrefs.SetInt("NumeroTempoActual", 0); // Valor predeterminado
+        }
+        else
+        {
+            numeroTempoActual = PlayerPrefs.GetInt("NumeroTempoActual");
+        }
+
+        if (!PlayerPrefs.HasKey("NumeroPomodoroActual"))
+        {
+            PlayerPrefs.SetInt("NumeroPomodoroActual", 0); // Valor predeterminado
+        }
+        else
+        {
+            numeroPomodoroActual = PlayerPrefs.GetInt("NumeroPomodoroActual");
+        }
+    }
 
     public static event ProgresoUsuarioPomodoro PomodoroTerminado = Pomodoro => Debug.Log($"se terminó el pomodoro: {Pomodoro.Nombre}");
     public static event ProgresoUsuarioPomodoro PomodoroIniciado = Pomodoro => Debug.Log($"se inició el pomodoro: {Pomodoro.Nombre}");
@@ -59,7 +105,7 @@ public class PomodoroSistema : MonoBehaviour
     //};
     public static event ProgresoUsuarioTempos TemposTerminado = Tempos => Debug.Log($"se terminó tempo: {Tempos.Nombre}");
     public static event ProgresoUsuarioTempos TemposIniciado = Tempos => Debug.Log($"se inició tempo: {Tempos.Nombre}");
-    
+
     public static event ProgresoUsuarioCiclo CicloTerminado = Ciclo => Debug.Log($"se terminó ciclo: {Ciclo.Nombre}");
     public static event ProgresoUsuarioCiclo CicloIniciado = Ciclo => Debug.Log($"se inició ciclo: {Ciclo.Nombre}");
 
@@ -96,7 +142,7 @@ public class PomodoroSistema : MonoBehaviour
 
                 if (_cicloActual.TemposCiclo[numeroTempoActual].GetEstadoCompletado() == false)// NO: el tempo está terminado?
                 {
-                                     //NO: entonces usalo
+                    //NO: entonces usalo
                     _tempoActual = _cicloActual.TemposCiclo[numeroTempoActual];
                     if (numeroTempoActual + 1 >= _cicloActual.TemposCiclo.Count) //el es último tempo de la lista
                     {
@@ -109,7 +155,7 @@ public class PomodoroSistema : MonoBehaviour
                     //SI: entonces pasa el siguiente tempo
                     TemposTerminado?.Invoke(_tempoActual);
                     numeroTempoActual++;
-                    if(_cicloActual.TemposCiclo[numeroTempoActual] == null)
+                    if (_cicloActual.TemposCiclo[numeroTempoActual] == null)
                     {
                         //se ha terminado todos los tempos del ciclo, por ende debe elegir el primero del ciclo si aún se debe repetir
                         _tempoActual = pomodoro.ciclosPomodoro[numeroCicloActual + 1].TemposCiclo[0];
@@ -118,7 +164,7 @@ public class PomodoroSistema : MonoBehaviour
                     {
                         _tempoActual = _cicloActual.TemposCiclo[numeroTempoActual];
                     }
-                   
+
 
                     //TemposIniciado.Invoke(_tempoActual);
 
@@ -132,7 +178,7 @@ public class PomodoroSistema : MonoBehaviour
                 TemposTerminado?.Invoke(ultimoTempoDeCiclo);
                 //sí: comienza el siguiente ciclo
                 CicloTerminado.Invoke(_cicloActual);
-                numeroCicloActual++;           
+                numeroCicloActual++;
                 _cicloActual = pomodoro.ciclosPomodoro[numeroCicloActual];
                 CicloIniciado.Invoke(_cicloActual);
 
@@ -146,7 +192,7 @@ public class PomodoroSistema : MonoBehaviour
             _pomodoroActual = sesionPerteneciente._pomodorosSesion[sesionPerteneciente.numeroPomodoroActual];
             numeroCicloActual = 0;
             PomodoroIniciado.Invoke(_pomodoroActual);
-            
+
         }
 
 
@@ -220,7 +266,7 @@ public class Pomodoro : IEstadoCompletado
                 tiempoTotal += ciclo.DuracionTotal;
 
             }
-     
+
 
             return tiempoTotal;
         }
@@ -261,7 +307,7 @@ public class Pomodoro : IEstadoCompletado
 
 
         Ciclo ciclo1 = new Ciclo(new List<Tempos> { tempo1, tempo2, tempo3 }, 1, "Ciclo 1");
-        Ciclo ciclo2 = new Ciclo(new List<Tempos> { tempo2, tempo3 }, 1 ,"Ciclo 2");
+        Ciclo ciclo2 = new Ciclo(new List<Tempos> { tempo2, tempo3 }, 1, "Ciclo 2");
         Ciclo ciclo3 = new Ciclo(new List<Tempos> { tempo2 }, 1, "Ciclo 3");
 
         ciclosPomodoro = new List<Ciclo> { ciclo1, ciclo2, ciclo3 };
@@ -344,7 +390,7 @@ public class Ciclo : IEstadoCompletado
     }
 
 
-    public Ciclo(List<Tempos> tempos, int repeticiones, string nombre ="")
+    public Ciclo(List<Tempos> tempos, int repeticiones, string nombre = "")
     {
         TemposCiclo = tempos;
         RepeticionesTotales = repeticiones;
@@ -415,7 +461,7 @@ public class Ciclo : IEstadoCompletado
     }
 }
 
-public enum TiposTempos {productivo,descanso}
+public enum TiposTempos { productivo, descanso }
 
 public class Tempos : IEstadoCompletado
 {
@@ -426,7 +472,7 @@ public class Tempos : IEstadoCompletado
 
 
 
-    public Tempos(string nombre, TimeSpan tiempoTotal, TiposTempos tiposTempos=TiposTempos.productivo)
+    public Tempos(string nombre, TimeSpan tiempoTotal, TiposTempos tiposTempos = TiposTempos.productivo)
     {
         Nombre = nombre;
         this.TiempoTotal = tiempoTotal;

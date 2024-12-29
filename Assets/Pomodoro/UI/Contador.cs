@@ -54,7 +54,8 @@ public class Contador : MonoBehaviour
         //PomodoroSistema.CicloIniciado += MostrarNombreCicloUI;
         //PomodoroSistema.PomodoroIniciado += MostrarNombrePomodoroUI;
         OnTerminadoContador = ReiniciarPuntuaciónTempo;
-       
+        CargarTiempoRestante();
+
     }
     public void MostrarNombreTempoUI(Tempos tempo)
     {
@@ -96,10 +97,30 @@ public class Contador : MonoBehaviour
         textoContador.text = string.Format("{0:00}:{1:00}:{2:00}", HorasRestanteStatic, MinutosRestanteStatic, SegundosRestanteStatic);
         slider.value = TiempoRestanteStatic / TiempoTotalStatic;
     }
+
+    private void CargarTiempoRestante()
+    {
+        if (PlayerPrefs.HasKey("TiempoRestante"))
+        {
+            TiempoRestanteStatic = PlayerPrefs.GetFloat("TiempoRestante");
+        }
+        else
+        {
+            // Si no hay valor guardado, usar el valor predeterminado
+            TiempoRestanteStatic = TiempoTotalStatic;
+        }
+    }
+
+    private void GuardarTiempoRestante()
+    {
+        PlayerPrefs.SetFloat("TiempoRestante", TiempoRestanteStatic);
+        PlayerPrefs.Save(); // Aseguramos que se guarde inmediatamente
+    }
+
     private void ContandoTiempo()
     {
         TiempoRestanteStatic -= Time.deltaTime;
-
+        GuardarTiempoRestante();
         PuntuacionTempo += Time.deltaTime * (1f / 60f);
         float value = Mathf.Floor(PuntuacionTempo);
         textoPuntuacionTempo.text = value.ToString();

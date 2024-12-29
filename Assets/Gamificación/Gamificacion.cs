@@ -84,23 +84,40 @@ public class Gamificacion : MonoBehaviour
         PomodoroSistema.TemposTerminado += AumentarProgresoDiarioTiempo;
         PomodoroSistema.PomodoroTerminado += RecibirAcumuladoTiempo;
 
-         PlayerPrefs.GetFloat("TiempoTotal", 0);
-         PlayerPrefs.GetFloat("TiempoTotalDiario", 0);
-         PlayerPrefs.GetFloat("TiempoPorAdquirir", 0);
+        AsignarValoresPredeterminadosPuntuacion();
 
     }
 
     private void Start()
     {
-        //PrimeraMeta = new MetaProgresoRecompensa("Primera meta de la productividad", gamificacionManager.cuerpoPrimeraEstrella, GestorMetas.Instance.getMetaMinimaPor(), TipoEstrella.MetaMinima);
-        //SegundaMeta = new MetaProgresoRecompensa("Segunda meta de la productividad", gamificacionManager.cuerpoSegundaEstrella, GestorMetas.Instance.getMetaDeIntermedioPor(), TipoEstrella.MetaIntermedia);
-        //TerceraMeta = new MetaProgresoRecompensa("Tercera máxima meta de la productividad", gamificacionManager.cuerpoTerceraEstrella, GestorMetas.Instance.getMetaDeSuperacionPor(), TipoEstrella.MetaDeSuperación);
-        TiempoTotal = PlayerPrefs.GetFloat("TiempoTotal");
-        TiempoTotalDiario = PlayerPrefs.GetFloat("TiempoTotalDiario");
-        TiempoPorAdquirir = PlayerPrefs.GetFloat("TiempoPorAdquirir");
+       
+
+
     }
 
+    void AsignarValoresPredeterminadosPuntuacion()
+    {
+        // Verificar y asignar valores predeterminados para TiempoTotal
+        if (!PlayerPrefs.HasKey("TiempoTotal"))
+        {
+            PlayerPrefs.SetFloat("TiempoTotal", 0f); // Valor predeterminado
+        }
+        TiempoTotal = PlayerPrefs.GetFloat("TiempoTotal");
 
+        // Verificar y asignar valores predeterminados para TiempoTotalDiario
+        if (!PlayerPrefs.HasKey("TiempoTotalDiario"))
+        {
+            PlayerPrefs.SetFloat("TiempoTotalDiario", 0f); // Valor predeterminado
+        }
+        TiempoTotalDiario = PlayerPrefs.GetFloat("TiempoTotalDiario");
+
+        // Verificar y asignar valores predeterminados para TiempoPorAdquirir
+        if (!PlayerPrefs.HasKey("TiempoPorAdquirir"))
+        {
+            PlayerPrefs.SetFloat("TiempoPorAdquirir", 0f); // Valor predeterminado
+        }
+        TiempoPorAdquirir = PlayerPrefs.GetFloat("TiempoPorAdquirir");
+    }
 
 
 

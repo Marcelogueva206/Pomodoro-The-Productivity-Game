@@ -45,26 +45,34 @@ public class ContadorProgreso : MonoBehaviour
     public void ActualizarMarcas()
     {
 
-        ActualizarMarca(cuerpoPrimeraMeta, GestorMetas.Instance.MetaMinima.PorcentajeRequeridoMeta);
-        ActualizarMarca(cuerpoSegundaMeta, GestorMetas.Instance.MetaDeIntermedio.PorcentajeRequeridoMeta);
-        ActualizarMarca(cuerpoTerceraMeta, GestorMetas.Instance.MetaDeSuperacion.PorcentajeRequeridoMeta);
+        ActualizarMarca(cuerpoPrimeraMeta, GestorMetas.Instance.MetaMinima.PorcentajeRequeridoMeta, GestorMetas.Instance.MetaMinima.PuntuacionRequerida);
+        ActualizarMarca(cuerpoSegundaMeta, GestorMetas.Instance.MetaDeIntermedio.PorcentajeRequeridoMeta, GestorMetas.Instance.MetaDeIntermedio.PuntuacionRequerida);
+        ActualizarMarca(cuerpoTerceraMeta, GestorMetas.Instance.MetaDeSuperacion.PorcentajeRequeridoMeta, GestorMetas.Instance.MetaDeSuperacion.PuntuacionRequerida);
 
-        ActualizarMarca(cuerpoMarca0, GestorMetas.Instance.Marca0Porciento.PorcentajeRequeridoMeta);
-        ActualizarMarca(cuerpoMarca10, GestorMetas.Instance.Marca10Porciento.PorcentajeRequeridoMeta);
-        ActualizarMarca(cuerpoMarca20, GestorMetas.Instance.Marca20Porciento.PorcentajeRequeridoMeta);
-        ActualizarMarca(cuerpoMarca30, GestorMetas.Instance.Marca30Porciento.PorcentajeRequeridoMeta);
-        ActualizarMarca(cuerpoMarca40, GestorMetas.Instance.Marca40Porciento.PorcentajeRequeridoMeta);
-        ActualizarMarca(cuerpoMarca50, GestorMetas.Instance.Marca50Porciento.PorcentajeRequeridoMeta);
-        ActualizarMarca(cuerpoMarca60, GestorMetas.Instance.Marca60Porciento.PorcentajeRequeridoMeta);
-        ActualizarMarca(cuerpoMarca70, GestorMetas.Instance.Marca70Porciento.PorcentajeRequeridoMeta);
-        ActualizarMarca(cuerpoMarca80, GestorMetas.Instance.Marca80Porciento.PorcentajeRequeridoMeta);
-        ActualizarMarca(cuerpoMarca90, GestorMetas.Instance.Marca90Porciento.PorcentajeRequeridoMeta);
-        ActualizarMarca(cuerpoMarca100,GestorMetas.Instance.Marca100Porciento.PorcentajeRequeridoMeta);
+        ActualizarMarca(cuerpoMarca0, GestorMetas.Instance.Marca0Porciento.PorcentajeRequeridoMeta, GestorMetas.Instance.Marca0Porciento.PuntuacionRequerida);
+        ActualizarMarca(cuerpoMarca10, GestorMetas.Instance.Marca10Porciento.PorcentajeRequeridoMeta,GestorMetas.Instance.Marca10Porciento.PuntuacionRequerida);
+        ActualizarMarca(cuerpoMarca20, GestorMetas.Instance.Marca20Porciento.PorcentajeRequeridoMeta, GestorMetas.Instance.Marca20Porciento.PuntuacionRequerida);
+        ActualizarMarca(cuerpoMarca30, GestorMetas.Instance.Marca30Porciento.PorcentajeRequeridoMeta, GestorMetas.Instance.Marca30Porciento.PuntuacionRequerida);
+        ActualizarMarca(cuerpoMarca40, GestorMetas.Instance.Marca40Porciento.PorcentajeRequeridoMeta, GestorMetas.Instance.Marca40Porciento.PuntuacionRequerida);
+        ActualizarMarca(cuerpoMarca50, GestorMetas.Instance.Marca50Porciento.PorcentajeRequeridoMeta, GestorMetas.Instance.Marca50Porciento.PuntuacionRequerida);
+        ActualizarMarca(cuerpoMarca60, GestorMetas.Instance.Marca60Porciento.PorcentajeRequeridoMeta, GestorMetas.Instance.Marca60Porciento.PuntuacionRequerida);
+        ActualizarMarca(cuerpoMarca70, GestorMetas.Instance.Marca70Porciento.PorcentajeRequeridoMeta, GestorMetas.Instance.Marca70Porciento.PuntuacionRequerida);
+        ActualizarMarca(cuerpoMarca80, GestorMetas.Instance.Marca80Porciento.PorcentajeRequeridoMeta, GestorMetas.Instance.Marca80Porciento.PuntuacionRequerida);
+        ActualizarMarca(cuerpoMarca90, GestorMetas.Instance.Marca90Porciento.PorcentajeRequeridoMeta, GestorMetas.Instance.Marca90Porciento.PuntuacionRequerida);
+        ActualizarMarca(cuerpoMarca100,GestorMetas.Instance.Marca100Porciento.PorcentajeRequeridoMeta, GestorMetas.Instance.Marca100Porciento.PuntuacionRequerida);
     }
 
-    private void ActualizarMarca(RectTransform marca, float porcentaje)
+    private void ActualizarMarca(RectTransform marca, float porcentaje, float cantidad = 0)
     {
-        marca.GetComponentInChildren<TextMeshProUGUI>().text = porcentaje.ToString();
+
+        if( cantidad == 0 )
+        {
+            marca.GetComponentInChildren<TextMeshProUGUI>().text = porcentaje.ToString("F1");
+        }else
+        {
+            marca.GetComponentInChildren<TextMeshProUGUI>().text = cantidad.ToString("F1");
+        }
+       
         // Asegúrate de que el valor esté entre 0 y 1
         float normalizedPercentage = Mathf.Clamp(porcentaje / 100f, 0f, 1f);
 
@@ -93,7 +101,6 @@ public class ContadorProgreso : MonoBehaviour
     void Update()
     {
         progresoUsuario = Gamificacion.Instance.ProgresoTotalMetaPor / 100f;
-        Debug.Log(progresoUsuario);
         MostrarProgresoUI();
         ActualizarMarcas();
 

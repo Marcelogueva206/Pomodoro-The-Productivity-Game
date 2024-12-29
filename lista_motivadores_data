@@ -1,3 +1,30 @@
 {
-    "motivadores": []
+    "motivadoresData": [
+        {
+            "Nombre": "PEPE",
+            "Emocionalidad": 0.7339092493057251,
+            "position": {
+                "x": 3.636841297149658,
+                "y": 2.8086023330688478,
+                "z": 0.0
+            },
+            "Exigencias": [
+                {
+                    "dificultadValor": 0,
+                    "MetaTiempoProductivo": 1.0000241994857789,
+                    "ProgresoMeta": 1.0
+                },
+                {
+                    "dificultadValor": 1,
+                    "MetaTiempoProductivo": 30.000112533569337,
+                    "ProgresoMeta": 1.0
+                },
+                {
+                    "dificultadValor": 2,
+                    "MetaTiempoProductivo": 60.728755950927737,
+                    "ProgresoMeta": 1.0
+                }
+            ]
+        }
+    ]
 }

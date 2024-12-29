@@ -8,14 +8,14 @@ using UnityEngine.UI;
 using UnityEngine.UIElements;
 using UnityEngine.Windows;
 using static UnityEngine.EventSystems.EventTrigger;
-
+[System.Serializable]
 public class Dinosaurio : MonoBehaviour
 {
     #region Caracteristicas generales
     [Header("Caracteristicas generales")]
     [SerializeField] private string _nombre;
     [SerializeField] private float _velocidad;
-    public string Nombre { get { return _nombre; } set { _nombre = value; interactuador.ActualizarNombre(); } }
+    [SerializeField] public string Nombre { get { return _nombre; } set { _nombre = value; interactuador.ActualizarNombre(); } }
     [HideInInspector] public Especie _Especie { get => especie; }
 
 
@@ -177,8 +177,12 @@ public class Dinosaurio : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
 
         // experimentación
-        exigencias = new List<Exigencia> { new ExigenciaTiempoProductivo(this, Exigencia.Dificultad.facil), new ExigenciaTiempoProductivo(this, ExigenciaTiempoProductivo.Dificultad.moderado), new ExigenciaTiempoProductivo(this, ExigenciaTiempoProductivo.Dificultad.dificil) };
-        
+
+
+        if (exigencias == null)
+        {
+            exigencias = new List<Exigencia> { new ExigenciaTiempoProductivo(this, Exigencia.Dificultad.facil), new ExigenciaTiempoProductivo(this, ExigenciaTiempoProductivo.Dificultad.moderado), new ExigenciaTiempoProductivo(this, ExigenciaTiempoProductivo.Dificultad.dificil) };
+        }
     }
 
     private void Start()
@@ -199,7 +203,8 @@ public class Dinosaurio : MonoBehaviour
         InvokeRepeating("AplicarDepresionPorTiempo", 0f, 300f);
 
         ComprobarEliminarPorDepresion();
-        
+
+       
     }
 
 
@@ -251,10 +256,10 @@ public class Dinosaurio : MonoBehaviour
         Emocionalidad = emocionalidad;
     }
 
-    private void OnDestroy()
-    {
-        EstadisticasManager.Instance.EliminarCaracterMotivadorDelSistema(this);
-    }
+    //private void OnDestroy()
+    //{
+    //    EstadisticasManager.Instance.EliminarCaracterMotivadorDelSistema(this);
+    //}
 
     public void SerAdoptado(Especie especie, Rareza rareza, string nombre)
     {
@@ -262,7 +267,7 @@ public class Dinosaurio : MonoBehaviour
         this.rareza = rareza;
         Nombre = nombre;
         ActualizarAspectoMotivador();
-        emocionalidad = 1;
+        emocionalidad = UnityEngine.Random.Range(0.3f,1f);
     }
 
     public void ActualizarAspectoMotivador()
@@ -892,7 +897,7 @@ public class Exigencia : IMostrarIndicadorCompletado
     protected string descripcion = "";
     protected float recompensaEmocional;
 
-    public readonly Dificultad dificultad;
+    public Dificultad dificultad;
     public readonly Dinosaurio exigidor;
     protected bool Completado;
     protected float tiempoAproximadoExigido;
@@ -949,7 +954,7 @@ public enum TiposComidas
 
 public class ExigenciaTiempoProductivo : Exigencia//Exigencia por comida / exigencia básica
 {
-    private float metaTiempoProductivo;
+    public float metaTiempoProductivo;
     private static Dictionary<Rareza, double> valoresRareza = new Dictionary<Rareza, double>()
     {
         { Rareza.Comun, 0.1 },
@@ -958,7 +963,7 @@ public class ExigenciaTiempoProductivo : Exigencia//Exigencia por comida / exige
         { Rareza.Legendaria, 2.0 }
     };
     //creador de exigencias diarias
-    private float progresoMeta = 0;
+    public float progresoMeta = 0;
     public readonly TiposComidas tiposComidaRequerida;
     public float ProgresoMeta
     {
