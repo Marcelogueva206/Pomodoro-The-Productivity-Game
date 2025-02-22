@@ -22,17 +22,28 @@ public class PomodoroSistema : MonoBehaviour
     [SerializeField] private static int numeroCicloActual = 0;
     [SerializeField] private static int numeroTempoActual = 0;
     [SerializeField] private static int numeroPomodoroActual = 0;
-    [SerializeField] private TextMeshProUGUI textoPomodorosRestantes;
     #region UnityMethods
     private void Awake()
     {
-        Pomodoro pomodoro1 = new Pomodoro(Pomodoro.PomodorosTipos.normal);
-        Pomodoro pomodoro2 = new Pomodoro(Pomodoro.PomodorosTipos.normal);
+        Pomodoro pomodoro1 = new Pomodoro(Pomodoro.PomodorosTipos.prueba);
+        Pomodoro pomodoro2 = new Pomodoro(Pomodoro.PomodorosTipos.mediano);
 
         _sesionActual = new Sesion(new List<Pomodoro> { pomodoro1, pomodoro2 }, "Sesion de prueba");
 
         CargarDatosPomodoro();
     }
+
+    public static void ActualizarNuevoPomodoro(Pomodoro.PomodorosTipos pomodorosTipo)
+    {
+        Pomodoro pomodoroNuevo = new Pomodoro(pomodorosTipo);
+
+        _sesionActual = new Sesion(new List<Pomodoro> { pomodoroNuevo });
+
+        numeroCicloActual = 0;
+        numeroTempoActual = 0;
+        numeroPomodoroActual = 0;
+    }
+
     void Start()
     {
         // necesario crear un metodo instanciador
@@ -46,7 +57,6 @@ public class PomodoroSistema : MonoBehaviour
     {
         EjecutarSision(_sesionActual);
         Debug.Log($"tempo: {numeroTempoActual} y ciclo: {numeroCicloActual}");
-        textoPomodorosRestantes.text = "Pomodoros restantes: " + _sesionActual.pomodorosRestantes;
 
     }
     #endregion
@@ -272,7 +282,7 @@ public class Pomodoro : IEstadoCompletado
         }
     }
 
-    public enum PomodorosTipos { normal, corto, largo, prueba }
+    public enum PomodorosTipos { mediano, corto, largo, prueba }
 
     private PomodorosTipos _tipo;
 
@@ -282,9 +292,9 @@ public class Pomodoro : IEstadoCompletado
 
         switch (tipoDePomdoro)
         {
-            case PomodorosTipos.normal:
+            case PomodorosTipos.mediano:
 
-                CrearPomodoroNormal();
+                CrearPomodoroMediano();
 
                 break;
             case PomodorosTipos.largo:
@@ -295,9 +305,26 @@ public class Pomodoro : IEstadoCompletado
             case PomodorosTipos.prueba:
                 CrearPomodoroPrueba();
                 break;
+
+                case PomodorosTipos.corto:
+                CrearPomodoroCorto();
+                break;
+
         }
     }
 
+    private void CrearPomodoroCorto()
+    {
+        Tempos trabajo = new Tempos("Recuperar enfoque", new TimeSpan(0, 5, 0));
+        Tempos descanso = new Tempos("Descanso corto", new TimeSpan(0, 5, 0), TiposTempos.descanso);
+     
+
+
+        Ciclo cicloProductivo = new Ciclo(new List<Tempos> { trabajo, descanso }, 200, "Recuperando el enfoque");
+      
+
+        ciclosPomodoro = new List<Ciclo> { cicloProductivo };
+    }
 
     private void CrearPomodoroPrueba()
     {
@@ -313,11 +340,11 @@ public class Pomodoro : IEstadoCompletado
         ciclosPomodoro = new List<Ciclo> { ciclo1, ciclo2, ciclo3 };
     }
 
-    private void CrearPomodoroNormal()
+    private void CrearPomodoroMediano()
     {
         Tempos trabajo = new Tempos("Trabajo", new TimeSpan(0, 30, 0));
         Tempos descanso = new Tempos("Descanso", new TimeSpan(0, 5, 0), TiposTempos.descanso);
-        Tempos descansoLargo = new Tempos("Descanso Largo", new TimeSpan(0, 45, 0), TiposTempos.descanso);
+        Tempos descansoLargo = new Tempos("Descanso Largo", new TimeSpan(0, 30, 0), TiposTempos.descanso);
 
 
         Ciclo cicloProductivo = new Ciclo(new List<Tempos> { trabajo, descanso }, 4, "Ciclo Productivo");
@@ -328,7 +355,7 @@ public class Pomodoro : IEstadoCompletado
 
     private void CrearPomodoroLargo()
     {
-        Tempos trabajo = new Tempos("Trabajo", new TimeSpan(0, 60, 0));
+        Tempos trabajo = new Tempos("Trabajo largo", new TimeSpan(0, 60, 0));
         Tempos descanso = new Tempos("Descanso", new TimeSpan(0, 10, 0), TiposTempos.descanso);
         Tempos descansoLargo = new Tempos("Descanso Largo", new TimeSpan(0, 45, 0), TiposTempos.descanso);
 

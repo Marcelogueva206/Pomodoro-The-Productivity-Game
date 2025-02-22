@@ -5,26 +5,23 @@ using UnityEngine.Networking;
 
 public class TestAI : MonoBehaviour
 {
-    [Range(0 ,1)]private float indiceDeInputs; //0 a 1: 0 es ningún comentario y 1 es siempre
-    Dictionary<GameObject, List<Dialogo>> DialogosPorCharacter = new Dictionary<GameObject, List<Dialogo>>();
-    [SerializeField] private List<GameObject> CharacterMotivadoresActivos;
+    //Dictionary<GameObject, List<Dialogo>> DialogosPorCharacter = new Dictionary<GameObject, List<Dialogo>>();
+   
 
 
 
-    private void Start()
-    {
-        if(CharacterMotivadoresActivos.Count > 0)
-        {
-            foreach (GameObject characterMotivador in CharacterMotivadoresActivos)
-            {
-                DialogosPorCharacter.Add(characterMotivador, characterMotivador.GetComponent<Dinosaurio>().dialogosPorDecir);
-            }
-        }
+    //private void Start()
+    //{
+    //    if(EstadisticasManager.Instance.getCaracteresMotivadoresEnSistema().Count > 0)
+    //    {
+    //        foreach (Dinosaurio characterMotivadorComponente in EstadisticasManager.Instance.getCaracteresMotivadoresEnSistema())
+    //        {
+    //            DialogosPorCharacter.Add(characterMotivadorComponente.gameObject, characterMotivadorComponente.dialogosPorDecir);
+    //        }
+    //    }
      
-    }
-    private int cantidadDeInputsDiario;
+    //}
 
-    private static int cantidadDeOutputsConsumidos;
 
     [Header("IA")]
     [SerializeField] private string gasURL;
@@ -39,7 +36,6 @@ public class TestAI : MonoBehaviour
     }
     public IEnumerator UseGeminiAI(string input)
     {
-        cantidadDeOutputsConsumidos++;
         WWWForm form = new WWWForm();
 
         form.AddField("parameter", input);

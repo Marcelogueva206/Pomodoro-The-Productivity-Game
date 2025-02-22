@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -11,16 +12,16 @@ using UnityEngine;
 public class Gamificacion : MonoBehaviour
 {
     [Header("Productivity")]
-    [SerializeField] public float TiempoTotal = 0; //Tiempo acumulado de varios días
-    [SerializeField] public float TiempoTotalDiario = 0; //Tiempo total del día
-    [SerializeField] public float TiempoPorAdquirir = 0; //Tiempo total de
+    [SerializeField] public float TiempoTotalAcumulado = 0; //Tiempo acumulado de varios días
+    [SerializeField] public float TiempoTotalProducidoHoy = 0; //Tiempo total de exclusivamente lo mostrado en el pomodoro
+    [SerializeField] public float TiempoAcumuladoHoy = 0; //Tiempo total del día
 
 
-    public float ProgresoTotalMetaPor
+    public float ProgresoTotalMetaDiarioPor
     {
         get
         {
-            float value = TiempoTotalDiario / GestorMetas.Instance.GetMetaSuperaciónValor() * 100f;
+            float value = TiempoTotalProducidoHoy / GestorMetas.Instance.GetMetaSuperaciónValor() * 100f;
             if (value < 0f)
             {
                 return 0f;
@@ -82,10 +83,21 @@ public class Gamificacion : MonoBehaviour
         Instance = this;
         PomodoroSistema.TemposTerminado += AcumularTiempo;
         PomodoroSistema.TemposTerminado += AumentarProgresoDiarioTiempo;
-        PomodoroSistema.PomodoroTerminado += RecibirAcumuladoTiempo;
+        //PomodoroSistema.PomodoroTerminado += RecibirAcumuladoTiempo;
 
         AsignarValoresPredeterminadosPuntuacion();
 
+        if (ComprobarEsOtroDia())
+        {
+            RecibirAcumuladoTiempoHoy();
+            ReiniciarContadorTiempoProducidoHoy();
+
+        }
+    }
+
+    private void ReiniciarContadorTiempoProducidoHoy()
+    {
+        TiempoTotalProducidoHoy = 0;
     }
 
     private void Start()
@@ -98,51 +110,59 @@ public class Gamificacion : MonoBehaviour
     void AsignarValoresPredeterminadosPuntuacion()
     {
         // Verificar y asignar valores predeterminados para TiempoTotal
-        if (!PlayerPrefs.HasKey("TiempoTotal"))
+        if (!PlayerPrefs.HasKey("TiempoTotalAcumulado"))
         {
-            PlayerPrefs.SetFloat("TiempoTotal", 0f); // Valor predeterminado
+            PlayerPrefs.SetFloat("TiempoTotalAcumulado", 0f); // Valor predeterminado
         }
-        TiempoTotal = PlayerPrefs.GetFloat("TiempoTotal");
+        TiempoTotalAcumulado = PlayerPrefs.GetFloat("TiempoTotalAcumulado");
 
         // Verificar y asignar valores predeterminados para TiempoTotalDiario
-        if (!PlayerPrefs.HasKey("TiempoTotalDiario"))
+        if (!PlayerPrefs.HasKey("TiempoTotalProducidoHoy"))
         {
-            PlayerPrefs.SetFloat("TiempoTotalDiario", 0f); // Valor predeterminado
+            PlayerPrefs.SetFloat("TiempoTotalProducidoHoy", 0f); // Valor predeterminado
         }
-        TiempoTotalDiario = PlayerPrefs.GetFloat("TiempoTotalDiario");
+        TiempoTotalProducidoHoy = PlayerPrefs.GetFloat("TiempoTotalProducidoHoy");
 
         // Verificar y asignar valores predeterminados para TiempoPorAdquirir
-        if (!PlayerPrefs.HasKey("TiempoPorAdquirir"))
+        if (!PlayerPrefs.HasKey("TiempoAcumuladoHoy"))
         {
-            PlayerPrefs.SetFloat("TiempoPorAdquirir", 0f); // Valor predeterminado
+            PlayerPrefs.SetFloat("TiempoAcumuladoHoy", 0f); // Valor predeterminado
         }
-        TiempoPorAdquirir = PlayerPrefs.GetFloat("TiempoPorAdquirir");
+        TiempoAcumuladoHoy = PlayerPrefs.GetFloat("TiempoAcumuladoHoy");
     }
 
 
 
     private void AcumularTiempo(Tempos tempo)
     {
-        TiempoPorAdquirir += (float)(tempo.TiempoTotal.TotalSeconds) * (1f / 60f);
+        TiempoAcumuladoHoy += (float)(tempo.TiempoTotal.TotalSeconds) * (1f / 60f);
         GuardarTiempo();
     }
     private void AumentarProgresoDiarioTiempo(Tempos tempo)
     {
-        TiempoTotalDiario += (float)(tempo.TiempoTotal.TotalSeconds) * (1f / 60f);
+        TiempoTotalProducidoHoy += (float)(tempo.TiempoTotal.TotalSeconds) * (1f / 60f);
 
         GuardarTiempo();
     }
-    private void RecibirAcumuladoTiempo(Pomodoro pomodoro)
+    private void RecibirAcumuladoTiempoHoy()
     {
-        TiempoTotal += TiempoPorAdquirir;
-        TiempoPorAdquirir = 0;
+        TiempoTotalAcumulado += TiempoAcumuladoHoy;
+        TiempoAcumuladoHoy = 0;
         GuardarTiempo();
     }
     public bool TryConsumirTiempo(float cantidad)
     {
-        if (TiempoPorAdquirir - cantidad >= 0)
+        if (TiempoAcumuladoHoy - cantidad >= 0)
         {
-            TiempoPorAdquirir -= cantidad;
+            TiempoAcumuladoHoy -= cantidad;
+            return true;
+        }
+        else if (TiempoAcumuladoHoy + TiempoTotalAcumulado - cantidad >=0)
+        {
+            float exceso = cantidad - TiempoAcumuladoHoy;
+
+                TiempoAcumuladoHoy = 0;
+            TiempoTotalAcumulado -= exceso;
             return true;
         }
         GuardarTiempo();
@@ -151,9 +171,9 @@ public class Gamificacion : MonoBehaviour
 
     public void GuardarTiempo()
     {
-        PlayerPrefs.SetFloat("TiempoTotal", TiempoTotal);
-        PlayerPrefs.SetFloat("TiempoTotalDiario", TiempoTotalDiario);
-        PlayerPrefs.SetFloat("TiempoPorAdquirir", TiempoPorAdquirir);
+        PlayerPrefs.SetFloat("TiempoTotalAcumulado", TiempoTotalAcumulado);
+        PlayerPrefs.SetFloat("TiempoTotalProducidoHoy", TiempoTotalProducidoHoy);
+        PlayerPrefs.SetFloat("TiempoAcumuladoHoy", TiempoAcumuladoHoy);
     }
 
     void OnApplicationQuit()
@@ -164,6 +184,27 @@ public class Gamificacion : MonoBehaviour
     {
         GuardarTiempo();
     }
+
+
+    public bool ComprobarEsOtroDia()
+    {
+        //hecho para ejectuarse una vez
+        string ultimaActualizacionStr = PlayerPrefs.GetString("UltimaActualizacion", DateTime.Now.ToString());
+        DateTime ultimaActualizacion = DateTime.Parse(ultimaActualizacionStr);
+
+        if (ultimaActualizacion.Month == DateTime.Now.Month && ultimaActualizacion.Year == DateTime.Now.Year)
+        {
+            if (DateTime.Now.Day - ultimaActualizacion.Day == 0)
+            {
+                return false;
+            }
+
+        }
+
+        return true;
+
+    }
+
 }
 
 

@@ -17,10 +17,10 @@ public class GestorMetas : MonoBehaviour
     [HideInInspector] private float ValorMetaMinima;
     public MetaProgresoRecompensa MetaDeIntermedio;
     [HideInInspector] private float ValorMetaDeIntermedio;
-    [HideInInspector] private Vector3  IncrementoDeMetaIntermedio = new Vector3 (5, 15);
+    [HideInInspector] private Vector3 IncrementoDeMetaIntermedio = new Vector3(5, 15);
     public MetaProgresoRecompensa MetaDeSuperacion;
     [HideInInspector] private float ValorMetaDeSuperacion;
-    [HideInInspector] private Vector3  IncrementoDeMetaSuperacion = new Vector3 (10 , 30);
+    [HideInInspector] private Vector3 IncrementoDeMetaSuperacion = new Vector3(10, 30);
 
     public List<MarcaBasicaRecompensa> marcasSimples;
 
@@ -39,8 +39,6 @@ public class GestorMetas : MonoBehaviour
 
     private void Awake()
     {
-
-        contadorProgreso = GameObject.Find("Dominio Usuario Panel").GetComponentInChildren<ContadorProgreso>();
 
         Marca0Porciento = new MarcaBasicaRecompensa("Marca del mínimo esfuerzo", 1f);
         Marca10Porciento = new MarcaBasicaRecompensa("Marca del 10%", 10f);
@@ -64,21 +62,29 @@ public class GestorMetas : MonoBehaviour
             return;
         }
         Instance = this;
+
+
+
         DontDestroyOnLoad(gameObject); // Opcional: persiste entre escenas
+
+        if (ComprobarEsOtroDia())
+        {
+            StartCoroutine(EsperarParaIniciarGeneraciónDeMetas());
+        }
     }
 
     private void Start() //es muy probableque haya un error, ya que los motivadores se implementan en el sistema ambién en el start
     {
-        
 
-        StartCoroutine(EsperarParaIniciarGeneraciónDeMetas());
+     
+
     }
 
     public void RegenerarMetasDiarias()
     {
 
 
-        if(EstadisticasManager.Instance.getCaracteresMotivadoresEnSistema().Count != 0)
+        if (EstadisticasManager.Instance.getCaracteresMotivadoresEnSistema().Count != 0)
         {
             TotalMinutosDeExigencias = 0;
             foreach (Dinosaurio motivador in EstadisticasManager.Instance.getCaracteresMotivadoresEnSistema())
@@ -114,13 +120,42 @@ public class GestorMetas : MonoBehaviour
 
     }
 
+    public MetaProgresoRecompensa GetMetaPorTipo(TipoMeta tipoMeta)
+    {
+        foreach (MetaProgresoRecompensa MetaRecompensa in new MetaProgresoRecompensa[] { GestorMetas.Instance.MetaMinima, GestorMetas.Instance.MetaDeIntermedio, GestorMetas.Instance.MetaDeSuperacion })
+        {
+            if (MetaRecompensa.tiposMetas == tipoMeta) { return MetaRecompensa; }
+        }
+
+        return null;
+    }
+
+    public bool ComprobarEsOtroDia()
+    {
+        //hecho para ejectuarse una vez
+        string ultimaActualizacionStr = PlayerPrefs.GetString("UltimaActualizacion", DateTime.Now.ToString());
+        DateTime ultimaActualizacion = DateTime.Parse(ultimaActualizacionStr);
+
+        if (ultimaActualizacion.Month == DateTime.Now.Month && ultimaActualizacion.Year == DateTime.Now.Year)
+        {
+            if (DateTime.Now.Day - ultimaActualizacion.Day == 0)
+            {
+                return false;
+            }
+
+        }
+
+        return true;
+
+    }
+
     public float GetMetaMinimaPor()
     {
-        return (ValorMetaMinima/ValorMetaDeSuperacion)*100;
+        return (ValorMetaMinima / ValorMetaDeSuperacion) * 100;
     }
     public float GetMetaDeIntermedioPor()
     {
-        return (ValorMetaDeIntermedio/ValorMetaDeSuperacion)*100;
+        return (ValorMetaDeIntermedio / ValorMetaDeSuperacion) * 100;
     }
     public float GetMetaDeSuperacionPor()
     {
@@ -132,13 +167,13 @@ public class GestorMetas : MonoBehaviour
         return ValorMetaDeSuperacion;
     }
 
-    public ContadorProgreso contadorProgreso;
-   
+
+
 
     public IEnumerator EsperarParaIniciarGeneraciónDeMetas()
     {
         // Espera hasta que el objeto requerido no sea null y esté activo en la jerarquía.
-        while (EstadisticasManager.Instance == null&& contadorProgreso == null&&ConfirmarMotivadoresCompletamenteCargados())
+        while (EstadisticasManager.Instance == null && ContadorProgreso.Instance == null)
         {
             Debug.Log("Esperando a que carge los elemntos necesarios para generar metas");
             yield return null; // Espera un frame.
@@ -150,11 +185,11 @@ public class GestorMetas : MonoBehaviour
 
     public bool ConfirmarMotivadoresCompletamenteCargados()
     {
-        foreach(Dinosaurio motivador in EstadisticasManager.Instance.getCaracteresMotivadoresEnSistema())
+        foreach (Dinosaurio motivador in EstadisticasManager.Instance.getCaracteresMotivadoresEnSistema())
         {
-            foreach(Exigencia exigencia in motivador.exigencias)
+            foreach (Exigencia exigencia in motivador.exigencias)
             {
-                if(exigencia == null)
+                if (exigencia == null)
                 {
                     return false;
                 }
@@ -163,7 +198,7 @@ public class GestorMetas : MonoBehaviour
 
         return true;
     }
- 
+
 
 }
 
@@ -171,14 +206,15 @@ public class MarcaBasicaRecompensa
 {
     public string Nombre;
     protected bool Completado = false;
-    public float PuntuacionRequerida { get => (PorcentajeRequeridoMeta / 100) * GestorMetas.Instance.GetMetaSuperaciónValor(); set { } }
+    protected bool Reclamado = false;
+    public float PuntuacionRequerida { get => (PorcentajeRequeridoMeta / 100f) * GestorMetas.Instance.GetMetaSuperaciónValor(); set { } }
     protected float porcentajeRequeridoMeta;
     public float PorcentajeRequeridoMeta
     {
         get => porcentajeRequeridoMeta; set
         {
 
-            if (value >= 0 && value <= 100)
+            if (value >= 0 && value <= 100f)
             {
                 porcentajeRequeridoMeta = value;
             }
@@ -202,6 +238,7 @@ public class MarcaBasicaRecompensa
     {
 
         Debug.Log($"¡Marca {marca.Nombre} logarado!:" + marca.PorcentajeRequeridoMeta + "%");
+        SistemaRecompensa.Instancia.IntentoRuletaGanado();
     };
 
 
@@ -210,23 +247,68 @@ public class MarcaBasicaRecompensa
 
     }
 
-
-    public void MarcaCompletada(bool estado)
+    public void SetCompletado(bool estado)
     {
         Completado = estado;
-        if (Completado == true)
+    }
+
+    public void SetReclamado(bool estado)
+    {
+        Reclamado = estado;
+    }
+
+    public void ReclamarPremio()
+    {
+        if (Completado == true && Reclamado == false)
         {
+
             PremioPorMarcaLograda?.Invoke(this);
+            Reclamado = true;
+            ContadorProgreso.Instance.IntentarGuardarProgreso();
+
+        }
+        else
+        {
+            Debug.Log("El premio ya fue reclamado");
         }
 
     }
 
+    public bool GetCompletado()
+    {
+        return Completado;
+    }
+
+    public bool GetReclamado()
+    {
+        return Reclamado;
+    }
+
+
+    private bool ComprobarEsOtroDia()
+    {
+        //hecho para ejectuarse una vez
+        string ultimaActualizacionStr = PlayerPrefs.GetString("UltimaActualizacion", DateTime.Now.ToString());
+        DateTime ultimaActualizacion = DateTime.Parse(ultimaActualizacionStr);
+
+        if (ultimaActualizacion.Month == DateTime.Now.Month && ultimaActualizacion.Year == DateTime.Now.Year)
+        {
+            if (DateTime.Now.Day - ultimaActualizacion.Day == 0)
+            {
+                return false;
+            }
+
+        }
+
+        return true;
+
+    }
 }
 
 public enum TipoMeta { MetaMinima, MetaIntermedia, MetaDeSuperación }
 public class MetaProgresoRecompensa : MarcaBasicaRecompensa
 {
-    readonly TipoMeta tiposMetas;
+    public readonly TipoMeta tiposMetas;
 
     public MetaProgresoRecompensa(string nombre, float porcentajeRequerido, TipoMeta tipoMeta) : base(nombre, porcentajeRequerido)
     {

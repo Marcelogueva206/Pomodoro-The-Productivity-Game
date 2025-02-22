@@ -1,0 +1,1130 @@
+fileFormatVersion: 2
+guid: 489a157415a2e564995e1c20b77ab7ab
+TextureImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 12
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Adopcion- UI-Animaciones-Estrellas_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 115
+        width: 28
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0c0fc24ee9c1c1e49bd31c2449755162
+      internalID: 26505319
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Adopcion- UI-Animaciones-Estrellas_1
+      rect:
+        serializedVersion: 2
+        x: 28
+        y: 115
+        width: 28
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 82199fbb8aa507949b052a25a0574bc0
+      internalID: -58684593
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Adopcion- UI-Animaciones-Estrellas_2
+      rect:
+        serializedVersion: 2
+        x: 56
+        y: 115
+        width: 28
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 62ef45f30e4942d4f99f227d3fb99bd1
+      internalID: -1334746010
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Adopcion- UI-Animaciones-Estrellas_3
+      rect:
+        serializedVersion: 2
+        x: 84
+        y: 115
+        width: 28
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5d9489843b0c6224dac6548340f6d2e5
+      internalID: 589613423
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Adopcion- UI-Animaciones-Estrellas_4
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 115
+        width: 28
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1e286ae8b342ffc4c9602e58d2b486c0
+      internalID: -28805513
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Adopcion- UI-Animaciones-Estrellas_5
+      rect:
+        serializedVersion: 2
+        x: 140
+        y: 115
+        width: 28
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 680a1f6c98bcea046836dcd48506ad68
+      internalID: -1885585375
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Adopcion- UI-Animaciones-Estrellas_6
+      rect:
+        serializedVersion: 2
+        x: 168
+        y: 115
+        width: 28
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3cee2cdb085ea684db868d521e62abc4
+      internalID: 654747695
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Adopcion- UI-Animaciones-Estrellas_7
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 92
+        width: 28
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cf465dc8c0e543943adf454abd18fab7
+      internalID: -730171300
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Adopcion- UI-Animaciones-Estrellas_8
+      rect:
+        serializedVersion: 2
+        x: 28
+        y: 92
+        width: 28
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5fc7083cc7450964b8d63d8a35385ae1
+      internalID: -1184349207
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Adopcion- UI-Animaciones-Estrellas_9
+      rect:
+        serializedVersion: 2
+        x: 56
+        y: 92
+        width: 28
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c31c19fad7d15b242bd46669593b6ff1
+      internalID: -1275356330
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Adopcion- UI-Animaciones-Estrellas_10
+      rect:
+        serializedVersion: 2
+        x: 84
+        y: 92
+        width: 28
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ae669b82e8117c748963eceb9248c0ae
+      internalID: -989853763
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Adopcion- UI-Animaciones-Estrellas_11
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 92
+        width: 28
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5297e724abe6b054c911681b66d50d20
+      internalID: -1504087103
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Adopcion- UI-Animaciones-Estrellas_12
+      rect:
+        serializedVersion: 2
+        x: 140
+        y: 92
+        width: 28
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4333caa0f2db1d24195a7aed88f512aa
+      internalID: -1124313842
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Adopcion- UI-Animaciones-Estrellas_13
+      rect:
+        serializedVersion: 2
+        x: 168
+        y: 92
+        width: 28
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fb1ea3f3cf0a7fa4a936060e313ee0f8
+      internalID: -473224874
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Adopcion- UI-Animaciones-Estrellas_14
+      rect:
+        serializedVersion: 2
+        x: 196
+        y: 92
+        width: 28
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6226106ed03f36d479969b09a69ff269
+      internalID: -1975865286
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Adopcion- UI-Animaciones-Estrellas_15
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 92
+        width: 28
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0682802eefb063f44b7d766dcf19ef4e
+      internalID: -1662315914
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Adopcion- UI-Animaciones-Estrellas_16
+      rect:
+        serializedVersion: 2
+        x: 252
+        y: 92
+        width: 28
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9b2aa76c5a1734b45964af03755489c5
+      internalID: -441862906
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Adopcion- UI-Animaciones-Estrellas_17
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 69
+        width: 28
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7863b26eaf932134d83991567460cf81
+      internalID: -812153881
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Adopcion- UI-Animaciones-Estrellas_18
+      rect:
+        serializedVersion: 2
+        x: 28
+        y: 69
+        width: 28
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cacbe9dc987e8a7448d850ff11c6e418
+      internalID: -810656096
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Adopcion- UI-Animaciones-Estrellas_19
+      rect:
+        serializedVersion: 2
+        x: 56
+        y: 69
+        width: 28
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e8377573299092d45bb229f9f9292b31
+      internalID: -1632802446
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Adopcion- UI-Animaciones-Estrellas_20
+      rect:
+        serializedVersion: 2
+        x: 84
+        y: 69
+        width: 28
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e9752b8729cb57b45a0f180652f021bb
+      internalID: 1875029768
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Adopcion- UI-Animaciones-Estrellas_21
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 69
+        width: 28
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: db8abdd9b39b9f443a75da3d0a56b9d4
+      internalID: 386280549
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Adopcion- UI-Animaciones-Estrellas_22
+      rect:
+        serializedVersion: 2
+        x: 140
+        y: 69
+        width: 28
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2cac489f9eabf1f43af6db7fea5a7265
+      internalID: -1947744630
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Adopcion- UI-Animaciones-Estrellas_23
+      rect:
+        serializedVersion: 2
+        x: 168
+        y: 69
+        width: 28
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 45e62a01ecf7d044fbf445aa0e6d1663
+      internalID: 1560591865
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Adopcion- UI-Animaciones-Estrellas_24
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 46
+        width: 28
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e971567a81398e84b98d02f93fb0ad28
+      internalID: -1492013558
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Adopcion- UI-Animaciones-Estrellas_25
+      rect:
+        serializedVersion: 2
+        x: 28
+        y: 46
+        width: 28
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 15ac543418bf18b47a4fd78c0ce90eab
+      internalID: 836286223
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Adopcion- UI-Animaciones-Estrellas_26
+      rect:
+        serializedVersion: 2
+        x: 56
+        y: 46
+        width: 28
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 46440f7f02946d94e82b1824f0784eb8
+      internalID: -1111999955
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Adopcion- UI-Animaciones-Estrellas_27
+      rect:
+        serializedVersion: 2
+        x: 84
+        y: 46
+        width: 28
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ad30b4df06e1d9a4a84588883725ba52
+      internalID: 1958003763
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Adopcion- UI-Animaciones-Estrellas_28
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 46
+        width: 28
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b4e2e0f866f50214fa08b015c4a41e38
+      internalID: 1888527294
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Adopcion- UI-Animaciones-Estrellas_29
+      rect:
+        serializedVersion: 2
+        x: 140
+        y: 46
+        width: 28
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 925ed063d3f6e8744bf9536756db9293
+      internalID: -268179351
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Adopcion- UI-Animaciones-Estrellas_30
+      rect:
+        serializedVersion: 2
+        x: 168
+        y: 46
+        width: 28
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8faf7922dd97e464c96441011ed17ad2
+      internalID: -1428512104
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Adopcion- UI-Animaciones-Estrellas_31
+      rect:
+        serializedVersion: 2
+        x: 196
+        y: 46
+        width: 28
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 11ba37244d383274f91a77cf30bf5e21
+      internalID: -476131615
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Adopcion- UI-Animaciones-Estrellas_32
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 46
+        width: 28
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a0ad3240778b430499b1305ccc30a512
+      internalID: -677231740
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Adopcion- UI-Animaciones-Estrellas_33
+      rect:
+        serializedVersion: 2
+        x: 252
+        y: 46
+        width: 28
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 03ec53f6345a3ef4ba89fb8f560a0a24
+      internalID: -2088842263
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Adopcion- UI-Animaciones-Estrellas_34
+      rect:
+        serializedVersion: 2
+        x: 280
+        y: 46
+        width: 28
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6278963eab6026543a69988cf122213e
+      internalID: -1123865820
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Adopcion- UI-Animaciones-Estrellas_35
+      rect:
+        serializedVersion: 2
+        x: 308
+        y: 46
+        width: 28
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 562ea6fd6d35a2a4a888d361aaee28be
+      internalID: 755240999
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Adopcion- UI-Animaciones-Estrellas_36
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 46
+        width: 28
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6d0aa20026a8f6943990e0c9db82f600
+      internalID: -294789714
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Adopcion- UI-Animaciones-Estrellas_37
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 23
+        width: 28
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8e70cf9d90f53154e90a825c8ed62874
+      internalID: 2073859807
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Adopcion- UI-Animaciones-Estrellas_38
+      rect:
+        serializedVersion: 2
+        x: 28
+        y: 23
+        width: 28
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8138a5de66343194e9b8728111aae74d
+      internalID: 248213865
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Adopcion- UI-Animaciones-Estrellas_39
+      rect:
+        serializedVersion: 2
+        x: 56
+        y: 23
+        width: 28
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e4b7ef9264518c640aac64efa7548e9b
+      internalID: 1945123178
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Adopcion- UI-Animaciones-Estrellas_40
+      rect:
+        serializedVersion: 2
+        x: 84
+        y: 23
+        width: 28
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 48af9dbb30297dd4d973fb264c9a58a6
+      internalID: 1613859994
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Adopcion- UI-Animaciones-Estrellas_41
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 23
+        width: 28
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 098de2406b93b67429ff5c243cb15116
+      internalID: -25000497
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Adopcion- UI-Animaciones-Estrellas_42
+      rect:
+        serializedVersion: 2
+        x: 140
+        y: 23
+        width: 28
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b1b06e0c345db1843a90e4a11a998f6b
+      internalID: -179550174
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Adopcion- UI-Animaciones-Estrellas_43
+      rect:
+        serializedVersion: 2
+        x: 168
+        y: 23
+        width: 28
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 73e76e75cbbe3324885fbaf513460b1d
+      internalID: -709256938
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Adopcion- UI-Animaciones-Estrellas_44
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 28
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3c50292d66fe8b046aa2cba159c6ecbd
+      internalID: -1763271366
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    nameFileIdTable:
+      Adopcion- UI-Animaciones-Estrellas_0: 26505319
+      Adopcion- UI-Animaciones-Estrellas_1: -58684593
+      Adopcion- UI-Animaciones-Estrellas_10: -989853763
+      Adopcion- UI-Animaciones-Estrellas_11: -1504087103
+      Adopcion- UI-Animaciones-Estrellas_12: -1124313842
+      Adopcion- UI-Animaciones-Estrellas_13: -473224874
+      Adopcion- UI-Animaciones-Estrellas_14: -1975865286
+      Adopcion- UI-Animaciones-Estrellas_15: -1662315914
+      Adopcion- UI-Animaciones-Estrellas_16: -441862906
+      Adopcion- UI-Animaciones-Estrellas_17: -812153881
+      Adopcion- UI-Animaciones-Estrellas_18: -810656096
+      Adopcion- UI-Animaciones-Estrellas_19: -1632802446
+      Adopcion- UI-Animaciones-Estrellas_2: -1334746010
+      Adopcion- UI-Animaciones-Estrellas_20: 1875029768
+      Adopcion- UI-Animaciones-Estrellas_21: 386280549
+      Adopcion- UI-Animaciones-Estrellas_22: -1947744630
+      Adopcion- UI-Animaciones-Estrellas_23: 1560591865
+      Adopcion- UI-Animaciones-Estrellas_24: -1492013558
+      Adopcion- UI-Animaciones-Estrellas_25: 836286223
+      Adopcion- UI-Animaciones-Estrellas_26: -1111999955
+      Adopcion- UI-Animaciones-Estrellas_27: 1958003763
+      Adopcion- UI-Animaciones-Estrellas_28: 1888527294
+      Adopcion- UI-Animaciones-Estrellas_29: -268179351
+      Adopcion- UI-Animaciones-Estrellas_3: 589613423
+      Adopcion- UI-Animaciones-Estrellas_30: -1428512104
+      Adopcion- UI-Animaciones-Estrellas_31: -476131615
+      Adopcion- UI-Animaciones-Estrellas_32: -677231740
+      Adopcion- UI-Animaciones-Estrellas_33: -2088842263
+      Adopcion- UI-Animaciones-Estrellas_34: -1123865820
+      Adopcion- UI-Animaciones-Estrellas_35: 755240999
+      Adopcion- UI-Animaciones-Estrellas_36: -294789714
+      Adopcion- UI-Animaciones-Estrellas_37: 2073859807
+      Adopcion- UI-Animaciones-Estrellas_38: 248213865
+      Adopcion- UI-Animaciones-Estrellas_39: 1945123178
+      Adopcion- UI-Animaciones-Estrellas_4: -28805513
+      Adopcion- UI-Animaciones-Estrellas_40: 1613859994
+      Adopcion- UI-Animaciones-Estrellas_41: -25000497
+      Adopcion- UI-Animaciones-Estrellas_42: -179550174
+      Adopcion- UI-Animaciones-Estrellas_43: -709256938
+      Adopcion- UI-Animaciones-Estrellas_44: -1763271366
+      Adopcion- UI-Animaciones-Estrellas_5: -1885585375
+      Adopcion- UI-Animaciones-Estrellas_6: 654747695
+      Adopcion- UI-Animaciones-Estrellas_7: -730171300
+      Adopcion- UI-Animaciones-Estrellas_8: -1184349207
+      Adopcion- UI-Animaciones-Estrellas_9: -1275356330
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

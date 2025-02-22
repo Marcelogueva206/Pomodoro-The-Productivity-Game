@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 8803499654888896223}
   - component: {fileID: 6607447035694008668}
   - component: {fileID: 2452606131704887576}
+  - component: {fileID: 3739392490070133228}
   m_Layer: 0
   m_Name: Comida Mediana
   m_TagString: Untagged
@@ -28,7 +29,7 @@ Transform:
   m_GameObject: {fileID: 1295891482649997070}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 328.9, y: 483.19028, z: 0}
+  m_LocalPosition: {x: 328.9, y: 483.19028, z: 1}
   m_LocalScale: {x: 4, y: 4, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -74,8 +75,8 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 16dd36906a5bc6a40a7872948b159454, type: 3}
+  m_SortingOrder: 3
+  m_Sprite: {fileID: 922274315, guid: a9ac4b69bc336454589d7192253ceb9e, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -100,6 +101,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   satisfacionTiempo: 3
   TiposComida: 0
+  tiempoEspera: 10
 --- !u!70 &2452606131704887576
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -135,3 +137,24 @@ CapsuleCollider2D:
   m_Offset: {x: 0.02, y: -0.03}
   m_Size: {x: 0.4, y: 0.4}
   m_Direction: 0
+--- !u!95 &3739392490070133228
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1295891482649997070}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 20060ef6eb1371d49be8b139a980fd06, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

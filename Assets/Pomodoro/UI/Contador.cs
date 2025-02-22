@@ -16,8 +16,6 @@ public class Contador : MonoBehaviour
     public static Contador contador;
     [SerializeField] private TextMeshProUGUI textoContador;
     [SerializeField] private TextMeshProUGUI textoTempoNombre;
-    [SerializeField] private TextMeshProUGUI textoCicloNombre;
-    [SerializeField] private TextMeshProUGUI textoPomodoroNombre;
     [SerializeField] private TextMeshProUGUI textoPuntuacionTempo;
     [SerializeField] public static float PuntuacionTempo = 0;
     [HideInInspector] private float _tiempoRestante;
@@ -27,7 +25,9 @@ public class Contador : MonoBehaviour
     [HideInInspector] private int _minutosRestante;
     [HideInInspector] private int _segundosRestante;
     [SerializeField] private GameObject barraProgreso;
-    [HideInInspector] private Slider slider;
+    [SerializeField] private GameObject BotonIniciar;
+    [SerializeField] private GameObject BotonPausar;
+    [HideInInspector] private Slider sliderTiempoRestante;
     private float TiempoRestante { get => _tiempoRestante; set => _tiempoRestante = (value > 0) ? value : 0; }
     private int HorasRestante { get => _horasRestante; set => _horasRestante = (value > 0) ? value : 0; }
     private int MinutosRestante { get => _minutosRestante; set => _minutosRestante = (value > 0) ? value : 0; }
@@ -49,7 +49,7 @@ public class Contador : MonoBehaviour
 
 
         AsignarContador(new TimeSpan(0, 10, 0));
-        slider = barraProgreso.GetComponent<Slider>();
+        sliderTiempoRestante = barraProgreso.GetComponent<Slider>();
         //PomodoroSistema.TemposIniciado += MostrarNombreTempoUI;
         //PomodoroSistema.CicloIniciado += MostrarNombreCicloUI;
         //PomodoroSistema.PomodoroIniciado += MostrarNombrePomodoroUI;
@@ -66,23 +66,7 @@ public class Contador : MonoBehaviour
 
     }
 
-    public void MostrarNombreCicloUI(Ciclo ciclo)
-    {
-        if (ciclo != null)
-        {
-            textoCicloNombre.text = ciclo.Nombre;
-        }
-
-    }
-
-    public void MostrarNombrePomodoroUI(Pomodoro pomodoro)
-    {
-        if (pomodoro != null)
-        {
-            textoPomodoroNombre.text = pomodoro.Nombre;
-        }
-
-    }
+  
 
 
 
@@ -95,7 +79,7 @@ public class Contador : MonoBehaviour
         SegundosRestanteStatic = Mathf.FloorToInt(TiempoRestanteStatic % 60);
 
         textoContador.text = string.Format("{0:00}:{1:00}:{2:00}", HorasRestanteStatic, MinutosRestanteStatic, SegundosRestanteStatic);
-        slider.value = TiempoRestanteStatic / TiempoTotalStatic;
+        sliderTiempoRestante.value = TiempoRestanteStatic / TiempoTotalStatic;
     }
 
     private void CargarTiempoRestante()
@@ -129,6 +113,8 @@ public class Contador : MonoBehaviour
     private void Start()
     {
         CambiarFaseContador(FasesContador.Inicio);
+
+        BotonPausar.SetActive(false);
 
     }
 
@@ -164,8 +150,6 @@ public class Contador : MonoBehaviour
         if (FaseActual == FasesContador.Inicio)
         {
             contador.MostrarNombreTempoUI(PomodoroSistema._tempoActual);
-            contador.MostrarNombreCicloUI(PomodoroSistema._cicloActual);
-            contador.MostrarNombrePomodoroUI(PomodoroSistema._pomodoroActual);
             ReiniciarTiempoContador();
         }
 
@@ -233,19 +217,27 @@ public class Contador : MonoBehaviour
         if (FasesContador.Inicio == FaseActual)
         {
             TempoIniciadoPorUsuario.Invoke(PomodoroSistema._tempoActual);
-
             SeInicioNuevoCiclo();
             SeinicioNuevoPomodoro();
 
             CambiarFaseContador(FasesContador.Progeso);
+
+            contador.BotonPausar.SetActive(true);
+            contador.BotonIniciar.SetActive(false);
         }
         else if (FasesContador.Detenido == FaseActual)
         {
             CambiarFaseContador(FasesContador.Progeso);
+
+            contador.BotonPausar.SetActive(true);
+            contador.BotonIniciar.SetActive(false);
         }
         else if (FasesContador.Progeso == FaseActual)
         {
             CambiarFaseContador(FasesContador.Detenido);
+
+            contador.BotonPausar.SetActive(false);
+            contador.BotonIniciar.SetActive(true);
         }
 
     }
@@ -284,6 +276,8 @@ public class Contador : MonoBehaviour
         }
     }
 
+
+
     public static void ReiniciarContador()
     {
         if (FasesContador.Inicio != FaseActual)
@@ -292,6 +286,23 @@ public class Contador : MonoBehaviour
         }
 
         ReiniciarContador();
+    }
+
+    public static void IniciarEnfoqueCorto()
+    {
+        PomodoroSistema.ActualizarNuevoPomodoro(Pomodoro.PomodorosTipos.corto);
+        CambiarFaseContador(FasesContador.Inicio);
+    }
+
+    public static void IniciarEnfoqueMediano()
+    {
+        PomodoroSistema.ActualizarNuevoPomodoro(Pomodoro.PomodorosTipos.mediano);
+             CambiarFaseContador(FasesContador.Inicio);
+    }
+    public static void IniciarEnfoqueLargo()
+    {
+        PomodoroSistema.ActualizarNuevoPomodoro(Pomodoro.PomodorosTipos.largo);
+        CambiarFaseContador(FasesContador.Inicio);
     }
 
 

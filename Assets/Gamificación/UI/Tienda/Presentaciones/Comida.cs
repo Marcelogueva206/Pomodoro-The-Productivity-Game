@@ -12,6 +12,8 @@ public class Comida : MonoBehaviour
 
     [SerializeField] private float satisfacionTiempo = 1f;
     [SerializeField] private TiposComidas TiposComida;
+    [SerializeField]  private float tiempoEspera = 6f;
+    private bool puedeSerConsumido = false; // Controla si el objeto puede ser consumido
     /// <summary>
     /// 6 minutos => 100 pp
     /// 1 hora productiva ==> 1000 pp
@@ -27,6 +29,21 @@ public class Comida : MonoBehaviour
 
     private bool isDragging = false;  // Para saber si el objeto está siendo arrastrado
 
+    void Start()
+    {
+        // Inicia la corutina que permite consumir la comida después de 5 segundos
+        StartCoroutine(HabilitarConsumo());
+    }
+
+    private IEnumerator HabilitarConsumo()
+    {
+        // Espera 5 segundos
+        yield return new WaitForSeconds(tiempoEspera);
+
+        // Después de 5 segundos, el objeto puede ser consumido
+        puedeSerConsumido = true;
+    }
+
     void Update()
     {
         // Si el objeto está siendo arrastrado, actualizamos su posición
@@ -34,7 +51,7 @@ public class Comida : MonoBehaviour
         {
             // Convertimos la posición del mouse en coordenadas del mundo 2D
             Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            mousePosition.z = 0;  // Asegurarse de que no cambie el eje Z
+            mousePosition.z = 1;  // Asegurarse de que no cambie el eje Z
 
             // Movemos el objeto a la posición del mouse
             transform.position = mousePosition;
@@ -83,26 +100,35 @@ public class Comida : MonoBehaviour
     //}
 
     // 1 minuto aumenta 1% el estado de animo
-    private void OnTriggerEnter2D(Collider2D collision)
+
+  
+    private void OnTriggerStay2D(Collider2D collision)
     {
-        if (collision.gameObject.CompareTag("Caracter Motivador"))
+
+        if (puedeSerConsumido)
         {
-            Dinosaurio consumidor = collision.gameObject.GetComponent<Dinosaurio>();
-            consumidor.AlterarEmocionalidad(satisfacionTiempo);
-
-
-            foreach (ExigenciaTiempoProductivo exigencia in consumidor.exigencias)
+            if (collision.gameObject.CompareTag("Caracter Motivador"))
             {
-                if (TiposComida == exigencia.tiposComidaRequerida||exigencia.tiposComidaRequerida == TiposComidas.cualquierTipo)
+                Dinosaurio consumidor = collision.gameObject.GetComponent<Dinosaurio>();
+                consumidor.AlterarEmocionalidad(satisfacionTiempo);
+
+
+                foreach (ExigenciaTiempoProductivo exigencia in consumidor.exigencias)
                 {
-                    exigencia.ProgresoMeta += satisfacionTiempo;
+                    if (TiposComida == exigencia.tiposComidaRequerida || exigencia.tiposComidaRequerida == TiposComidas.cualquierTipo)
+                    {
+                        exigencia.ProgresoMeta += satisfacionTiempo;
+                    }
                 }
+
+
+                Destroy(gameObject);
+
             }
 
-
-            Destroy(gameObject);
-
         }
+
+           
     }
 
 }

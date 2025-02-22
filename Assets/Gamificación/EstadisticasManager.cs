@@ -3,6 +3,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
+using UnityEngine.UIElements;
+
 
 public class EstadisticasManager : MonoBehaviour
 {
@@ -19,6 +22,68 @@ public class EstadisticasManager : MonoBehaviour
     {
         return CaracteresMotivadoresEnSistema;
     }
+
+   public TMP_Text textoRangoPerteneciente;
+   public TMP_Text textoTiempoPromedioProductivo;
+    public UnityEngine.UI.Image medallaImagenUI;
+
+
+    [Header("Imagenes de las medallas")]
+    public Sprite medallaPlatino;
+    public Sprite medallaOro;
+    public Sprite medallaPlata;
+    public Sprite medallaBronce;
+    public Sprite SinMedalla;
+
+    public void ActualizarTextoRangoYPrimedioUI()
+    {
+        TimeSpan promedioActual = TimeSpan.FromHours(FindObjectOfType<ProductividadManager>().CalcularPromedio());
+
+        float RangoPorcentaje = CalcularTop((float)promedioActual.TotalHours);
+        string RangoTexto = "Top " + RangoPorcentaje.ToString("F1") + "%";
+
+        // Determinar el rango de medalla basado en el promedio diario
+        if (RangoPorcentaje <= 5f)
+        {
+            medallaImagenUI.sprite = medallaPlatino;// Platino
+        }
+        else if (RangoPorcentaje <= 10f)
+        {
+            medallaImagenUI.sprite = medallaOro;// Oro
+        }
+        else if (RangoPorcentaje <= 30f)
+        {
+            medallaImagenUI.sprite = medallaPlata;// Plata
+        }
+        else if (RangoPorcentaje <= 50f)
+        {
+            medallaImagenUI.sprite = medallaBronce;
+        }
+        else
+        {
+            medallaImagenUI.sprite = SinMedalla;
+        }
+
+        // Mostrar la medalla y el promedio diario en el texto de rango
+        textoRangoPerteneciente.text = RangoTexto;
+        textoTiempoPromedioProductivo.text = FormatearTiempo(promedioActual);
+    }
+
+    private float CalcularTop(float horas)
+    {
+        return 100f * Mathf.Exp(-0.6f * horas);
+    }
+
+    public static string FormatearTiempo(TimeSpan tiempo)
+    {
+        int horas = tiempo.Hours;
+        int minutos = tiempo.Minutes;
+
+        return $"{horas} hora{(horas != 1 ? "s" : "")} con {minutos} minuto{(minutos != 1 ? "s" : "")}";
+    }
+
+
+
 
 
     public void AñadirCaracterMotivadorAlSistema(Dinosaurio motivador)
@@ -75,6 +140,24 @@ public class EstadisticasManager : MonoBehaviour
         //Debug.Log("Cnaitdad de motivadores:"+PlayerPrefs.GetInt(keyCantidadMotivadores));
         CargarInformaciónMotivadores();
         PlayerPrefs.Save(); // Asegura que los datos se guarden en disco
+
+        // Ejemplo de uso:
+        // Registrar 1 hora productiva para hoy
+        GuardarTiempoTotalProductivoPorVida();
+
+        // Registrar 3 horas productivas para otro día
+        GuardarTiempoTotalProductivoPorVida();
+
+        // Obtener el promedio como TimeSpan
+        //TimeSpan promedio = ObtenerPromedioProductividad();
+        //Debug.Log("Promedio de tiempo productivo: " + promedio);
+
+        // Reiniciar datos si es necesario
+        // ReiniciarDatosProductividad();
+
+
+        GuardarTiempoTotalProductivoPorVida();
+        
     }
 
 
@@ -97,18 +180,90 @@ public class EstadisticasManager : MonoBehaviour
         #region ExtraB
         DontDestroyOnLoad(gameObject); //evita que se destruya entre otras escenas 
         #endregion
+
+
+        // Recuperar el tiempo total en horas desde PlayerPrefs
+        CargarPromedioProductivoPorVida();
+    }
+
+    private void CargarPromedioProductivoPorVida()
+    {
+        float tiempoTotal = PlayerPrefs.GetFloat(TotalTiempoKey, 0f);
+
+        // Crear un TimeSpan a partir del tiempo total en horas
+        TiempoTotalProductivoPorVida = TimeSpan.FromSeconds((double)tiempoTotal);
+
+        DiasEnTotalPorVida = PlayerPrefs.GetInt(DiasKey);
+
+        if (ComprobarEsOtroDia())
+        {
+            DiasEnTotalPorVida++;
+        }
     }
 
     [HideInInspector] public static TimeSpan TiempoTempoProductivoPromedio = new TimeSpan(0, 15, 0);
-    [HideInInspector] public static TimeSpan TiempoTotalProductivoDiarioPromedio = new TimeSpan(4, 0, 0);
+
+
+    [HideInInspector] public static TimeSpan TiempoTotalProductivoPorVida = new TimeSpan(0, 0, 0);
+    private const string TotalTiempoKey = "TotalTiempoProductividad"; // Clave para el total de tiempo en PlayerPrefs
+    public int DiasEnTotalPorVida = 0;
+    private const string DiasKey = "DiasProductividad"; // Clave para la cantidad de días registrados en PlayerPrefs
+
+
+
     [HideInInspector] public static TimeSpan TiempoTotalProductivoHoy = new TimeSpan(0, 0, 0);
+
+
+    public void GuardarTiempoTotalProductivoPorVida()
+    {
+        // Obtener los valores actuales guardados
+        double totalTiempo = TiempoTotalProductivoPorVida.Seconds;
+        int diasRegistrados = DiasEnTotalPorVida;
+
+      
+
+        // Guardar los valores actualizados
+        PlayerPrefs.SetFloat(TotalTiempoKey, (float)totalTiempo);
+        PlayerPrefs.SetInt(DiasKey, diasRegistrados);
+        PlayerPrefs.Save();
+    }
+
+
+
+    public TimeSpan ObtenerPromedioProductividad()
+    {
+        double totalTiempo = PlayerPrefs.GetFloat(TotalTiempoKey, 0f);
+        int diasRegistrados = PlayerPrefs.GetInt(DiasKey, 0);
+
+        if (diasRegistrados == 0)
+            return TimeSpan.Zero; // Si no hay días registrados, el promedio es 0
+
+        double promedioHoras = totalTiempo / diasRegistrados;
+        return TimeSpan.FromHours(promedioHoras);
+    }
+
+
+
+
+
+
+
+
+
+
+
 
 
     public void RegistrarTempoTerminado(Tempos tempoTerminado)
     {
-        TiempoTempoProductivoPromedio = (TiempoTempoProductivoPromedio + tempoTerminado.TiempoTotal) / 2;
-        TiempoTotalProductivoHoy += tempoTerminado.TiempoTotal;
-
+        if(tempoTerminado.tiposTempos == TiposTempos.productivo)
+        {
+            TiempoTempoProductivoPromedio = (TiempoTempoProductivoPromedio + tempoTerminado.TiempoTotal) / 2f;
+            TiempoTotalProductivoHoy += tempoTerminado.TiempoTotal;
+            TiempoTotalProductivoPorVida += tempoTerminado.TiempoTotal;
+            FindObjectOfType<ProductividadManager>().RegistrarHoras(tempoTerminado.TiempoTotal.TotalHours);
+        } 
+        ActualizarTextoRangoYPrimedioUI();
 
 
     }
@@ -117,6 +272,7 @@ public class EstadisticasManager : MonoBehaviour
     {
         // Desuscribir el evento para evitar referencias huérfanas.  
         PomodoroSistema.TemposTerminado -= RegistrarTempoTerminado;
+  
     }
 
 
@@ -202,51 +358,61 @@ public class EstadisticasManager : MonoBehaviour
                         componenteDinosaurioNuevo.Nombre = motivadorCargado.Nombre;
                         componenteDinosaurioNuevo.Emocionalidad = motivadorCargado.Emocionalidad;
                         componenteDinosaurioNuevo.gameObject.transform.position = motivadorCargado.position;
-                    }           
-                    List<Exigencia> ExigenciasDinosaurioNuevo = componenteDinosaurioNuevo.exigencias;
-
-                    foreach (ExigenciaData exigenciaCargada in motivadorCargado.Exigencias) // para cada exigencia guradado en el motivador guardado en archivos
-                    {
-                        switch (exigenciaCargada.dificultadValor) // comprobamos que tipo de dificultad tiene para saignarle a su respectivo exigencia del nuevo motivador cargado
-                        {
-
-                            case (int)Exigencia.Dificultad.facil:
-                                if (exigenciaCargada is ExigenciaTiempoProductivoData) // la exigencia guardad esde tipo tiempo productivo?
-                                {
-                                    ExigenciaTiempoProductivo ExigenciasTiempoProductivoDinosaurioNuevo = ExigenciasDinosaurioNuevo[0] as ExigenciaTiempoProductivo; //convertimos la exigencia del dinosaurio nuevo en una exigencia especificamente del tipo de tiempo productivo
-                                    ExigenciaTiempoProductivoData ExigenciaCargadaTiempoProductivo = exigenciaCargada as ExigenciaTiempoProductivoData;
-                                    ExigenciasTiempoProductivoDinosaurioNuevo.dificultad = (Exigencia.Dificultad)ExigenciaCargadaTiempoProductivo.dificultadValor;
-                                    ExigenciasTiempoProductivoDinosaurioNuevo.metaTiempoProductivo = ExigenciaCargadaTiempoProductivo.MetaTiempoProductivo;
-                                    ExigenciasTiempoProductivoDinosaurioNuevo.progresoMeta = ExigenciaCargadaTiempoProductivo.ProgresoMeta;
-                                    
-                                }           
-
-                                break;
-                            case (int)Exigencia.Dificultad.moderado:
-                                if (exigenciaCargada is ExigenciaTiempoProductivoData) // la exigencia guardad esde tipo tiempo productivo?
-                                {
-                                    ExigenciaTiempoProductivo ExigenciasTiempoProductivoDinosaurioNuevo = ExigenciasDinosaurioNuevo[1] as ExigenciaTiempoProductivo; //convertimos la exigencia del dinosaurio nuevo en una exigencia especificamente del tipo de tiempo productivo
-                                    ExigenciaTiempoProductivoData ExigenciaCargadaTiempoProductivo = exigenciaCargada as ExigenciaTiempoProductivoData;
-                                    ExigenciasTiempoProductivoDinosaurioNuevo.dificultad = (Exigencia.Dificultad)ExigenciaCargadaTiempoProductivo.dificultadValor;
-                                    ExigenciasTiempoProductivoDinosaurioNuevo.metaTiempoProductivo = ExigenciaCargadaTiempoProductivo.MetaTiempoProductivo;
-                                    ExigenciasTiempoProductivoDinosaurioNuevo.progresoMeta = ExigenciaCargadaTiempoProductivo.ProgresoMeta;
-                                }
-                                break;
-                            case (int)Exigencia.Dificultad.dificil:
-                                if (exigenciaCargada is ExigenciaTiempoProductivoData) // la exigencia guardad esde tipo tiempo productivo?
-                                {
-                                    ExigenciaTiempoProductivo ExigenciasTiempoProductivoDinosaurioNuevo = ExigenciasDinosaurioNuevo[2] as ExigenciaTiempoProductivo; //convertimos la exigencia del dinosaurio nuevo en una exigencia especificamente del tipo de tiempo productivo
-                                    ExigenciaTiempoProductivoData ExigenciaCargadaTiempoProductivo = exigenciaCargada as ExigenciaTiempoProductivoData;
-                                    ExigenciasTiempoProductivoDinosaurioNuevo.dificultad = (Exigencia.Dificultad)ExigenciaCargadaTiempoProductivo.dificultadValor;
-                                    ExigenciasTiempoProductivoDinosaurioNuevo.metaTiempoProductivo = ExigenciaCargadaTiempoProductivo.MetaTiempoProductivo;
-                                    ExigenciasTiempoProductivoDinosaurioNuevo.progresoMeta = ExigenciaCargadaTiempoProductivo.ProgresoMeta;
-                                }
-                                break;
-
-
-
-                        }
                     }
+
+                    if (ComprobarEsOtroDia()) //comprubea si es otro día para no cargarlo. caso contrario no debería cargar los respectivos datos
+                    {
+                        componenteDinosaurioNuevo.ReiniciarExigencias();
+
+                    }else
+                    {
+                        List<Exigencia> ExigenciasDinosaurioNuevo = componenteDinosaurioNuevo.exigencias;
+
+                        foreach (ExigenciaData exigenciaCargada in motivadorCargado.Exigencias) // para cada exigencia guradado en el motivador guardado en archivos
+                        {
+                            switch (exigenciaCargada.dificultadValor) // comprobamos que tipo de dificultad tiene para saignarle a su respectivo exigencia del nuevo motivador cargado
+                            {
+
+                                case (int)Exigencia.Dificultad.facil:
+                                    if (exigenciaCargada is ExigenciaTiempoProductivoData) // la exigencia guardad esde tipo tiempo productivo?
+                                    {
+                                        ExigenciaTiempoProductivo ExigenciasTiempoProductivoDinosaurioNuevo = ExigenciasDinosaurioNuevo[0] as ExigenciaTiempoProductivo; //convertimos la exigencia del dinosaurio nuevo en una exigencia especificamente del tipo de tiempo productivo
+                                        ExigenciaTiempoProductivoData ExigenciaCargadaTiempoProductivo = exigenciaCargada as ExigenciaTiempoProductivoData;
+                                        ExigenciasTiempoProductivoDinosaurioNuevo.dificultad = (Exigencia.Dificultad)ExigenciaCargadaTiempoProductivo.dificultadValor;
+                                        ExigenciasTiempoProductivoDinosaurioNuevo.metaTiempoProductivo = ExigenciaCargadaTiempoProductivo.MetaTiempoProductivo;
+                                        ExigenciasTiempoProductivoDinosaurioNuevo.progresoMeta = ExigenciaCargadaTiempoProductivo.ProgresoMeta;
+
+                                    }
+
+                                    break;
+                                case (int)Exigencia.Dificultad.moderado:
+                                    if (exigenciaCargada is ExigenciaTiempoProductivoData) // la exigencia guardad esde tipo tiempo productivo?
+                                    {
+                                        ExigenciaTiempoProductivo ExigenciasTiempoProductivoDinosaurioNuevo = ExigenciasDinosaurioNuevo[1] as ExigenciaTiempoProductivo; //convertimos la exigencia del dinosaurio nuevo en una exigencia especificamente del tipo de tiempo productivo
+                                        ExigenciaTiempoProductivoData ExigenciaCargadaTiempoProductivo = exigenciaCargada as ExigenciaTiempoProductivoData;
+                                        ExigenciasTiempoProductivoDinosaurioNuevo.dificultad = (Exigencia.Dificultad)ExigenciaCargadaTiempoProductivo.dificultadValor;
+                                        ExigenciasTiempoProductivoDinosaurioNuevo.metaTiempoProductivo = ExigenciaCargadaTiempoProductivo.MetaTiempoProductivo;
+                                        ExigenciasTiempoProductivoDinosaurioNuevo.progresoMeta = ExigenciaCargadaTiempoProductivo.ProgresoMeta;
+                                    }
+                                    break;
+                                case (int)Exigencia.Dificultad.dificil:
+                                    if (exigenciaCargada is ExigenciaTiempoProductivoData) // la exigencia guardad esde tipo tiempo productivo?
+                                    {
+                                        ExigenciaTiempoProductivo ExigenciasTiempoProductivoDinosaurioNuevo = ExigenciasDinosaurioNuevo[2] as ExigenciaTiempoProductivo; //convertimos la exigencia del dinosaurio nuevo en una exigencia especificamente del tipo de tiempo productivo
+                                        ExigenciaTiempoProductivoData ExigenciaCargadaTiempoProductivo = exigenciaCargada as ExigenciaTiempoProductivoData;
+                                        ExigenciasTiempoProductivoDinosaurioNuevo.dificultad = (Exigencia.Dificultad)ExigenciaCargadaTiempoProductivo.dificultadValor;
+                                        ExigenciasTiempoProductivoDinosaurioNuevo.metaTiempoProductivo = ExigenciaCargadaTiempoProductivo.MetaTiempoProductivo;
+                                        ExigenciasTiempoProductivoDinosaurioNuevo.progresoMeta = ExigenciaCargadaTiempoProductivo.ProgresoMeta;
+                                    }
+                                    break;
+
+
+
+                            }
+                        }
+
+                    }
+                   
 
                 
                 }
@@ -264,9 +430,38 @@ public class EstadisticasManager : MonoBehaviour
 
     private void OnApplicationQuit()
     {
+        GuardarUltimaActualizacion();
         GuardarInformarciónMotivadores();
+
     }
 
+
+
+    private void GuardarUltimaActualizacion()
+    {
+        // Guarda la hora actual como la última vez que se cerró la aplicación
+        PlayerPrefs.SetString("UltimaActualizacion", DateTime.Now.ToString());
+        PlayerPrefs.Save();
+    }
+
+    public bool ComprobarEsOtroDia()
+    {
+        //hecho para ejectuarse una vez
+        string ultimaActualizacionStr = PlayerPrefs.GetString("UltimaActualizacion", DateTime.Now.ToString());
+        DateTime ultimaActualizacion = DateTime.Parse(ultimaActualizacionStr);
+
+        if (ultimaActualizacion.Month == DateTime.Now.Month && ultimaActualizacion.Year == DateTime.Now.Year)
+        {
+            if (DateTime.Now.Day - ultimaActualizacion.Day == 0)
+            {
+                return false;
+            }
+
+        }
+
+        return true;
+
+    }
 }
 
 

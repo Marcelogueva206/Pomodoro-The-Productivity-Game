@@ -60,8 +60,8 @@ public class Dinosaurio : MonoBehaviour
 
         }
     }
-    [SerializeField] private float sensibilidad = 1;
-    [SerializeField]private float consumoBaseDiarioEmocionalidad = 10;
+    [SerializeField] private float sensibilidad = 1f;
+    [SerializeField]private float consumoBaseDiarioEmocionalidad = 25f;
     public void AplicarDepresionPorTiempo()
     {
         // se ejecuta cada 5 minutos
@@ -70,9 +70,31 @@ public class Dinosaurio : MonoBehaviour
         // 1 horas = 1.04 % tristeza
         // 5 minuto = 0.086% tristeza 
 
-        AlterarEmocionalidad(consumoBaseDiarioEmocionalidad*(1/24)*(1/60)*(5)*sensibilidad);
-
+        AlterarEmocionalidad(-consumoBaseDiarioEmocionalidad*(1f/24f)*(1f/60f)*(5f)*sensibilidad);
+        Debug.Log("porcentaje de depresión generadoa por el tiempo transcurrido durante la aplicación: " + -consumoBaseDiarioEmocionalidad * (1f / 24f) * (1f/ 60f) * (5f) * sensibilidad);
     }
+
+
+    public void AplicarDepresionPorTiempo(float TiempoTranscurrido)
+    {
+        AlterarEmocionalidad(-TiempoTranscurrido * sensibilidad * (1f / 60f) * (1f / 60f) * (25f / 24f));
+        Debug.Log("porcentaje de depresión generadoa por el tiempo transcurrido fuera de la palicación: "+ -TiempoTranscurrido * sensibilidad * (1f / 60f) * (1f / 60f) * (25f / 24f));
+    }
+
+ 
+    public float ObtenerTiempoTranscurrido()
+    {
+        // Recupera la última vez que se guardó el tiempo, si no existe, devuelve 0 segundos
+        string ultimaActualizacionStr = PlayerPrefs.GetString("UltimaActualizacion", DateTime.Now.ToString());
+        DateTime ultimaActualizacion = DateTime.Parse(ultimaActualizacionStr);
+
+        // Calcula el tiempo transcurrido
+        TimeSpan tiempoTranscurrido = DateTime.Now - ultimaActualizacion;
+
+        return (float)tiempoTranscurrido.TotalSeconds;
+    }
+
+
 
     public float GetMinimoSostenible()
     {
@@ -127,7 +149,7 @@ public class Dinosaurio : MonoBehaviour
     {
 
         //50% = 0.5f
-        Emocionalidad += (variacionEnPorcentaje/100) * sensibilidad;
+        Emocionalidad += (variacionEnPorcentaje/100f) * sensibilidad;
         ActualizarEstadoDeAnimo();
 
     }
@@ -179,10 +201,11 @@ public class Dinosaurio : MonoBehaviour
         // experimentación
 
 
-        if (exigencias == null)
-        {
-            exigencias = new List<Exigencia> { new ExigenciaTiempoProductivo(this, Exigencia.Dificultad.facil), new ExigenciaTiempoProductivo(this, ExigenciaTiempoProductivo.Dificultad.moderado), new ExigenciaTiempoProductivo(this, ExigenciaTiempoProductivo.Dificultad.dificil) };
-        }
+       
+
+        
+            IniciarExigencias();
+     
     }
 
     private void Start()
@@ -201,6 +224,9 @@ public class Dinosaurio : MonoBehaviour
         PanelDialogo.gameObject.SetActive(false);
 
         InvokeRepeating("AplicarDepresionPorTiempo", 0f, 300f);
+        AplicarDepresionPorTiempo(ObtenerTiempoTranscurrido());
+
+
 
         ComprobarEliminarPorDepresion();
 
@@ -239,14 +265,18 @@ public class Dinosaurio : MonoBehaviour
 
         AnimadorCaracter.SetInteger("Comportamiento", (int)comportamiento);
 
-        if(dialogoActualPorDecir != null)
-        {
+        //if(dialogoActualPorDecir != null)
+        //{
             if (dialogosPorDecir.Count > 0) //¿tengo algoq ue decir?
             {
-                Debug.Log(dialogosPorDecir.Count);
+                Debug.Log("cantidad de dialogos " +dialogosPorDecir.Count);
                 CambiarComportamiento(Comportamiento.Hablar);
             }
-        }
+        //}
+        //else
+        //{
+        //    Debug.Log("el dialogo actual no existe");
+        //}
 
     }
 
@@ -276,6 +306,42 @@ public class Dinosaurio : MonoBehaviour
         ///
     }
 
+    public void IniciarExigencias()
+    {
+        if (exigencias == null)
+        {
+            exigencias = new List<Exigencia> { new ExigenciaTiempoProductivo(this, Exigencia.Dificultad.facil), new ExigenciaTiempoProductivo(this, ExigenciaTiempoProductivo.Dificultad.moderado), new ExigenciaTiempoProductivo(this, ExigenciaTiempoProductivo.Dificultad.dificil) };
+        }
+
+
+    }
+
+    public void ReiniciarExigencias()
+    {
+        //las exigencias se han reiniciado
+        exigencias.Clear();
+        exigencias = new List<Exigencia> { new ExigenciaTiempoProductivo(this, Exigencia.Dificultad.facil), new ExigenciaTiempoProductivo(this, ExigenciaTiempoProductivo.Dificultad.moderado), new ExigenciaTiempoProductivo(this, ExigenciaTiempoProductivo.Dificultad.dificil) };
+
+    }
+
+    public bool ComprobarEsOtroDia()
+    {
+        //hecho para ejectuarse una vez
+        string ultimaActualizacionStr = PlayerPrefs.GetString("UltimaActualizacion", DateTime.Now.ToString());
+        DateTime ultimaActualizacion = DateTime.Parse(ultimaActualizacionStr);
+
+        if (ultimaActualizacion.Month == DateTime.Now.Month && ultimaActualizacion.Year == DateTime.Now.Year)
+        {
+            if (DateTime.Now.Day - ultimaActualizacion.Day == 0)
+            {
+                return false;
+            }
+
+        }
+
+        return true;
+
+    }
 
     #endregion
     #region Sistema de dialogo 
@@ -286,6 +352,7 @@ public class Dinosaurio : MonoBehaviour
     public List<Dialogo> dialogosPorDecir = new List<Dialogo>();
     private Dialogo dialogoActualPorDecir;
     [HideInInspector] private bool PensandoDialogo = false;
+    private bool dialogoActivo = false;
 
     private void Felicitar(Tempos tempos)
     {
@@ -327,7 +394,10 @@ public class Dinosaurio : MonoBehaviour
         PensandoDialogo = true;
         yield return StartCoroutine(TestAI.Gemini.UseGeminiAI(dialogo.Prompt));
 
+
         dialogo.mensajeFinal = TestAI.Gemini.response;
+
+        
         dialogosPorDecir.Add(dialogo);
     }
 
@@ -336,10 +406,11 @@ public class Dinosaurio : MonoBehaviour
 
     public void MostrarDialogoActual(float tiempo)
     {
-
+        
         if (dialogosPorDecir.Count > 0)
         {
             dialogoActualPorDecir = dialogosPorDecir[0];
+
         }
         else
         {
@@ -347,42 +418,46 @@ public class Dinosaurio : MonoBehaviour
             return;
         }
 
-        Felicitacion felicitacion;
-        if (dialogoActualPorDecir is Felicitacion)
+        if(dialogoActivo == false)
         {
-            felicitacion = dialogoActualPorDecir as Felicitacion;
-
-            switch (felicitacion.rareza)
+            dialogoActivo = true;
+            Felicitacion felicitacion;
+            if (dialogoActualPorDecir is Felicitacion)
             {
-                case Felicitacion.Rareza.nula:
-                    FondoDeDialogo.GetComponent<UnityEngine.UI.Image>().color = Color.white;
-                    break;
-                case Felicitacion.Rareza.sencillo:
-                    FondoDeDialogo.GetComponent<UnityEngine.UI.Image>().color = Color.white;
-                    textoDialogo.color = Color.gray;
-                    break;
-                case Felicitacion.Rareza.desafiante:
-                    FondoDeDialogo.GetComponent<UnityEngine.UI.Image>().color = Color.yellow;
-                    break;
-                case Felicitacion.Rareza.superior:
-                    FondoDeDialogo.GetComponent<UnityEngine.UI.Image>().color = Color.blue;
-                    textoDialogo.color = Color.black + Color.blue;
-                    break;
-                case Felicitacion.Rareza.Top:
-                    FondoDeDialogo.GetComponent<UnityEngine.UI.Image>().color = Color.red;
-                    textoDialogo.color = Color.yellow;
-                    break;
-            }
-        }
+                felicitacion = dialogoActualPorDecir as Felicitacion;
 
-        StartCoroutine(TypeDialog(dialogoActualPorDecir.mensajeFinal, esperarParaMostrar));
-        StartCoroutine(StopDialogo(dialogoActualPorDecir.mensajeFinal.ToCharArray().Length / letterPerSeconds + tiempo));
+                switch (felicitacion.rareza)
+                {
+                    case Felicitacion.Rareza.nula:
+                        FondoDeDialogo.GetComponent<UnityEngine.UI.Image>().color = Color.white;
+                        break;
+                    case Felicitacion.Rareza.sencillo:
+                        FondoDeDialogo.GetComponent<UnityEngine.UI.Image>().color = Color.white;
+                        textoDialogo.color = Color.gray;
+                        break;
+                    case Felicitacion.Rareza.desafiante:
+                        FondoDeDialogo.GetComponent<UnityEngine.UI.Image>().color = Color.yellow;
+                        break;
+                    case Felicitacion.Rareza.superior:
+                        FondoDeDialogo.GetComponent<UnityEngine.UI.Image>().color = Color.blue;
+                        textoDialogo.color = Color.black + Color.blue;
+                        break;
+                    case Felicitacion.Rareza.Top:
+                        FondoDeDialogo.GetComponent<UnityEngine.UI.Image>().color = Color.red;
+                        textoDialogo.color = Color.yellow;
+                        break;
+                }
+            }
+            StartCoroutine(TypeDialog(dialogoActualPorDecir.mensajeFinal, esperarParaMostrar));
+            StartCoroutine(StopDialogo(dialogoActualPorDecir.mensajeFinal.ToCharArray().Length / letterPerSeconds + tiempo));
+        }
+      
     }
 
 
     IEnumerator StopDialogo(float tiempo)
     {
-        yield return new WaitForSeconds(tiempo);
+        yield return new WaitForSecondsRealtime(tiempo);
         textoDialogo.text = SubtractStrings(textoDialogo.text, dialogoActualPorDecir.mensajeFinal);
 
         dialogosPorDecir.Remove(dialogoActualPorDecir);
@@ -393,6 +468,8 @@ public class Dinosaurio : MonoBehaviour
             PanelDialogo.gameObject.SetActive(false);
             CambiarComportamiento(Comportamiento.Merodear);
         }
+
+        dialogoActivo = false;
     }
     #region Métodos de apoyo
 
@@ -411,11 +488,15 @@ public class Dinosaurio : MonoBehaviour
     }
     public IEnumerator TypeDialog(string dialog, float firstWait)
     {
-        yield return new WaitForSeconds(firstWait);
+        yield return new WaitForSecondsRealtime(firstWait);
+
+        textoDialogo.text = string.Empty;
+
+
         foreach (var letter in dialog.ToCharArray())
         {
             textoDialogo.text += letter;
-            yield return new WaitForSeconds(1f / letterPerSeconds);
+            yield return new WaitForSecondsRealtime(1f / letterPerSeconds);
         }
 
     }
@@ -464,7 +545,11 @@ public class Dinosaurio : MonoBehaviour
         {
             if (collider.GetComponent<Dinosaurio>().comportamiento == Comportamiento.Hablar)
             {
-                return true;
+                if(collider.GetComponent<Dinosaurio>().gameObject != gameObject)
+                {
+                    return true;
+                }
+
             }
         }
 
@@ -701,7 +786,6 @@ public class Dialogo
     public string Prompt { get => contextoGeneral + contextoEspecifico + tarea; }
     public Dialogo(Dinosaurio emisor)
     {
-        //this.id = id;
         contextoGeneral = "Interpretas a una mascota que acompaña al usario en su trabajo. Te comportas feliz o triste según la productividad del usuario. Tú output no debe superar los 200 caracteres";
         contextoGeneral += ".Eres un pequeño " + emisor._Especie.ToString();
         contextoGeneral += ".Estás " + emisor.getEstadoDeAnimo().ToString();
@@ -723,11 +807,11 @@ public class Felicitacion : Dialogo
             rareza = Rareza.sencillo;
             contextoEspecifico += $".El usuario logró superar estar concentrado un total de {tempoTerminado.TiempoTotal.ToString(@"h\:mm\:ss")}";
             //Felicitar por superar de ser más productivo de lo normal
-            if (EstadisticasManager.TiempoTempoProductivoPromedio < tempoTerminado.TiempoTotal)
-            {
-                rareza = Rareza.desafiante;
-                contextoEspecifico += $".El usuario logró superar su promedio productivo diario de {EstadisticasManager.TiempoTotalProductivoDiarioPromedio.ToString(@"h\:mm\:ss")}";
-            }
+            //if (EstadisticasManager.TiempoTempoProductivoPromedio < tempoTerminado.TiempoTotal)
+            //{
+            //    rareza = Rareza.desafiante;
+            //    contextoEspecifico += $".El usuario logró superar su promedio productivo diario de {EstadisticasManager.TiempoTotalProductivo.ToString(@"h\:mm\:ss")}";
+            //}
 
 
             //Felicitar por superar tu tiempo de productividad muy larga

@@ -8,8 +8,8 @@ public class AdopcionManager : MonoBehaviour
     // Instancia única del Singleton
     public static AdopcionManager Instance { get; private set; }
 
-    private Especie adoptadoEspecie;
-    private Rareza adoptadoRareza;
+    public Especie adoptadoEspecie;
+    public Rareza adoptadoRareza;
 
     public GameObject MotivadorPrefab;
 

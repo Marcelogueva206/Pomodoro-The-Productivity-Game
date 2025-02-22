@@ -1,27 +1,27 @@
 {
     "motivadoresData": [
         {
-            "Nombre": "PEPE",
-            "Emocionalidad": 0.7339092493057251,
+            "Nombre": "Juan",
+            "Emocionalidad": 1.2083231210708619,
             "position": {
-                "x": 3.636841297149658,
-                "y": 2.8086023330688478,
-                "z": 0.0
+                "x": -7.362483501434326,
+                "y": -0.8926201462745667,
+                "z": 0.8100000023841858
             },
             "Exigencias": [
                 {
                     "dificultadValor": 0,
-                    "MetaTiempoProductivo": 1.0000241994857789,
+                    "MetaTiempoProductivo": 21.07308006286621,
                     "ProgresoMeta": 1.0
                 },
                 {
                     "dificultadValor": 1,
-                    "MetaTiempoProductivo": 30.000112533569337,
+                    "MetaTiempoProductivo": 30.01634407043457,
                     "ProgresoMeta": 1.0
                 },
                 {
                     "dificultadValor": 2,
-                    "MetaTiempoProductivo": 60.728755950927737,
+                    "MetaTiempoProductivo": 64.17251586914063,
                     "ProgresoMeta": 1.0
                 }
             ]
