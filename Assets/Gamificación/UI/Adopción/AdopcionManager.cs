@@ -36,7 +36,7 @@ public class AdopcionManager : MonoBehaviour
         var spaceChances = new[]
         {
             new { Specie = Especie.Stegosaurus, Probability = 40 },
-            new { Specie = Especie.Velociraptor, Probability = 20 },
+            new { Specie = Especie.Espinosaurio, Probability = 20 },
             new { Specie = Especie.Triceratops, Probability = 30 },
             new { Specie = Especie.TiranosaurioRex, Probability = 10 }
         };
@@ -101,7 +101,8 @@ public class AdopcionManager : MonoBehaviour
     {
         GameObject motivadorNuevo = Instantiate(MotivadorPrefab);
         motivadorNuevo.GetComponent<Dinosaurio>().SerAdoptado(adoptadoEspecie, adoptadoRareza, nombre);
-        motivadorNuevo.transform.position = new Vector3(0, 0, 0);
+        motivadorNuevo.transform.position = new Vector3(0, 0, 1);
+        EstadisticasManager.Instance.GuardarInformarciónMotivadores();
     }
 
 }

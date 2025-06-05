@@ -140,9 +140,26 @@ public class Gamificacion : MonoBehaviour
     }
     private void AumentarProgresoDiarioTiempo(Tempos tempo)
     {
-        TiempoTotalProducidoHoy += (float)(tempo.TiempoTotal.TotalSeconds) * (1f / 60f);
+        if(tempo.tiposTempos == TiposTempos.productivo)
+        {
+            TiempoTotalProducidoHoy += (float)(tempo.TiempoTotal.TotalSeconds) * (1f / 60f);
+            Debug.Log($"[DEBUG] Aumentando progreso diario: {TiempoTotalProducidoHoy} minutos");
 
-        GuardarTiempo();
+            if (tempo == null)
+            {
+                Debug.LogWarning("Tempo es nulo. No se puede aumentar el progreso.");
+                return;
+            }
+
+            if (tempo.TiempoTotal.TotalSeconds <= 0)
+            {
+                Debug.LogWarning("Tempo terminado tiene 0 segundos. No se suma nada.");
+                return;
+            }
+
+            GuardarTiempo();
+        }
+     
     }
     private void RecibirAcumuladoTiempoHoy()
     {

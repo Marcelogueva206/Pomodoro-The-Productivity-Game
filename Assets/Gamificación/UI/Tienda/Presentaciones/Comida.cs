@@ -109,20 +109,28 @@ public class Comida : MonoBehaviour
         {
             if (collision.gameObject.CompareTag("Caracter Motivador"))
             {
+                
                 Dinosaurio consumidor = collision.gameObject.GetComponent<Dinosaurio>();
-                consumidor.AlterarEmocionalidad(satisfacionTiempo);
 
-
-                foreach (ExigenciaTiempoProductivo exigencia in consumidor.exigencias)
+                if (consumidor.PuedoComerlo())
                 {
-                    if (TiposComida == exigencia.tiposComidaRequerida || exigencia.tiposComidaRequerida == TiposComidas.cualquierTipo)
+                    consumidor.CambiarComportamiento(Comportamiento.Comer);
+                    consumidor.AlterarEmocionalidad(satisfacionTiempo);
+                    EstadisticasManager.Instance.GuardarInformarciónMotivadores();
+
+                    foreach (ExigenciaTiempoProductivo exigencia in consumidor.exigencias)
                     {
-                        exigencia.ProgresoMeta += satisfacionTiempo;
+                        if (TiposComida == exigencia.tiposComidaRequerida || exigencia.tiposComidaRequerida == TiposComidas.cualquierTipo)
+                        {
+                            exigencia.ProgresoMeta += satisfacionTiempo;
+                        }
                     }
+
+
+                    Destroy(gameObject);
+
                 }
 
-
-                Destroy(gameObject);
 
             }
 

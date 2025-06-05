@@ -163,7 +163,9 @@ public class PomodoroSistema : MonoBehaviour
                 else
                 {
                     //SI: entonces pasa el siguiente tempo
+                
                     TemposTerminado?.Invoke(_tempoActual);
+                    ContadorProgreso.Instance.VerificarLogroDeEstrellas();
                     numeroTempoActual++;
                     if (_cicloActual.TemposCiclo[numeroTempoActual] == null)
                     {

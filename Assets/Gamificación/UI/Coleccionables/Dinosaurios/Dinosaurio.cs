@@ -1,6 +1,7 @@
-using System;
+Ôªøusing System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using TMPro;
 using UnityEngine;
@@ -16,7 +17,7 @@ public class Dinosaurio : MonoBehaviour
     [SerializeField] private string _nombre;
     [SerializeField] private float _velocidad;
     [SerializeField] public string Nombre { get { return _nombre; } set { _nombre = value; interactuador.ActualizarNombre(); } }
-    [HideInInspector] public Especie _Especie { get => especie; }
+    [HideInInspector] public Especie _Especie { get => especie; set => especie = value; }
 
 
     [SerializeField] private Especie especie;
@@ -29,7 +30,7 @@ public class Dinosaurio : MonoBehaviour
     [HideInInspector] private SpriteRenderer spriteRenderer;
 
     #endregion
- 
+
     #region Sistema de emociones
 
     [Header("Sistema de Emociones")]
@@ -60,8 +61,11 @@ public class Dinosaurio : MonoBehaviour
 
         }
     }
+
+    public Rareza Rareza { get => rareza; set => rareza = value; }
+
     [SerializeField] private float sensibilidad = 1f;
-    [SerializeField]private float consumoBaseDiarioEmocionalidad = 25f;
+    [SerializeField] private float consumoBaseDiarioEmocionalidad = 25f;
     public void AplicarDepresionPorTiempo()
     {
         // se ejecuta cada 5 minutos
@@ -70,21 +74,21 @@ public class Dinosaurio : MonoBehaviour
         // 1 horas = 1.04 % tristeza
         // 5 minuto = 0.086% tristeza 
 
-        AlterarEmocionalidad(-consumoBaseDiarioEmocionalidad*(1f/24f)*(1f/60f)*(5f)*sensibilidad);
-        Debug.Log("porcentaje de depresiÛn generadoa por el tiempo transcurrido durante la aplicaciÛn: " + -consumoBaseDiarioEmocionalidad * (1f / 24f) * (1f/ 60f) * (5f) * sensibilidad);
+        AlterarEmocionalidad(-consumoBaseDiarioEmocionalidad * (1f / 24f) * (1f / 60f) * (5f) * sensibilidad);
+        Debug.Log("porcentaje de depresi√≥n generadoa por el tiempo transcurrido durante la aplicaci√≥n: " + -consumoBaseDiarioEmocionalidad * (1f / 24f) * (1f / 60f) * (5f) * sensibilidad);
     }
 
 
     public void AplicarDepresionPorTiempo(float TiempoTranscurrido)
     {
         AlterarEmocionalidad(-TiempoTranscurrido * sensibilidad * (1f / 60f) * (1f / 60f) * (25f / 24f));
-        Debug.Log("porcentaje de depresiÛn generadoa por el tiempo transcurrido fuera de la palicaciÛn: "+ -TiempoTranscurrido * sensibilidad * (1f / 60f) * (1f / 60f) * (25f / 24f));
+        Debug.Log("porcentaje de depresi√≥n generadoa por el tiempo transcurrido fuera de la palicaci√≥n: " + -TiempoTranscurrido * sensibilidad * (1f / 60f) * (1f / 60f) * (25f / 24f));
     }
 
- 
+
     public float ObtenerTiempoTranscurrido()
     {
-        // Recupera la ˙ltima vez que se guardÛ el tiempo, si no existe, devuelve 0 segundos
+        // Recupera la √∫ltima vez que se guard√≥ el tiempo, si no existe, devuelve 0 segundos
         string ultimaActualizacionStr = PlayerPrefs.GetString("UltimaActualizacion", DateTime.Now.ToString());
         DateTime ultimaActualizacion = DateTime.Parse(ultimaActualizacionStr);
 
@@ -98,8 +102,8 @@ public class Dinosaurio : MonoBehaviour
 
     public float GetMinimoSostenible()
     {
-        //proporciÛn de 1% => 1 minuto 
-        return consumoBaseDiarioEmocionalidad*sensibilidad*(1/1);
+        //proporci√≥n de 1% => 1 minuto 
+        return consumoBaseDiarioEmocionalidad * sensibilidad * (1 / 1);
     }
 
     public void ActualizarEstadoDeAnimo()
@@ -149,7 +153,7 @@ public class Dinosaurio : MonoBehaviour
     {
 
         //50% = 0.5f
-        Emocionalidad += (variacionEnPorcentaje/100f) * sensibilidad;
+        Emocionalidad += (variacionEnPorcentaje / 100f) * sensibilidad;
         ActualizarEstadoDeAnimo();
 
     }
@@ -161,8 +165,8 @@ public class Dinosaurio : MonoBehaviour
     public float GetTiempoTotalExigido()
     {
         float tiempoTotal = 0;
-    
-        foreach ( Exigencia exigencia in exigencias )
+
+        foreach (Exigencia exigencia in exigencias)
         {
             tiempoTotal += exigencia.GetMostrarTiempoAproximadoExigido();
 
@@ -182,7 +186,7 @@ public class Dinosaurio : MonoBehaviour
 
 
     #endregion
-    #region Unity mÈtodos
+    #region Unity m√©todos
     private void Awake()
     {
         //PomodoroSistema.PomodoroTerminado += FelicitarPomodoroTerminado;
@@ -198,20 +202,20 @@ public class Dinosaurio : MonoBehaviour
         AnimadorCaracter = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
 
-        // experimentaciÛn
+        // experimentaci√≥n
 
 
-       
 
-        
-            IniciarExigencias();
-     
+
+
+        IniciarExigencias();
+
     }
 
     private void Start()
     {
         moverse = true;
-        EstadisticasManager.Instance.AÒadirCaracterMotivadorAlSistema(this);
+        EstadisticasManager.Instance.A√±adirCaracterMotivadorAlSistema(this);
         interactuador.ActualizarMostrarIndicadorCompletadoExigencias();
         interactuador.ActualizarMostrarEmocionalidad();
 
@@ -225,27 +229,33 @@ public class Dinosaurio : MonoBehaviour
 
         InvokeRepeating("AplicarDepresionPorTiempo", 0f, 300f);
         AplicarDepresionPorTiempo(ObtenerTiempoTranscurrido());
-
-
-
         ComprobarEliminarPorDepresion();
 
-       
+        SetEspecieYRareza();
+
+        EstadisticasManager.Instance.GuardarInformarci√≥nMotivadores();
     }
 
+    public void SetEspecieYRareza()
+    {
+        AnimadorCaracter.SetInteger("Especie", (int)especie);
+        AnimadorCaracter.SetInteger("Rareza", (int)rareza);
+    }
 
     void Update()
     {
         Position2D = gameObject.transform.position;
         Comportarse(comportamiento);
         setEstadoAnimo();
+
+
         if (IsMoving())
         {
-            AnimadorCaracter.SetBool("Moviendose", true);
+            AnimadorCaracter.SetFloat("Moviendose", 1);
         }
         else
         {
-            AnimadorCaracter.SetBool("Moviendose", false);
+            AnimadorCaracter.SetFloat("Moviendose", 0);
         }
 
 
@@ -263,26 +273,35 @@ public class Dinosaurio : MonoBehaviour
 
 
 
-        AnimadorCaracter.SetInteger("Comportamiento", (int)comportamiento);
+        AnimadorCaracter.SetFloat("Comportamiento", (float)comportamiento);
+
+        SetEspecieYRareza(); //Debes quitarlo
+
 
         //if(dialogoActualPorDecir != null)
         //{
-            if (dialogosPorDecir.Count > 0) //øtengo algoq ue decir?
-            {
-                Debug.Log("cantidad de dialogos " +dialogosPorDecir.Count);
-                CambiarComportamiento(Comportamiento.Hablar);
-            }
+        if (dialogosPorDecir.Count > 0) //¬øtengo algoq ue decir?
+        {
+            Debug.Log("cantidad de dialogos " + dialogosPorDecir.Count);
+            CambiarComportamiento(Comportamiento.Hablar);
+        }
         //}
         //else
         //{
         //    Debug.Log("el dialogo actual no existe");
         //}
 
+        UpdateSortingOrder();
+
     }
 
+    void UpdateSortingOrder()
+    {
+        GetComponent<SpriteRenderer>().sortingOrder = Mathf.RoundToInt(-transform.position.y * 100);
+    }
     private void OnValidate()
     {
-        // AquÌ forzamos la llamada a la propiedad cada vez que cambie desde el Inspector.
+        // Aqu√≠ forzamos la llamada a la propiedad cada vez que cambie desde el Inspector.
         Emocionalidad = emocionalidad;
     }
 
@@ -297,12 +316,12 @@ public class Dinosaurio : MonoBehaviour
         this.rareza = rareza;
         Nombre = nombre;
         ActualizarAspectoMotivador();
-        emocionalidad = UnityEngine.Random.Range(0.3f,1f);
+        emocionalidad = UnityEngine.Random.Range(0.3f, 1f);
     }
 
     public void ActualizarAspectoMotivador()
     {
-        //// NECESITAS A—ADIR DESPUES
+        //// NECESITAS A√ëADIR DESPUES
         ///
     }
 
@@ -356,23 +375,73 @@ public class Dinosaurio : MonoBehaviour
 
     private void Felicitar(Tempos tempos)
     {
-        Dialogo dialogoNuevo = new Felicitacion(this, tempos); //proceso mental en analisar la situaciÛn y pensar en quÈ quieres decir
+        if (tempos.tiposTempos == TiposTempos.productivo)
+        {
+            if (estadoAnimo != EstadoAnimo.Triste || estadoAnimo != EstadoAnimo.Deprimido)
+            {
+                Dialogo dialogoNuevo = new Felicitacion(this, tempos); // Analizar la situaci√≥n y pensar qu√© decir
 
+                StartCoroutine(ProcesoDeFecilitaci√≥n(dialogoNuevo)); // Iniciar la corrutina
+            }
+
+        }
+    }
+
+
+    private IEnumerator ProcesoDeFecilitaci√≥n(Dialogo dialogoNuevo)
+    {
+        CambiarComportamiento(Comportamiento.Celebrar); // Iniciar celebraci√≥n
+
+        float TiempoDeCelebracion = 0f;
+        float ProbabilidadExtraDeHablar = 0f;
+        switch (estadoAnimo)
+        {
+            case EstadoAnimo.Triste:
+                TiempoDeCelebracion = 0f;
+                break;
+            case EstadoAnimo.Feliz:
+                TiempoDeCelebracion = UnityEngine.Random.Range(1f, 6f);
+                break;
+            case EstadoAnimo.Euforia:
+                TiempoDeCelebracion = UnityEngine.Random.Range(3f, 9f);
+                ProbabilidadExtraDeHablar = 0.2f;
+                break;
+            case EstadoAnimo.Deprimido:
+                TiempoDeCelebracion = 0f;
+                break;
+        }
+
+        yield return new WaitForSeconds(TiempoDeCelebracion);
+        CambiarComportamiento(Comportamiento.Merodear);
+        //RECORDATORIO MENTAL QUE ESTO DE AQUI ELIMINA EL COMPORTAMIENTO DE CELEBRAR Y SOLO POR AHORA LO DEJAR√ã COMO UN COMENTARI
+        //float probabilidadHablar = Mathf.Max(0.05f, 0.5f - 0.1f * EstadisticasManager.Instance.getCaracteresMotivadoresEnSistema().Count + ProbabilidadExtraDeHablar);
+        float probabilidadHablar = 0f; //ELIMINAR ESTO Y REEMPALZA CON LO DE ARRIBA
+        if (UnityEngine.Random.value <= probabilidadHablar)
+        {
+            IniciarComportamientoHablar(dialogoNuevo); // Iniciar el di√°logo despu√©s de celebrar
+        }
+
+
+    }
+
+
+    private void IniciarComportamientoHablar(Dialogo dialogoNuevo)
+    {
         StartCoroutine(IncluirDialogosPorDecir(dialogoNuevo));
         PanelDialogo.gameObject.SetActive(true);
     }
-    #region ExperimentaciÛn dialogo
+    #region Experimentaci√≥n dialogo
     //public void FelicitarTempoTerminado(Tempos tempo)
     //{
-    //    MostrarDialogo(10f, $"pequeÒas felicidades por terminar el tempo, las cosas son poco a poco");
+    //    MostrarDialogo(10f, $"peque√±as felicidades por terminar el tempo, las cosas son poco a poco");
     //}
     //public void FelicitarCicloTerminado(Ciclo ciclo)
     //{
-    //    MostrarDialogo(10f, $"Felicidades por acabar tremendo ciclo, cada vez est·s m·s cerca");
+    //    MostrarDialogo(10f, $"Felicidades por acabar tremendo ciclo, cada vez est√°s m√°s cerca");
     //}
     //public void FelicitarPomodoroTerminado(Pomodoro pomodoro)
     //{
-    //    MostrarDialogo(10f, $"FELICIDADES por terminar el pomodoro llamado {pomodoro.Nombre} el cual durÛ {pomodoro.DuracionTotal}");
+    //    MostrarDialogo(10f, $"FELICIDADES por terminar el pomodoro llamado {pomodoro.Nombre} el cual dur√≥ {pomodoro.DuracionTotal}");
     //}
     //public void MotivarTempoIniciado(Tempos tempo)
     //{
@@ -397,7 +466,7 @@ public class Dinosaurio : MonoBehaviour
 
         dialogo.mensajeFinal = TestAI.Gemini.response;
 
-        
+
         dialogosPorDecir.Add(dialogo);
     }
 
@@ -406,7 +475,7 @@ public class Dinosaurio : MonoBehaviour
 
     public void MostrarDialogoActual(float tiempo)
     {
-        
+
         if (dialogosPorDecir.Count > 0)
         {
             dialogoActualPorDecir = dialogosPorDecir[0];
@@ -418,7 +487,7 @@ public class Dinosaurio : MonoBehaviour
             return;
         }
 
-        if(dialogoActivo == false)
+        if (dialogoActivo == false)
         {
             dialogoActivo = true;
             Felicitacion felicitacion;
@@ -451,7 +520,7 @@ public class Dinosaurio : MonoBehaviour
             StartCoroutine(TypeDialog(dialogoActualPorDecir.mensajeFinal, esperarParaMostrar));
             StartCoroutine(StopDialogo(dialogoActualPorDecir.mensajeFinal.ToCharArray().Length / letterPerSeconds + tiempo));
         }
-      
+
     }
 
 
@@ -471,7 +540,7 @@ public class Dinosaurio : MonoBehaviour
 
         dialogoActivo = false;
     }
-    #region MÈtodos de apoyo
+    #region M√©todos de apoyo
 
     string SubtractStrings(string str1, string str2)
     {
@@ -530,9 +599,121 @@ public class Dinosaurio : MonoBehaviour
             case Comportamiento.Deprimirse:
                 DetenerseInstantaneamente();
                 break;
+            case Comportamiento.Comer:
+                DetenerseInstantaneamente();
+                break;
         }
 
     }
+
+    public bool PuedoComerlo()
+    {
+        if (comportamiento == Comportamiento.Comer && estadoAnimo != EstadoAnimo.Deprimido)
+        {
+            return false;
+        }
+        else return true;
+    }
+
+    private IEnumerator ProcesoDeComer()
+    {
+        float TiempoDeCelebracionPorComer = 0f;
+
+        string NombreAnimacion = "Comer";
+
+        switch (rareza)
+        {
+            case Rareza.Comun:
+                NombreAnimacion += "C";
+                break;
+            case Rareza.Rara:
+                NombreAnimacion += "R";
+                break;
+            case Rareza.SuperRara:
+                NombreAnimacion += "S";
+                break;
+            case Rareza.Legendaria:
+                NombreAnimacion += "L";
+                break;
+        }
+
+        switch (especie)
+        {
+            case Especie.TiranosaurioRex:
+                NombreAnimacion += "4";
+                break;
+            case Especie.Triceratops:
+                NombreAnimacion += "1";
+                break;
+            case Especie.Espinosaurio:
+                NombreAnimacion += "3";
+                break;
+            case Especie.Stegosaurus:
+                NombreAnimacion += "2";
+                break;
+        }
+
+        float TiempoDeDuraci√≥nDeComer = ObtenerDuracionAnimacion(NombreAnimacion);
+
+        Debug.Log("Tiempo de duraci√≥n de comer: "+TiempoDeDuraci√≥nDeComer);
+        switch (estadoAnimo)
+        {
+            case EstadoAnimo.Triste:
+                TiempoDeCelebracionPorComer = 0f;
+                break;
+            case EstadoAnimo.Feliz:
+                TiempoDeCelebracionPorComer = UnityEngine.Random.Range(3f, 6f);
+                break;
+            case EstadoAnimo.Euforia:
+                TiempoDeCelebracionPorComer = UnityEngine.Random.Range(3f, 8f);
+
+                break;
+            case EstadoAnimo.Deprimido:
+                TiempoDeCelebracionPorComer = 0f;
+                break;
+        }
+        Debug.Log("Tiempo total de espera: " + (TiempoDeDuraci√≥nDeComer + TiempoDeCelebracionPorComer));
+        yield return new WaitForSeconds(TiempoDeDuraci√≥nDeComer+TiempoDeCelebracionPorComer);
+        CambiarComportamiento(Comportamiento.Merodear);
+    }
+
+    private float ObtenerDuracionAnimacion(string nombreAnimacion)
+    {
+        // Buscar el clip correcto en el AnimatorController
+        AnimationClip clipEncontrado = AnimadorCaracter.runtimeAnimatorController.animationClips
+            .FirstOrDefault(clip => clip.name == nombreAnimacion);
+
+        if (clipEncontrado == null)
+        {
+            Debug.LogWarning($"‚ö†Ô∏è No se encontr√≥ la animaci√≥n '{nombreAnimacion}'.");
+            return 0f;
+        }
+
+        Debug.Log($"üé• Animaci√≥n encontrada: {clipEncontrado.name}, Duraci√≥n base: {clipEncontrado.length}s");
+
+        // Obtener el estado actual o el pr√≥ximo en reproducci√≥n
+        AnimatorStateInfo estado = AnimadorCaracter.GetCurrentAnimatorStateInfo(0);
+        if (!estado.IsName(nombreAnimacion))
+        {
+            estado = AnimadorCaracter.GetNextAnimatorStateInfo(0);
+        }
+
+        // Obtener velocidad de la animaci√≥n desde el Animator
+        //float speed = estado.speed;
+
+        // Si la velocidad es 0 (posiblemente a√∫n no se ha actualizado), devolvemos la duraci√≥n normal
+        //if (speed == 0)
+        //{
+        //    Debug.LogWarning("‚ö†Ô∏è La velocidad de la animaci√≥n es 0. Devolviendo duraci√≥n base.");
+        //    return clipEncontrado.length;
+        //}
+
+        float duracionFinal = clipEncontrado.length / 0.10f;
+        Debug.Log($"‚úÖ Duraci√≥n ajustada: {duracionFinal}s (Speed: {0.10f})");
+
+        return duracionFinal;
+    }
+
 
     [HideInInspector] private Vector2 PosicionOriginalPanelDeDialogo;
     [HideInInspector] private Vector2 PosicionOriginalTextoDeDialogo;
@@ -545,7 +726,7 @@ public class Dinosaurio : MonoBehaviour
         {
             if (collider.GetComponent<Dinosaurio>().comportamiento == Comportamiento.Hablar)
             {
-                if(collider.GetComponent<Dinosaurio>().gameObject != gameObject)
+                if (collider.GetComponent<Dinosaurio>().gameObject != gameObject)
                 {
                     return true;
                 }
@@ -555,13 +736,12 @@ public class Dinosaurio : MonoBehaviour
 
         return false;
     }
-
     private void MirarAlJugadorAlHablar()
     {
 
         if (Camara.transform.position.x > Position2D.x)
         {
-            //est· hacia la izquierda de la camara
+            //est√° hacia la izquierda de la camara
             FondoDeDialogo.localScale = new Vector3(-1, FondoDeDialogo.localScale.y, FondoDeDialogo.localScale.z);
             spriteRenderer.flipX = true;
             SetRectTransformValues(PanelDialogo, -PosicionOriginalPanelDeDialogo.x, PanelDialogo.anchoredPosition.y);
@@ -574,12 +754,12 @@ public class Dinosaurio : MonoBehaviour
             spriteRenderer.flipX = false;
             SetRectTransformValues(PanelDialogo, PosicionOriginalPanelDeDialogo.x, PanelDialogo.anchoredPosition.y);
             SetRectTransformValues(RectTransformTextoDialogo, PosicionOriginalTextoDeDialogo.x, RectTransformTextoDialogo.anchoredPosition.y);
-            //est· hacia la derecha de la camara
+            //est√° hacia la derecha de la camara
         }
 
         if (Camara.transform.position.y > Position2D.y)
         {
-            //est· hacia arriba la camara
+            //est√° hacia arriba la camara
             FondoDeDialogo.localScale = new Vector3(FondoDeDialogo.localScale.x, 1, FondoDeDialogo.localScale.z);
             SetRectTransformValues(PanelDialogo, PanelDialogo.anchoredPosition.x, PosicionOriginalPanelDeDialogo.y);
             SetRectTransformValues(RectTransformTextoDialogo, RectTransformTextoDialogo.anchoredPosition.x, PosicionOriginalTextoDeDialogo.y);
@@ -589,7 +769,7 @@ public class Dinosaurio : MonoBehaviour
             FondoDeDialogo.localScale = new Vector3(FondoDeDialogo.localScale.x, -1, FondoDeDialogo.localScale.z);
             SetRectTransformValues(PanelDialogo, PanelDialogo.anchoredPosition.x, -PosicionOriginalPanelDeDialogo.y);
             SetRectTransformValues(RectTransformTextoDialogo, RectTransformTextoDialogo.anchoredPosition.x, -PosicionOriginalTextoDeDialogo.y);
-            //est· hacia abajo la camara
+            //est√° hacia abajo la camara
         }
 
     }
@@ -597,6 +777,7 @@ public class Dinosaurio : MonoBehaviour
 
     public void CambiarComportamiento(Comportamiento comportamiento)
     {
+
         if (comportamiento == Comportamiento.Hablar)
         {
             if (OtroEstaHablando() == true)
@@ -618,6 +799,13 @@ public class Dinosaurio : MonoBehaviour
             }
 
         }
+        else
+        if (comportamiento == Comportamiento.Comer && estadoAnimo != EstadoAnimo.Deprimido)
+        {
+            StartCoroutine(ProcesoDeComer());
+        }
+
+
         DetenerseInstantaneamente();
         this.comportamiento = comportamiento;
 
@@ -627,14 +815,14 @@ public class Dinosaurio : MonoBehaviour
     {
         if (Destino == Vector2.zero)
         {
-            Vector2 PosiciÛnAleatoria = new(UnityEngine.Random.Range(Gamificacion.MinX, Gamificacion.MaxX), UnityEngine.Random.Range(Gamificacion.MinY, Gamificacion.MaxY));
-            Destino = PosiciÛnAleatoria; //necesario para empezar a caminar
+            Vector2 Posici√≥nAleatoria = new(UnityEngine.Random.Range(Gamificacion.MinX, Gamificacion.MaxX), UnityEngine.Random.Range(Gamificacion.MinY, Gamificacion.MaxY));
+            Destino = Posici√≥nAleatoria; //necesario para empezar a caminar
         }
 
         if (Vector2.Distance(Destino, Position2D) < 2)
         {
-            Vector2 PosiciÛnAleatoria = new(UnityEngine.Random.Range(Gamificacion.MinX, Gamificacion.MaxX), UnityEngine.Random.Range(Gamificacion.MinY, Gamificacion.MaxY));
-            Destino = PosiciÛnAleatoria;
+            Vector2 Posici√≥nAleatoria = new(UnityEngine.Random.Range(Gamificacion.MinX, Gamificacion.MaxX), UnityEngine.Random.Range(Gamificacion.MinY, Gamificacion.MaxY));
+            Destino = Posici√≥nAleatoria;
             Detenerse(UnityEngine.Random.Range(0f, 10f));
 
         }
@@ -687,11 +875,11 @@ public class Dinosaurio : MonoBehaviour
         // Verifica la velocidad del Rigidbody2D en los ejes x e y
         if (rb.velocity.x != 0 || rb.velocity.y != 0)
         {
-            return true; // Se est· moviendo
+            return true; // Se est√° moviendo
         }
         else
         {
-            return false; // No se est· moviendo
+            return false; // No se est√° moviendo
         }
     }
     public void Detenerse(float tiempo)
@@ -724,7 +912,7 @@ public class Dinosaurio : MonoBehaviour
     {
         if (estadoAnimo == EstadoAnimo.Deprimido)
         {
-            Debug.Log($"{name} se deprimiÛ por la falta de atenciÛn y cariÒo");
+            Debug.Log($"{name} se deprimi√≥ por la falta de atenci√≥n y cari√±o");
             EliminarMotivador();
         }
 
@@ -732,7 +920,7 @@ public class Dinosaurio : MonoBehaviour
     }
 
     #endregion
-    #region MÈtodos extras
+    #region M√©todos extras
     public IEnumerator EjecutarEn(float tiempo, Action metodo)
     {
         yield return new WaitForSeconds(tiempo);
@@ -764,10 +952,10 @@ public class Dinosaurio : MonoBehaviour
 }
 #region variables enum
 public enum Rareza { Comun, Rara, SuperRara, Legendaria }
-public enum Especie { TiranosaurioRex, Triceratops, Velociraptor, Stegosaurus}
+public enum Especie { TiranosaurioRex, Triceratops, Espinosaurio, Stegosaurus }
 
 
-public enum Comportamiento { Merodear, Hablar, Celebrar, Deprimirse }
+public enum Comportamiento { Merodear, Hablar, Celebrar, Deprimirse, Comer }
 
 public enum EstadoAnimo { Triste, Feliz, Euforia, Deprimido }
 #endregion
@@ -786,9 +974,9 @@ public class Dialogo
     public string Prompt { get => contextoGeneral + contextoEspecifico + tarea; }
     public Dialogo(Dinosaurio emisor)
     {
-        contextoGeneral = "Interpretas a una mascota que acompaÒa al usario en su trabajo. Te comportas feliz o triste seg˙n la productividad del usuario. T˙ output no debe superar los 200 caracteres";
-        contextoGeneral += ".Eres un pequeÒo " + emisor._Especie.ToString();
-        contextoGeneral += ".Est·s " + emisor.getEstadoDeAnimo().ToString();
+        contextoGeneral = "Interpretas a una mascota que acompa√±a al usario en su trabajo. Te comportas feliz o triste seg√∫n la productividad del usuario. T√∫ output no debe superar los 200 caracteres";
+        contextoGeneral += ".Eres un peque√±o " + emisor._Especie.ToString();
+        contextoGeneral += ".Est√°s " + emisor.getEstadoDeAnimo().ToString();
         this.animoDelDialogo = emisor.getEstadoDeAnimo();
 
     }
@@ -800,17 +988,17 @@ public class Felicitacion : Dialogo
     public Rareza rareza;
     public Felicitacion(Dinosaurio emisor, Tempos tempoTerminado) : base(emisor)
     {
-        tarea = "Felicitalo por lo que logrÛ el usuario, incluso si tu estadode ·nimo es triste";
+        tarea = "Felicitalo por lo que logr√≥ el usuario, incluso si tu estadode √°nimo es triste";
 
         if (tempoTerminado.tiposTempos == TiposTempos.productivo)
         {
             rareza = Rareza.sencillo;
-            contextoEspecifico += $".El usuario logrÛ superar estar concentrado un total de {tempoTerminado.TiempoTotal.ToString(@"h\:mm\:ss")}";
-            //Felicitar por superar de ser m·s productivo de lo normal
+            contextoEspecifico += $".El usuario logr√≥ superar estar concentrado un total de {tempoTerminado.TiempoTotal.ToString(@"h\:mm\:ss")}";
+            //Felicitar por superar de ser m√°s productivo de lo normal
             //if (EstadisticasManager.TiempoTempoProductivoPromedio < tempoTerminado.TiempoTotal)
             //{
             //    rareza = Rareza.desafiante;
-            //    contextoEspecifico += $".El usuario logrÛ superar su promedio productivo diario de {EstadisticasManager.TiempoTotalProductivo.ToString(@"h\:mm\:ss")}";
+            //    contextoEspecifico += $".El usuario logr√≥ superar su promedio productivo diario de {EstadisticasManager.TiempoTotalProductivo.ToString(@"h\:mm\:ss")}";
             //}
 
 
@@ -818,19 +1006,19 @@ public class Felicitacion : Dialogo
             if (tempoTerminado.TiempoTotal >= new TimeSpan(1, 30, 0))
             {
                 rareza = Rareza.superior;
-                contextoEspecifico += $".El usuario logrÛ estar concentrado durante el largo periodo consecutivo de m·s 1 hora y 30 minutos. El usuario estuvo {tempoTerminado.TiempoTotal.ToString(@"h\:mm\:ss")} en total";
+                contextoEspecifico += $".El usuario logr√≥ estar concentrado durante el largo periodo consecutivo de m√°s 1 hora y 30 minutos. El usuario estuvo {tempoTerminado.TiempoTotal.ToString(@"h\:mm\:ss")} en total";
 
             }
-            //else if (tempoTerminado.TiempoTotal >= new TimeSpan(0, 45, 0))    //Felicitar por terminar un tempo productivo de duraciÛn larga
+            //else if (tempoTerminado.TiempoTotal >= new TimeSpan(0, 45, 0))    //Felicitar por terminar un tempo productivo de duraci√≥n larga
             //{
             //    id = "004";
             //    rareza = Rareza.desafiante;
-            //    contextoEspecifico += $".El usuario logrÛ estar concentrado durante el largo periodo consecutivo de m·s 45 minutos. El usuario estuvo {tempoTerminado.TiempoTotal.ToString(@"h\:mm\:ss")} en total";
+            //    contextoEspecifico += $".El usuario logr√≥ estar concentrado durante el largo periodo consecutivo de m√°s 45 minutos. El usuario estuvo {tempoTerminado.TiempoTotal.ToString(@"h\:mm\:ss")} en total";
 
             //}
             #region Anterior trabajo
 
-            //    //Fecilitar por conseguir mucho tiempo siendo productivo hoy (m·s que el promedio)
+            //    //Fecilitar por conseguir mucho tiempo siendo productivo hoy (m√°s que el promedio)
 
             //    if (EstadisticasManager.TiempoTotalProductivoHoy > new TimeSpan(5, 0, 0))
             //    {
@@ -840,26 +1028,26 @@ public class Felicitacion : Dialogo
             //        {
             //            case Dinosaurio.EstadoAnimo.Euforia:
             //                mensajesVariantes = new List<String> {
-            //               $"°IncreÌble! °Superaste todas las expectativas con {EstadisticasManager.TiempoTotalProductivoHoy.ToString(@"h\:mm\:ss")} de productividad!",
-            //$"°Est·s imparable! °Has trabajado {EstadisticasManager.TiempoTotalProductivoHoy.ToString(@"h\:mm\:ss")} y no hay quien te detenga!",
-            //$"°Woohoo! °Est·s en racha con {EstadisticasManager.TiempoTotalProductivoHoy.ToString(@"h\:mm\:ss")} de pura productividad!",
+            //               $"¬°Incre√≠ble! ¬°Superaste todas las expectativas con {EstadisticasManager.TiempoTotalProductivoHoy.ToString(@"h\:mm\:ss")} de productividad!",
+            //$"¬°Est√°s imparable! ¬°Has trabajado {EstadisticasManager.TiempoTotalProductivoHoy.ToString(@"h\:mm\:ss")} y no hay quien te detenga!",
+            //$"¬°Woohoo! ¬°Est√°s en racha con {EstadisticasManager.TiempoTotalProductivoHoy.ToString(@"h\:mm\:ss")} de pura productividad!",
 
             //    };
             //                mensajeFinal = SelectRandomElement(mensajesVariantes);
             //                break;
             //            case Dinosaurio.EstadoAnimo.Feliz:
             //                mensajesVariantes = new List<String> {
-            //                $"°Felicidades totales!, est·s estudiando hoy m·s que el promedio ({EstadisticasManager.TiempoTotalProductivoHoy.ToString(@"h\:mm\:ss")}).",
-            //                $"°Rawr!, !Te speraste!,{EstadisticasManager.TiempoTotalProductivoHoy.ToString(@"h\:mm\:ss")}",
-            //                $"°Impresionante! Has el promedio de productividad con {EstadisticasManager.TiempoTotalProductivoHoy.ToString(@"h\:mm\:ss")}. °Vamos por m·s!"
+            //                $"¬°Felicidades totales!, est√°s estudiando hoy m√°s que el promedio ({EstadisticasManager.TiempoTotalProductivoHoy.ToString(@"h\:mm\:ss")}).",
+            //                $"¬°Rawr!, !Te speraste!,{EstadisticasManager.TiempoTotalProductivoHoy.ToString(@"h\:mm\:ss")}",
+            //                $"¬°Impresionante! Has el promedio de productividad con {EstadisticasManager.TiempoTotalProductivoHoy.ToString(@"h\:mm\:ss")}. ¬°Vamos por m√°s!"
             //            };
             //                mensajeFinal = SelectRandomElement(mensajesVariantes);
             //                break;
             //            case Dinosaurio.EstadoAnimo.Triste:
             //                mensajesVariantes = new List<String> {
-            //                $"Oh no, parece que hoy no fue tu mejor dÌa. °Pero maÒana ser· mejor!",
-            //                $"No siempre se puede ganar, pero puedes intentarlo otra vez. °No te rindas!",
-            //                "SÈ que puedes hacerlo mejor. °Vamos a intentarlo de nuevo!"
+            //                $"Oh no, parece que hoy no fue tu mejor d√≠a. ¬°Pero ma√±ana ser√° mejor!",
+            //                $"No siempre se puede ganar, pero puedes intentarlo otra vez. ¬°No te rindas!",
+            //                "S√© que puedes hacerlo mejor. ¬°Vamos a intentarlo de nuevo!"
             //            };
             //                mensajeFinal = SelectRandomElement(mensajesVariantes);
             //                break;
@@ -867,7 +1055,7 @@ public class Felicitacion : Dialogo
             //        #endregion
             //    }
 
-            //    //felicitar por estar m·s tiempo productivo hoy que tu promedio 
+            //    //felicitar por estar m√°s tiempo productivo hoy que tu promedio 
 
             //    if(EstadisticasManager.TiempoTotalProductivoDiarioPromedio < tempoTerminado.TiempoTotal)
             //    {
@@ -890,27 +1078,27 @@ public class Felicitacion : Dialogo
             //        {
             //            case Dinosaurio.EstadoAnimo.Euforia:
             //                mensajesVariantes = new List<String> {
-            //    $"°S˙per increÌble! Rompiste tu rÈcord de {EstadisticasManager.TiempoTotalProductivoDiarioPromedio.ToString(@"h\:mm\:ss")} promedio diario siendo productivo.",
-            //    $"°Wow! °Tu productividad de hoy superÛ todo lo que habÌas logrado antes! °{EstadisticasManager.TiempoTotalProductivoDiarioPromedio.ToString(@"h\:mm\:ss")} es impresionante!",
-            //    $"°Est·s en la cima! No solo alcanzaste, sino que destrozaste tu promedio diario de {EstadisticasManager.TiempoTotalProductivoDiarioPromedio.ToString(@"h\:mm\:ss")} horas. °IncreÌble!"
+            //    $"¬°S√∫per incre√≠ble! Rompiste tu r√©cord de {EstadisticasManager.TiempoTotalProductivoDiarioPromedio.ToString(@"h\:mm\:ss")} promedio diario siendo productivo.",
+            //    $"¬°Wow! ¬°Tu productividad de hoy super√≥ todo lo que hab√≠as logrado antes! ¬°{EstadisticasManager.TiempoTotalProductivoDiarioPromedio.ToString(@"h\:mm\:ss")} es impresionante!",
+            //    $"¬°Est√°s en la cima! No solo alcanzaste, sino que destrozaste tu promedio diario de {EstadisticasManager.TiempoTotalProductivoDiarioPromedio.ToString(@"h\:mm\:ss")} horas. ¬°Incre√≠ble!"
             //};
             //                mensajeFinal = SelectRandomElement(mensajesVariantes);
             //                break;
 
             //            case Dinosaurio.EstadoAnimo.Feliz:
             //                mensajesVariantes = new List<String> {
-            //    $"Superaste tu promedio diario siendo productivo por {EstadisticasManager.TiempoTotalProductivoDiarioPromedio.ToString(@"h\:mm\:ss")}, °increÌble!",
-            //    $"°Genial! Hoy tu productividad ha sido excelente, °has trabajado m·s que tu promedio diario de {EstadisticasManager.TiempoTotalProductivoDiarioPromedio.ToString(@"h\:mm\:ss")} horas!",
-            //    $"°Felicidades! Hoy estuviste m·s productivo que de costumbre, superando tu promedio de {EstadisticasManager.TiempoTotalProductivoDiarioPromedio.ToString(@"h\:mm\:ss")}. °Sigue asÌ!"
+            //    $"Superaste tu promedio diario siendo productivo por {EstadisticasManager.TiempoTotalProductivoDiarioPromedio.ToString(@"h\:mm\:ss")}, ¬°incre√≠ble!",
+            //    $"¬°Genial! Hoy tu productividad ha sido excelente, ¬°has trabajado m√°s que tu promedio diario de {EstadisticasManager.TiempoTotalProductivoDiarioPromedio.ToString(@"h\:mm\:ss")} horas!",
+            //    $"¬°Felicidades! Hoy estuviste m√°s productivo que de costumbre, superando tu promedio de {EstadisticasManager.TiempoTotalProductivoDiarioPromedio.ToString(@"h\:mm\:ss")}. ¬°Sigue as√≠!"
             //};
             //                mensajeFinal = SelectRandomElement(mensajesVariantes);
             //                break;
 
             //            case Dinosaurio.EstadoAnimo.Triste:
             //                mensajesVariantes = new List<String> {
-            //    $"A pesar de las circunstancias, no puedo negar que te mereces una felicitaciÛn por mantenerte concentrado m·s que tu promedio diario de {EstadisticasManager.TiempoTotalProductivoDiarioPromedio.ToString(@"h\:mm\:ss")}.",
-            //    $"Hoy no ha sido f·cil, pero superaste tu promedio diario de {EstadisticasManager.TiempoTotalProductivoDiarioPromedio.ToString(@"h\:mm\:ss")}. Eso merece reconocimiento.",
-            //    $"Aunque fue un dÌa difÌcil, lograste concentrarte m·s de lo que sueles hacerlo. °Tu promedio de {EstadisticasManager.TiempoTotalProductivoDiarioPromedio.ToString(@"h\:mm\:ss")} horas lo dice todo!"
+            //    $"A pesar de las circunstancias, no puedo negar que te mereces una felicitaci√≥n por mantenerte concentrado m√°s que tu promedio diario de {EstadisticasManager.TiempoTotalProductivoDiarioPromedio.ToString(@"h\:mm\:ss")}.",
+            //    $"Hoy no ha sido f√°cil, pero superaste tu promedio diario de {EstadisticasManager.TiempoTotalProductivoDiarioPromedio.ToString(@"h\:mm\:ss")}. Eso merece reconocimiento.",
+            //    $"Aunque fue un d√≠a dif√≠cil, lograste concentrarte m√°s de lo que sueles hacerlo. ¬°Tu promedio de {EstadisticasManager.TiempoTotalProductivoDiarioPromedio.ToString(@"h\:mm\:ss")} horas lo dice todo!"
             //};
             //                mensajeFinal = SelectRandomElement(mensajesVariantes);
             //                break;
@@ -931,27 +1119,27 @@ public class Felicitacion : Dialogo
         //    {
         //        case Dinosaurio.EstadoAnimo.Euforia:
         //            mensajesVariantes = new List<String> {
-        //    $"°IncreÌble! °Superaste todas las expectativas con {EstadisticasManager.TiempoTotalProductivoHoy.ToString(@"h\:mm\:ss")} de productividad! Te mereces este descanso.",
-        //    $"°Est·s imparable! °Has trabajado {EstadisticasManager.TiempoTotalProductivoHoy.ToString(@"h\:mm\:ss")} y no hay quien te detenga! TÛmate un respiro, te lo ganaste.",
-        //    $"°Woohoo! °Est·s en racha con {EstadisticasManager.TiempoTotalProductivoHoy.ToString(@"h\:mm\:ss")} de pura productividad! Este descanso es m·s que merecido.",
+        //    $"¬°Incre√≠ble! ¬°Superaste todas las expectativas con {EstadisticasManager.TiempoTotalProductivoHoy.ToString(@"h\:mm\:ss")} de productividad! Te mereces este descanso.",
+        //    $"¬°Est√°s imparable! ¬°Has trabajado {EstadisticasManager.TiempoTotalProductivoHoy.ToString(@"h\:mm\:ss")} y no hay quien te detenga! T√≥mate un respiro, te lo ganaste.",
+        //    $"¬°Woohoo! ¬°Est√°s en racha con {EstadisticasManager.TiempoTotalProductivoHoy.ToString(@"h\:mm\:ss")} de pura productividad! Este descanso es m√°s que merecido.",
         //};
         //            mensajeFinal = SelectRandomElement(mensajesVariantes);
         //            break;
 
         //        case Dinosaurio.EstadoAnimo.Feliz:
         //            mensajesVariantes = new List<String> {
-        //    $"°Felicidades totales! Est·s estudiando hoy m·s que el promedio ({EstadisticasManager.TiempoTotalProductivoHoy.ToString(@"h\:mm\:ss")}). Ahora, rel·jate un poco.",
-        //    $"°Rawr! °Te superaste con {EstadisticasManager.TiempoTotalProductivoHoy.ToString(@"h\:mm\:ss")} de productividad! °Disfruta de este descanso!",
-        //    $"°Impresionante! Has superado el promedio de productividad con {EstadisticasManager.TiempoTotalProductivoHoy.ToString(@"h\:mm\:ss")}. °TÛmate un merecido descanso!",
+        //    $"¬°Felicidades totales! Est√°s estudiando hoy m√°s que el promedio ({EstadisticasManager.TiempoTotalProductivoHoy.ToString(@"h\:mm\:ss")}). Ahora, rel√°jate un poco.",
+        //    $"¬°Rawr! ¬°Te superaste con {EstadisticasManager.TiempoTotalProductivoHoy.ToString(@"h\:mm\:ss")} de productividad! ¬°Disfruta de este descanso!",
+        //    $"¬°Impresionante! Has superado el promedio de productividad con {EstadisticasManager.TiempoTotalProductivoHoy.ToString(@"h\:mm\:ss")}. ¬°T√≥mate un merecido descanso!",
         //};
         //            mensajeFinal = SelectRandomElement(mensajesVariantes);
         //            break;
 
         //        case Dinosaurio.EstadoAnimo.Triste:
         //            mensajesVariantes = new List<String> {
-        //    $"Oh no, parece que hoy no fue tu mejor dÌa con {EstadisticasManager.TiempoTotalProductivoHoy.ToString(@"h\:mm\:ss")}. Pero este descanso te ayudar· a recargar energÌas para maÒana.",
-        //    $"No siempre se puede ganar, pero puedes intentarlo otra vez. °No te rindas! TÛmate este descanso para volver m·s fuerte.",
-        //    $"SÈ que puedes hacerlo mejor. °Vamos a intentarlo de nuevo despuÈs de un buen descanso!",
+        //    $"Oh no, parece que hoy no fue tu mejor d√≠a con {EstadisticasManager.TiempoTotalProductivoHoy.ToString(@"h\:mm\:ss")}. Pero este descanso te ayudar√° a recargar energ√≠as para ma√±ana.",
+        //    $"No siempre se puede ganar, pero puedes intentarlo otra vez. ¬°No te rindas! T√≥mate este descanso para volver m√°s fuerte.",
+        //    $"S√© que puedes hacerlo mejor. ¬°Vamos a intentarlo de nuevo despu√©s de un buen descanso!",
         //};
         //            mensajeFinal = SelectRandomElement(mensajesVariantes);
         //            break;
@@ -973,7 +1161,7 @@ public class Felicitacion : Dialogo
 //
 // retos generales
 // lleva cierta cantidad de pomorodos
-// establece la tarea m·s importante
+// establece la tarea m√°s importante
 // planifica las tareas de tu siguiente pomodoro
 
 public class Exigencia : IMostrarIndicadorCompletado
@@ -988,13 +1176,13 @@ public class Exigencia : IMostrarIndicadorCompletado
 
     public virtual float GetMostrarTiempoAproximadoExigido()
     {
-        Debug.LogError("est·s mostrando el tiempo exigisdo de una clase abstracta");
+        Debug.LogError("est√°s mostrando el tiempo exigisdo de una clase abstracta");
         return 0;
     }
 
 
 
-    public Exigencia(Dinosaurio exigidor, Dificultad dificultad, string descripcion = "-", float recompensaEmocional = 0) //se deber· quitar estos parametros opcionales
+    public Exigencia(Dinosaurio exigidor, Dificultad dificultad, string descripcion = "-", float recompensaEmocional = 0) //se deber√° quitar estos parametros opcionales
     {
         Completado = false;
 
@@ -1012,22 +1200,22 @@ public class Exigencia : IMostrarIndicadorCompletado
         this.dificultad = dificultad;
     }
 
-    public enum Dificultad { facil, moderado, dificil } // yambien hace refrencia a la posiciÛn
+    public enum Dificultad { facil, moderado, dificil } // yambien hace refrencia a la posici√≥n
 
 
     public virtual string GetMostrarIndicadorCompletado()
     {
-        return "est·s mostrando el progreso de una clase abstracta";
+        return "est√°s mostrando el progreso de una clase abstracta";
     }
 
     public virtual string GetMostrarDescripcionExigencia()
     {
-        return "est·s mostrando la descripciÛn de una clase abstracta";
+        return "est√°s mostrando la descripci√≥n de una clase abstracta";
     }
 
     public virtual float GetValueIndicadorCompletado()
     {
-        Debug.Log("Est·s mostrando el valor de progreso de una clase abstracta");
+        Debug.Log("Est√°s mostrando el valor de progreso de una clase abstracta");
         return Completado ? 1f : 0f;
     }
 }
@@ -1036,7 +1224,7 @@ public enum TiposComidas
     prueba1, cualquierTipo
 }
 
-public class ExigenciaTiempoProductivo : Exigencia//Exigencia por comida / exigencia b·sica
+public class ExigenciaTiempoProductivo : Exigencia//Exigencia por comida / exigencia b√°sica
 {
     public float metaTiempoProductivo;
     private static Dictionary<Rareza, double> valoresRareza = new Dictionary<Rareza, double>()
@@ -1086,14 +1274,14 @@ public class ExigenciaTiempoProductivo : Exigencia//Exigencia por comida / exige
     // debo crear un randomizadorde tipos de comida
     public ExigenciaTiempoProductivo(Dinosaurio exigidor, Dificultad dificultad, TiposComidas tiposComidaRequerida = TiposComidas.cualquierTipo, float metaProductiva = 0) : base(exigidor, dificultad)
     {
-     
+
         // max 5 CM -  5/10 horas
         // promedio 3 CM - 3/6 horas
         // min 1 CM -  1/2 horas
 
-        // facil ==> 1 - 30  minutos promedio (para mantener estado de ·nimo) 
-        // mediano ==> 30 - 60 (para aumentar un poco el estado de ·nimo)
-        // dificil ==> 60 - 120 (para aumentar mucho el estado de ·nimo) 
+        // facil ==> 1 - 30  minutos promedio (para mantener estado de √°nimo) 
+        // mediano ==> 30 - 60 (para aumentar un poco el estado de √°nimo)
+        // dificil ==> 60 - 120 (para aumentar mucho el estado de √°nimo) 
 
         this.tiposComidaRequerida = tiposComidaRequerida;
 
@@ -1139,26 +1327,26 @@ public class ExigenciaTiempoProductivo : Exigencia//Exigencia por comida / exige
     {
 
 
-        float proporciÛnDificultad = 0f;
+        float proporci√≥nDificultad = 0f;
         switch (dificultad)
         {
             case Dificultad.facil:
-                proporciÛnDificultad = 1f;
+                proporci√≥nDificultad = 1f;
                 break;
             case Dificultad.moderado:
-                proporciÛnDificultad = 1.5f;
+                proporci√≥nDificultad = 1.5f;
                 break;
             case Dificultad.dificil:
-                proporciÛnDificultad = 2f;
+                proporci√≥nDificultad = 2f;
                 break;
         }
 
-        //consumo de emocionalidad diario 0.3 - 241.5 pp lo calculÈ viendo el promedio entre los pp de una exigencia facil, que se supone que es quien regula
-        exigidor.AlterarEmocionalidad(10f * proporciÛnDificultad);
+        //consumo de emocionalidad diario 0.3 - 241.5 pp lo calcul√© viendo el promedio entre los pp de una exigencia facil, que se supone que es quien regula
+        exigidor.AlterarEmocionalidad(10f * proporci√≥nDificultad);
         Debug.Log("la exigencia a sido completada");
     }
 
-    public static Dificultad DificultadAleatoria() // se rompe si aÒades m·s dificultades de lo normal (3)
+    public static Dificultad DificultadAleatoria() // se rompe si a√±ades m√°s dificultades de lo normal (3)
     {
         int NumeroAleatorio = UnityEngine.Random.Range(0, 3);
 
@@ -1201,7 +1389,7 @@ public class ExigenciaTiempoProductivo : Exigencia//Exigencia por comida / exige
             return "Exigencia completada";
         }
 
-        
+
 
     }
 
@@ -1235,7 +1423,7 @@ public class ExigenciaSuperarRecord : Exigencia
 
 
 
-        this.descripcion = $"Los caracteres motivadores necesitan ser alegrado por tus logros. Deber·s superar un reto personala productivo para emocionarlos.";
+        this.descripcion = $"Los caracteres motivadores necesitan ser alegrado por tus logros. Deber√°s superar un reto personala productivo para emocionarlos.";
 
     }
 

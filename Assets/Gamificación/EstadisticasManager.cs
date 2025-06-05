@@ -1,10 +1,7 @@
-using JetBrains.Annotations;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using TMPro;
-using UnityEngine.UIElements;
+using UnityEngine;
 
 
 public class EstadisticasManager : MonoBehaviour
@@ -14,7 +11,7 @@ public class EstadisticasManager : MonoBehaviour
     public static EstadisticasManager Instance { get; private set; }
     [SerializeField] private GameObject MotivadorPrefab;
 
-    public string keyCantidadMotivadores = "CantidadMotivadores";
+    public string keyCantidadMotivadores = "CantidadMotivadores"; //No cambiar de nombres, ya que estoy usando otra istancia sin referencia
 
     #region Sistema de integración de motivadores
     [SerializeField] private List<Dinosaurio> CaracteresMotivadoresEnSistema;
@@ -73,7 +70,6 @@ public class EstadisticasManager : MonoBehaviour
     {
         return 100f * Mathf.Exp(-0.6f * horas);
     }
-
     public static string FormatearTiempo(TimeSpan tiempo)
     {
         int horas = tiempo.Hours;
@@ -81,29 +77,24 @@ public class EstadisticasManager : MonoBehaviour
 
         return $"{horas} hora{(horas != 1 ? "s" : "")} con {minutos} minuto{(minutos != 1 ? "s" : "")}";
     }
-
-
-
-
-
     public void AñadirCaracterMotivadorAlSistema(Dinosaurio motivador)
     {
+
         if (!CaracteresMotivadoresEnSistema.Contains(motivador))
         {
             CaracteresMotivadoresEnSistema.Add(motivador);
-            StartCoroutine(GestorMetas.Instance.EsperarParaIniciarGeneraciónDeMetas());
+            //StartCoroutine(GestorMetas.Instance.EsperarParaIniciarGeneraciónDeMetas());
         }
-        GuardarInformarciónMotivadores();
 
+        GuardarInformarciónMotivadores();
     }
     public void EliminarCaracterMotivadorDelSistema(Dinosaurio motivador)
     {
         if (CaracteresMotivadoresEnSistema.Contains(motivador))
         {
             CaracteresMotivadoresEnSistema.Remove(motivador);
-            StartCoroutine(GestorMetas.Instance.EsperarParaIniciarGeneraciónDeMetas());
+            //StartCoroutine(GestorMetas.Instance.EsperarParaIniciarGeneraciónDeMetas());
         }
-        GuardarInformarciónMotivadores();
 
     }
     #endregion
@@ -113,7 +104,24 @@ public class EstadisticasManager : MonoBehaviour
 
     private const string KeyUltimaFecha = "UltimaFecha";
 
+    void OnApplicationQuit()
+    {
+        DateTime fechaActual = DateTime.Now;
 
+        if (PlayerPrefs.HasKey(KeyUltimaFecha))
+        {
+            string ultimaFecha = PlayerPrefs.GetString(KeyUltimaFecha);
+            Debug.Log("Última vez que se abrió la aplicación: " + ultimaFecha);
+        }
+        else
+        {
+            Debug.Log("Es la primera vez que abres la aplicación.");
+        }
+
+        PlayerPrefs.SetString(KeyUltimaFecha, fechaActual.ToString("yyyy-MM-dd HH:mm:ss"));
+        PlayerPrefs.SetString("UltimaActualizacion", DateTime.Now.ToString()); //HAY UN ERROR SOBRE LAS FECHAS QUE DEBES CORREGIR
+
+    }
     private void Start()
     {
         //if (!PlayerPrefs.HasKey(keyCantidadMotivadores))
@@ -159,8 +167,23 @@ public class EstadisticasManager : MonoBehaviour
         GuardarTiempoTotalProductivoPorVida();
         
     }
+    private float intervaloGuardado = 30f; // Ajustable: 30s - 60s
+    private float tiempoTranscurrido = 0f;
+
+    private void Update()
+    {
+        tiempoTranscurrido += Time.deltaTime;
+
+        if (tiempoTranscurrido >= intervaloGuardado)
+        {
+            GuardarInformarciónMotivadores();
+            tiempoTranscurrido = 0f;
+            
+         
+        }
 
 
+    }
     private void Awake()
     {
         #region ExtraA
@@ -184,6 +207,7 @@ public class EstadisticasManager : MonoBehaviour
 
         // Recuperar el tiempo total en horas desde PlayerPrefs
         CargarPromedioProductivoPorVida();
+
     }
 
     private void CargarPromedioProductivoPorVida()
@@ -202,18 +226,11 @@ public class EstadisticasManager : MonoBehaviour
     }
 
     [HideInInspector] public static TimeSpan TiempoTempoProductivoPromedio = new TimeSpan(0, 15, 0);
-
-
     [HideInInspector] public static TimeSpan TiempoTotalProductivoPorVida = new TimeSpan(0, 0, 0);
     private const string TotalTiempoKey = "TotalTiempoProductividad"; // Clave para el total de tiempo en PlayerPrefs
     public int DiasEnTotalPorVida = 0;
     private const string DiasKey = "DiasProductividad"; // Clave para la cantidad de días registrados en PlayerPrefs
-
-
-
     [HideInInspector] public static TimeSpan TiempoTotalProductivoHoy = new TimeSpan(0, 0, 0);
-
-
     public void GuardarTiempoTotalProductivoPorVida()
     {
         // Obtener los valores actuales guardados
@@ -227,33 +244,17 @@ public class EstadisticasManager : MonoBehaviour
         PlayerPrefs.SetInt(DiasKey, diasRegistrados);
         PlayerPrefs.Save();
     }
+    //public TimeSpan ObtenerPromedioProductividad()
+    //{
+    //    double totalTiempo = PlayerPrefs.GetFloat(TotalTiempoKey, 0f);
+    //    int diasRegistrados = PlayerPrefs.GetInt(DiasKey, 0);
 
+    //    if (diasRegistrados == 0)
+    //        return TimeSpan.Zero; // Si no hay días registrados, el promedio es 0
 
-
-    public TimeSpan ObtenerPromedioProductividad()
-    {
-        double totalTiempo = PlayerPrefs.GetFloat(TotalTiempoKey, 0f);
-        int diasRegistrados = PlayerPrefs.GetInt(DiasKey, 0);
-
-        if (diasRegistrados == 0)
-            return TimeSpan.Zero; // Si no hay días registrados, el promedio es 0
-
-        double promedioHoras = totalTiempo / diasRegistrados;
-        return TimeSpan.FromHours(promedioHoras);
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
+    //    double promedioHoras = totalTiempo / diasRegistrados;
+    //    return TimeSpan.FromHours(promedioHoras);
+    //}
     public void RegistrarTempoTerminado(Tempos tempoTerminado)
     {
         if(tempoTerminado.tiposTempos == TiposTempos.productivo)
@@ -267,16 +268,12 @@ public class EstadisticasManager : MonoBehaviour
 
 
     }
-
     private void OnDestroy()
     {
         // Desuscribir el evento para evitar referencias huérfanas.  
         PomodoroSistema.TemposTerminado -= RegistrarTempoTerminado;
   
     }
-
-
-
     public void GuardarInformarciónMotivadores()
     {
         PlayerPrefs.SetInt(keyCantidadMotivadores, CaracteresMotivadoresEnSistema.Count);
@@ -286,7 +283,11 @@ public class EstadisticasManager : MonoBehaviour
         {
             DinosaurioData motivadorDataPorGuardar = new DinosaurioData(); // creamos un cartucho para guardar la información
             motivadorDataPorGuardar.Nombre = motivador.Nombre;
+            motivadorDataPorGuardar.especie = motivador._Especie.ToString();
             motivadorDataPorGuardar.Emocionalidad = motivador.Emocionalidad;
+            motivadorDataPorGuardar.rareza = motivador.Rareza.ToString();
+            
+      
             motivadorDataPorGuardar.position = motivador.gameObject.transform.position;
             DataPorGuardar.motivadoresData.Add(motivadorDataPorGuardar);
 
@@ -333,7 +334,6 @@ public class EstadisticasManager : MonoBehaviour
         System.IO.File.WriteAllText("lista_motivadores_data", json);
         PlayerPrefs.Save();
     }
-
     public void CargarInformaciónMotivadores()
     {
         if (PlayerPrefs.GetInt(keyCantidadMotivadores) != 0)
@@ -358,6 +358,14 @@ public class EstadisticasManager : MonoBehaviour
                         componenteDinosaurioNuevo.Nombre = motivadorCargado.Nombre;
                         componenteDinosaurioNuevo.Emocionalidad = motivadorCargado.Emocionalidad;
                         componenteDinosaurioNuevo.gameObject.transform.position = motivadorCargado.position;
+                        componenteDinosaurioNuevo._Especie = (Especie)System.Enum.Parse(typeof(Especie), motivadorCargado.especie);
+                        componenteDinosaurioNuevo.Rareza = (Rareza)System.Enum.Parse(typeof(Rareza), motivadorCargado.rareza);
+
+                        if (componenteDinosaurioNuevo.gameObject.transform.position.z < 1)
+                        {
+                            componenteDinosaurioNuevo.gameObject.transform.position += new Vector3(0, 0, 1);
+                        }
+                       
                     }
 
                     if (ComprobarEsOtroDia()) //comprubea si es otro día para no cargarlo. caso contrario no debería cargar los respectivos datos
@@ -427,23 +435,12 @@ public class EstadisticasManager : MonoBehaviour
 
 
     }
-
-    private void OnApplicationQuit()
-    {
-        GuardarUltimaActualizacion();
-        GuardarInformarciónMotivadores();
-
-    }
-
-
-
     private void GuardarUltimaActualizacion()
     {
         // Guarda la hora actual como la última vez que se cerró la aplicación
         PlayerPrefs.SetString("UltimaActualizacion", DateTime.Now.ToString());
         PlayerPrefs.Save();
     }
-
     public bool ComprobarEsOtroDia()
     {
         //hecho para ejectuarse una vez
@@ -478,6 +475,8 @@ public class DinosaurioData
     public string Nombre;
     public float Emocionalidad;
     public Vector3 position;
+    public string especie;
+    public string rareza;
     public List<ExigenciaTiempoProductivoData> Exigencias = new List<ExigenciaTiempoProductivoData>();
 }
 [System.Serializable]

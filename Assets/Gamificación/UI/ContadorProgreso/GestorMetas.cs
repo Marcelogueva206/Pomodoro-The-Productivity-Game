@@ -53,7 +53,9 @@ public class GestorMetas : MonoBehaviour
         Marca100Porciento = new MarcaBasicaRecompensa("Marca del éxito", 100f);
         marcasSimples = new List<MarcaBasicaRecompensa> { Marca0Porciento, Marca10Porciento, Marca20Porciento, Marca30Porciento, Marca40Porciento, Marca50Porciento, Marca60Porciento, Marca70Porciento, Marca80Porciento, Marca90Porciento, Marca100Porciento };
 
-
+        MetaMinima = new MetaProgresoRecompensa("Primera meta de la productividad", 5, TipoMeta.MetaMinima);
+        MetaDeIntermedio = new MetaProgresoRecompensa("Segunda meta de la productividad", 10, TipoMeta.MetaIntermedia);
+        MetaDeSuperacion = new MetaProgresoRecompensa("Tercera máxima meta de la productividad", 15, TipoMeta.MetaDeSuperación);
 
         // Implementación del patrón Singleton
         if (Instance != null && Instance != this)
@@ -65,61 +67,123 @@ public class GestorMetas : MonoBehaviour
 
 
 
-        DontDestroyOnLoad(gameObject); // Opcional: persiste entre escenas
+        DontDestroyOnLoad(gameObject); // Opcional: persiste entre escenas        DontDestroyOnLoad(gameObject); // Opcional: persiste entre escenas
+        // Inicializa las metas diarias al iniciar el juego
+        //RegenerarMetasDiarias();
 
-        if (ComprobarEsOtroDia())
+       
+    }
+
+    public void GuardarMetas()
+    {
+        PlayerPrefs.SetFloat("MetaMinima", ValorMetaMinima);
+        PlayerPrefs.SetFloat("MetaIntermedia", ValorMetaDeIntermedio);
+        PlayerPrefs.SetFloat("MetaSuperacion", ValorMetaDeSuperacion);
+        //PlayerPrefs.SetString("UltimaActualizacion", DateTime.Now.ToString());
+        PlayerPrefs.SetString("UltimaActualizacion", DateTime.Now.ToString()); // <-- aquí
+        PlayerPrefs.Save(); // Asegura que los datos se guarden inmediatamente
+    }
+
+    public void CargarMetas()
+    {
+        if (PlayerPrefs.HasKey("MetaMinima"))
         {
-            StartCoroutine(EsperarParaIniciarGeneraciónDeMetas());
+            ValorMetaMinima = PlayerPrefs.GetFloat("MetaMinima");
+            ValorMetaDeIntermedio = PlayerPrefs.GetFloat("MetaIntermedia");
+            ValorMetaDeSuperacion = PlayerPrefs.GetFloat("MetaSuperacion");
         }
+        else
+        {
+            // Si no hay datos guardados, inicializa con valores predeterminados
+            ValorMetaMinima = 5;
+            ValorMetaDeIntermedio = 10;
+            ValorMetaDeSuperacion = 15;
+        }
+        //
+
+        MetaMinima.SetNombre("Primera meta de la productividad");
+        MetaMinima.SetPorcentaje(Mathf.FloorToInt(GetMetaMinimaPor()));
+        MetaMinima.SetCompletado(false);
+
+        MetaDeIntermedio.SetNombre("Segunda meta de la productividad");
+        MetaDeIntermedio.SetPorcentaje(Mathf.FloorToInt(GetMetaDeIntermedioPor()));
+        MetaDeIntermedio.SetCompletado(false);
+
+        MetaDeSuperacion.SetNombre("Tercera máxima meta de la productividad");
+        MetaDeSuperacion.SetPorcentaje(Mathf.FloorToInt(GetMetaDeSuperacionPor()));
+        MetaDeSuperacion.SetCompletado(false);
     }
 
     private void Start() //es muy probableque haya un error, ya que los motivadores se implementan en el sistema ambién en el start
     {
-
-     
-
-    }
-
-    public void RegenerarMetasDiarias()
-    {
-
-
-        if (EstadisticasManager.Instance.getCaracteresMotivadoresEnSistema().Count != 0)
+        CargarMetas();
+      
+        // Verifica si las metas deben regenerarse
+        if (MetasNoInicializadas() || ComprobarEsOtroDia())
         {
-            TotalMinutosDeExigencias = 0;
-            foreach (Dinosaurio motivador in EstadisticasManager.Instance.getCaracteresMotivadoresEnSistema())
-            {
-                TotalMinutosDeExigencias += motivador.GetTiempoTotalExigido();
-
-                MinimoMinutosDeExigencias += motivador.GetMinimoSostenible();
-            }
-
-            ValorMetaMinima = MinimoMinutosDeExigencias;
-
-            float rangoAleatorioDeIncrementoDeMetaIntermedio = UnityEngine.Random.Range(IncrementoDeMetaIntermedio.x, IncrementoDeMetaIntermedio.y);
-            int cantidadDeMotivadores = EstadisticasManager.Instance.getCaracteresMotivadoresEnSistema().Count;
-
-            ValorMetaDeIntermedio = MinimoMinutosDeExigencias + cantidadDeMotivadores * rangoAleatorioDeIncrementoDeMetaIntermedio;
-
-            float rangoAleatorioDeIncrementoDeMetaDeSuperación = UnityEngine.Random.Range(IncrementoDeMetaSuperacion.x, IncrementoDeMetaSuperacion.y);
-            ValorMetaDeSuperacion = ValorMetaDeIntermedio + cantidadDeMotivadores * rangoAleatorioDeIncrementoDeMetaDeSuperación;
+            Debug.Log("Regenerando metas porque no están inicializadas o es un nuevo día.");
+            StartCoroutine(EsperarParaIniciarGeneraciónDeMetas());
         }
         else
         {
-            ValorMetaMinima = 5;
-            ValorMetaDeIntermedio = 10;
-            ValorMetaDeSuperacion = 15;
-
-
-
+            Debug.Log("Cargando metas guardadas porque es el mismo día.");
         }
-        MetaMinima = new MetaProgresoRecompensa("Primera meta de la productividad", Mathf.FloorToInt(GetMetaMinimaPor()), TipoMeta.MetaMinima);
-        MetaDeIntermedio = new MetaProgresoRecompensa("Segunda meta de la productividad", Mathf.FloorToInt(GetMetaDeIntermedioPor()), TipoMeta.MetaIntermedia);
-        MetaDeSuperacion = new MetaProgresoRecompensa("Tercera máxima meta de la productividad", Mathf.FloorToInt(GetMetaDeSuperacionPor()), TipoMeta.MetaDeSuperación);
+
 
 
     }
+    // Método para regenerar las metas diarias
+    public void RegenerarMetasDiarias()
+    {
+        if (MetasNoInicializadas() || ComprobarEsOtroDia())
+        {
+            if (EstadisticasManager.Instance.getCaracteresMotivadoresEnSistema().Count > 0)
+            {
+                TotalMinutosDeExigencias = 0;
+                MinimoMinutosDeExigencias = 0;
+                foreach (Dinosaurio motivador in EstadisticasManager.Instance.getCaracteresMotivadoresEnSistema())
+                {
+                    TotalMinutosDeExigencias += motivador.GetTiempoTotalExigido();
+                    MinimoMinutosDeExigencias += motivador.GetMinimoSostenible();
+                }
 
+                ValorMetaMinima = MinimoMinutosDeExigencias;
+
+                float rangoAleatorioDeIncrementoDeMetaIntermedio = UnityEngine.Random.Range(IncrementoDeMetaIntermedio.x, IncrementoDeMetaIntermedio.y);
+                int cantidadDeMotivadores = EstadisticasManager.Instance.getCaracteresMotivadoresEnSistema().Count;
+
+                ValorMetaDeIntermedio = MinimoMinutosDeExigencias + cantidadDeMotivadores * rangoAleatorioDeIncrementoDeMetaIntermedio;
+
+                float rangoAleatorioDeIncrementoDeMetaDeSuperación = UnityEngine.Random.Range(IncrementoDeMetaSuperacion.x, IncrementoDeMetaSuperacion.y);
+                ValorMetaDeSuperacion = ValorMetaDeIntermedio + cantidadDeMotivadores * rangoAleatorioDeIncrementoDeMetaDeSuperación;
+            }
+            else
+            {
+                Debug.LogWarning("[CargarMetas] No se encontraron caracteresMotivadores. Usando valores predeterminados.");
+                ValorMetaMinima = 5;
+                ValorMetaDeIntermedio = 10;
+                ValorMetaDeSuperacion = 15;
+            }
+
+            MetaMinima.SetNombre("Primera meta de la productividad");
+            MetaMinima.SetPorcentaje(Mathf.FloorToInt(GetMetaMinimaPor()));
+            MetaMinima.SetCompletado(false);
+
+            MetaDeIntermedio.SetNombre("Segunda meta de la productividad");
+            MetaDeIntermedio.SetPorcentaje(Mathf.FloorToInt(GetMetaDeIntermedioPor()));
+            MetaDeIntermedio.SetCompletado(false);
+
+            MetaDeSuperacion.SetNombre("Tercera máxima meta de la productividad");
+            MetaDeSuperacion.SetPorcentaje(Mathf.FloorToInt(GetMetaDeSuperacionPor()));
+            MetaDeSuperacion.SetCompletado(false);
+
+            GuardarMetas();
+        }
+        PlayerPrefs.SetString("UltimaActualizacion", DateTime.Now.ToString("yyyy-MM-dd"));
+        PlayerPrefs.Save();
+
+    }
+    
     public MetaProgresoRecompensa GetMetaPorTipo(TipoMeta tipoMeta)
     {
         foreach (MetaProgresoRecompensa MetaRecompensa in new MetaProgresoRecompensa[] { GestorMetas.Instance.MetaMinima, GestorMetas.Instance.MetaDeIntermedio, GestorMetas.Instance.MetaDeSuperacion })
@@ -130,36 +194,54 @@ public class GestorMetas : MonoBehaviour
         return null;
     }
 
+    private bool MetasNoInicializadas()
+    {
+        return ValorMetaMinima <= 0 || ValorMetaDeIntermedio <= 0 || ValorMetaDeSuperacion <= 0;
+    }
+
     public bool ComprobarEsOtroDia()
     {
-        //hecho para ejectuarse una vez
+        ////hecho para ejectuarse una vez
+        //string ultimaActualizacionStr = PlayerPrefs.GetString("UltimaActualizacion", DateTime.Now.ToString());
+        //DateTime ultimaActualizacion = DateTime.Parse(ultimaActualizacionStr);
+
+        //if (ultimaActualizacion.Month == DateTime.Now.Month && ultimaActualizacion.Year == DateTime.Now.Year)
+        //{
+        //    if (DateTime.Now.Day - ultimaActualizacion.Day == 0)
+        //    {
+        //        return false;
+        //    }
+
+        //}
+
+        //return true;
+
         string ultimaActualizacionStr = PlayerPrefs.GetString("UltimaActualizacion", DateTime.Now.ToString());
-        DateTime ultimaActualizacion = DateTime.Parse(ultimaActualizacionStr);
+        DateTime ultimaActualizacion;
 
-        if (ultimaActualizacion.Month == DateTime.Now.Month && ultimaActualizacion.Year == DateTime.Now.Year)
+        Debug.Log($"Última actualización guardada: {ultimaActualizacionStr}");
+        // Intenta parsear la fecha guardada
+        if (!DateTime.TryParse(ultimaActualizacionStr, out ultimaActualizacion))
         {
-            if (DateTime.Now.Day - ultimaActualizacion.Day == 0)
-            {
-                return false;
-            }
-
+            // Si falla, fuerza regeneración de metas
+            return true;
         }
 
-        return true;
-
+        // Calcula la diferencia de días completos
+        return (DateTime.Now.Date - ultimaActualizacion.Date).Days >= 1;
     }
 
     public float GetMetaMinimaPor()
     {
-        return (ValorMetaMinima / ValorMetaDeSuperacion) * 100;
+        return (ValorMetaMinima / ValorMetaDeSuperacion) * 100f;
     }
     public float GetMetaDeIntermedioPor()
     {
-        return (ValorMetaDeIntermedio / ValorMetaDeSuperacion) * 100;
+        return (ValorMetaDeIntermedio / ValorMetaDeSuperacion) * 100f;
     }
     public float GetMetaDeSuperacionPor()
     {
-        return 100;
+        return 100f;
     }
 
     public float GetMetaSuperaciónValor()
@@ -173,7 +255,7 @@ public class GestorMetas : MonoBehaviour
     public IEnumerator EsperarParaIniciarGeneraciónDeMetas()
     {
         // Espera hasta que el objeto requerido no sea null y esté activo en la jerarquía.
-        while (EstadisticasManager.Instance == null && ContadorProgreso.Instance == null)
+        while (EstadisticasManager.Instance == null || ContadorProgreso.Instance == null || (EstadisticasManager.Instance.getCaracteresMotivadoresEnSistema().Count <= 0 /*&& PlayerPrefs.GetInt("CantidadMotivadores") == 0*/)) // posible errorr
         {
             Debug.Log("Esperando a que carge los elemntos necesarios para generar metas");
             yield return null; // Espera un frame.
@@ -249,9 +331,18 @@ public class MarcaBasicaRecompensa
 
     public void SetCompletado(bool estado)
     {
+   
+
         Completado = estado;
     }
-
+    public void SetPorcentaje(float porcentaje)
+    {
+        porcentajeRequeridoMeta = porcentaje;
+    }
+    public void SetNombre(string nombre)
+    {
+        Nombre = nombre.Trim();
+    }
     public void SetReclamado(bool estado)
     {
         Reclamado = estado;

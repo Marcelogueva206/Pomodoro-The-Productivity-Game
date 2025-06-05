@@ -23,6 +23,8 @@ public class ProductividadManager : MonoBehaviour
         CargarRegistros(); // Cargar datos al iniciar el juego
         MostrarRegistrosEnConsola();
         EstadisticasManager.Instance.ActualizarTextoRangoYPrimedioUI();
+
+        //ReiniciarRegistroProductividad();
     }
 
     public void RegistrarHoras(double horas)
@@ -44,7 +46,7 @@ public class ProductividadManager : MonoBehaviour
         GuardarRegistros();
     }
 
-    public double CalcularPromedio()
+    public double CalcularPromedio() // este es el real
     {
         DateTime hoy = DateTime.Now;
         double numerador = 0;
@@ -109,7 +111,17 @@ public class ProductividadManager : MonoBehaviour
             Debug.LogWarning($"⚠️ No se encontró un registro para la fecha {fechaObjetivo}.");
         }
     }
+    public void ReiniciarRegistroProductividad()
+    {
+        registros.Clear(); // Eliminar todos los registros en memoria
 
+        if (File.Exists(filePath))
+        {
+            File.Delete(filePath); // Borrar el archivo JSON si existe
+        }
+
+        Debug.Log("🔄 Registro de productividad reiniciado. Ahora es como si el usuario ingresara por primera vez.");
+    }
 }
 
 [System.Serializable]

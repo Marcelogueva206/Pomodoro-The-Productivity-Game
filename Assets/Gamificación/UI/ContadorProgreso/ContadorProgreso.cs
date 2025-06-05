@@ -35,7 +35,7 @@ public class ContadorProgreso : MonoBehaviour
         }
     }
 
-    public float ProgresoUsuario { get => progresoUsuario; set { VerificarLogroDeEstrellas(); VerificarLogrosDeMarcas(); progresoUsuario = value; } }
+    public float ProgresoUsuario { get => progresoUsuario; set { /*VerificarLogroDeEstrellas()*/; VerificarLogrosDeMarcas(); progresoUsuario = value; } }
 
     public event ProgresoMetaUsuario PremioPorProgresoUsuario = (progreso) =>
     {
@@ -67,8 +67,22 @@ public class ContadorProgreso : MonoBehaviour
     [SerializeField] private RectTransform cuerpoMarca100;
     public void ActualizarMarcas()
     {
+        if (GestorMetas.Instance == null)
+        {
+            Debug.LogError("GestorMetas.Instance no está inicializado.");
+            return;
+        }
+
+        if (GestorMetas.Instance.MetaMinima == null || GestorMetas.Instance.MetaDeIntermedio == null || GestorMetas.Instance.MetaDeSuperacion == null)
+        {
+            Debug.LogError("Una o más metas no están inicializadas.");
+            return;
+        }
+
         if (TodosLosElementosCargadosParActualizarMarcas())
         {
+           
+
             if (GestorMetas.Instance.MetaMinima != null && GestorMetas.Instance.MetaDeIntermedio != null && GestorMetas.Instance.MetaDeSuperacion != null)
             {
                 ActualizarMarca(cuerpoPrimeraMeta, GestorMetas.Instance.MetaMinima.PorcentajeRequeridoMeta, GestorMetas.Instance.MetaMinima.PuntuacionRequerida);
@@ -86,9 +100,6 @@ public class ContadorProgreso : MonoBehaviour
                 ActualizarMarca(cuerpoMarca80, GestorMetas.Instance.Marca80Porciento.PorcentajeRequeridoMeta, GestorMetas.Instance.Marca80Porciento.PuntuacionRequerida);
                 ActualizarMarca(cuerpoMarca90, GestorMetas.Instance.Marca90Porciento.PorcentajeRequeridoMeta, GestorMetas.Instance.Marca90Porciento.PuntuacionRequerida);
                 ActualizarMarca(cuerpoMarca100, GestorMetas.Instance.Marca100Porciento.PorcentajeRequeridoMeta, GestorMetas.Instance.Marca100Porciento.PuntuacionRequerida);
-
-                Debug.Log(GestorMetas.Instance.Marca0Porciento.PorcentajeRequeridoMeta);
-                Debug.Log(GestorMetas.Instance.Marca0Porciento.PuntuacionRequerida);
             }
         }
         else
@@ -100,17 +111,18 @@ public class ContadorProgreso : MonoBehaviour
        
     }
 
-    private void ActualizarMarca(RectTransform marca, float porcentaje, float cantidad = 0)
+    private void ActualizarMarca(RectTransform marca, float porcentaje, float cantidad)
     {
+        
         TextMeshProUGUI textoMarca = marca.GetComponentInChildren<TextMeshProUGUI>();
 
         // Solo actualiza el texto si el componente existe
         if (textoMarca != null)
         {
-            textoMarca.text = (cantidad == 0) ? Mathf.CeilToInt(porcentaje).ToString() : Mathf.CeilToInt(cantidad).ToString();
+            textoMarca.text = Mathf.CeilToInt(cantidad).ToString(); // Siempre muestra la cantidad
         }
 
-        if(porcentaje < 100f)
+        if (porcentaje < 100f)
         {
             // Asegúrate de que el valor esté entre 0 y 1
             float normalizedPercentage = Mathf.Clamp(porcentaje / 100f, 0f, 1f);
@@ -121,6 +133,8 @@ public class ContadorProgreso : MonoBehaviour
             // Actualiza la posición del marcador, considerando el ancho de la barra
             marca.anchoredPosition = new Vector2(markerPositionX - (sliderBarraProgreso.GetComponent<RectTransform>().rect.width * 0.5f), marca.anchoredPosition.y);
         }
+
+
     }
        
 
@@ -176,7 +190,8 @@ public class ContadorProgreso : MonoBehaviour
 
     public void ActualizarProgresoEnEvento(Tempos tempos)
     {
-        ProgresoUsuario = Gamificacion.Instance.ProgresoTotalMetaDiarioPor / 100f;
+
+        ProgresoUsuario = (float)Gamificacion.Instance.ProgresoTotalMetaDiarioPor / 100f;
     }
 
     void OnApplicationQuit()
@@ -256,6 +271,7 @@ public class ContadorProgreso : MonoBehaviour
         foreach(RectTransform cuerpoMarcadorMeta in new RectTransform[] { cuerpoPrimeraMeta , cuerpoSegundaMeta, cuerpoTerceraMeta })
         {
             cuerpoMarcadorMeta.gameObject.GetComponent<LogicaMarcaMeta>().IntentarMostrarReclamarRecompensa();
+          
 
         }
 
@@ -276,10 +292,6 @@ public class ContadorProgreso : MonoBehaviour
         // Ejecutar el método una vez que las metas estén inicializadas
         ActualizarMostrarReclamarRecompensa(null);
     }
-
-
-
-
 
     public void IntentarCargarProgreso()
     {
@@ -338,37 +350,52 @@ public class ContadorProgreso : MonoBehaviour
             MetaRecompensa.SetReclamado(valorGuardadoReclamado);
 
         }
-
+        MostrarProgresoUI();
     }
-
-
-
-    private void VerificarLogroDeEstrellas()
+    public void VerificarLogroDeEstrellas()
     {
 
         Debug.Log("Verififación de estrellas...");
+        ActualizarProgresoEnEvento(null);
+
         if (GestorMetas.Instance.MetaMinima != null&& GestorMetas.Instance.MetaDeIntermedio != null&& GestorMetas.Instance.MetaDeSuperacion != null)
         {
-            foreach (MetaProgresoRecompensa MetaRecompensa in new MetaProgresoRecompensa[] { GestorMetas.Instance.MetaMinima, GestorMetas.Instance.MetaDeIntermedio, GestorMetas.Instance.MetaDeSuperacion })
+            //Debug.Log($"Progreso usuario {progresoUsuario}");
+            //foreach (MetaProgresoRecompensa MetaRecompensa in new MetaProgresoRecompensa[] { GestorMetas.Instance.MetaMinima, GestorMetas.Instance.MetaDeIntermedio, GestorMetas.Instance.MetaDeSuperacion })
+            //{
+            //    Debug.Log($"Porcentaje requerido: {MetaRecompensa.PorcentajeRequeridoMeta} para la meta {MetaRecompensa.tiposMetas}  ");
+            //    if ((MetaRecompensa.PorcentajeRequeridoMeta / 100f) < progresoUsuario)
+            //    {
+            //        Debug.Log("Gestor: " + GestorMetas.Instance.MetaMinima.GetHashCode());
+            //        Debug.Log("Local : " + MetaRecompensa.GetHashCode());
+
+            //        MetaRecompensa.SetCompletado(true);
+            //    }
+            //    else
+            //    {
+            //        return;
+            //    }
+
+
+            //}
+         
+
+            foreach (var MetaRecompensa in new[] { GestorMetas.Instance.MetaMinima, GestorMetas.Instance.MetaDeIntermedio, GestorMetas.Instance.MetaDeSuperacion })
             {
+                bool logroCumplido = (MetaRecompensa.PorcentajeRequeridoMeta / 100f) <= progresoUsuario;
 
-                if (MetaRecompensa.PorcentajeRequeridoMeta / 100f <= progresoUsuario)
-                {
-                    MetaRecompensa.SetCompletado(true);
-                }
-                else
-                {
-                    return;
-                }
+                Debug.Log($"Meta {MetaRecompensa.tiposMetas} - progreso usuario: {progresoUsuario} - necesita: {MetaRecompensa.PorcentajeRequeridoMeta / 100f} - cumplido: {logroCumplido}");
 
-
+                MetaRecompensa.SetCompletado(logroCumplido);
             }
         }
         else
         {
             Debug.Log("Verififación de estrellas ha fallado");
         }
-     
+
+        ActualizarMostrarReclamarRecompensa(null);
+
     }
 
     //private void InvocarEventoParaRecompensa(int index, float progresoLogrado)
@@ -380,11 +407,12 @@ public class ContadorProgreso : MonoBehaviour
     //    }
     //}
 
-    private void MostrarProgresoUI()
+    public void MostrarProgresoUI()
     {
         TextoPPsAcumulados.text = Gamificacion.Instance.TiempoAcumuladoHoy.ToString("F0");
         TextoPPsTotales.text = Gamificacion.Instance.TiempoTotalAcumulado.ToString("F0");
         sliderBarraProgreso.value = ProgresoUsuario;
+
         sliderBarraProgresoAcumulado.value = ProgresoUsuario + (Contador.PuntuacionTempo / GestorMetas.Instance.GetMetaSuperaciónValor());
     }
 
@@ -406,8 +434,6 @@ public class ContadorProgreso : MonoBehaviour
         return true;
 
     }
-
-
     private bool TodosLosElementosCargadosParActualizarMarcas()
     {
         var gm = GestorMetas.Instance;

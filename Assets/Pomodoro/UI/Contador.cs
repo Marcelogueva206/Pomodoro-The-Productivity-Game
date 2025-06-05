@@ -105,7 +105,12 @@ public class Contador : MonoBehaviour
     {
         TiempoRestanteStatic -= Time.deltaTime;
         GuardarTiempoRestante();
-        PuntuacionTempo += Time.deltaTime * (1f / 60f);
+
+        if(PomodoroSistema._tempoActual.tiposTempos == TiposTempos.productivo)
+        {
+            PuntuacionTempo += Time.deltaTime * (1f / 60f);
+        }
+     
         float value = Mathf.Floor(PuntuacionTempo);
         textoPuntuacionTempo.text = value.ToString();
     }
@@ -113,9 +118,10 @@ public class Contador : MonoBehaviour
     private void Start()
     {
         CambiarFaseContador(FasesContador.Inicio);
-
+        IniciarEnfoqueCorto();
         BotonPausar.SetActive(false);
 
+      
     }
 
     public void AsignarContadorGUI()
@@ -175,16 +181,23 @@ public class Contador : MonoBehaviour
             case FasesContador.Detenido:
                 OnDetenidoContador.Invoke();
                 ContandoActivo = false;
+                contador.BotonPausar.SetActive(false); // <- Esto debe estar en false
+                contador.BotonIniciar.SetActive(true);  // <- Este en true
                 break;
             case FasesContador.Inicio:
                 OnInicioContador.Invoke();
 
                 ContandoActivo = false;
                 ReiniciarTiempoContador();
+                contador.BotonPausar.SetActive(false);
+                contador.BotonIniciar.SetActive(true);
+
                 break;
             case FasesContador.Progeso:
                 OnProgresoContador.Invoke();
                 ContandoActivo = true;
+                contador.BotonPausar.SetActive(true);
+                contador.BotonIniciar.SetActive(false);
 
                 break;
             case FasesContador.Terminado:
@@ -194,6 +207,8 @@ public class Contador : MonoBehaviour
                 CambiarFaseContador(FasesContador.Inicio);
                 break;
         }
+
+
     }
 
     private void ReiniciarPuntuaciónTempo()
@@ -221,23 +236,18 @@ public class Contador : MonoBehaviour
             SeinicioNuevoPomodoro();
 
             CambiarFaseContador(FasesContador.Progeso);
-
-            contador.BotonPausar.SetActive(true);
-            contador.BotonIniciar.SetActive(false);
         }
         else if (FasesContador.Detenido == FaseActual)
         {
             CambiarFaseContador(FasesContador.Progeso);
-
-            contador.BotonPausar.SetActive(true);
-            contador.BotonIniciar.SetActive(false);
         }
         else if (FasesContador.Progeso == FaseActual)
         {
             CambiarFaseContador(FasesContador.Detenido);
 
-            contador.BotonPausar.SetActive(false);
-            contador.BotonIniciar.SetActive(true);
+        }else if (FasesContador.Terminado == FaseActual)
+        {
+
         }
 
     }

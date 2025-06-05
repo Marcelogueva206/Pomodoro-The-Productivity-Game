@@ -4,7 +4,7 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using System.Runtime.InteropServices.WindowsRuntime;
-using UnityEditor.Animations;
+
 
 public class VentanaAdopcion : MonoBehaviour
 {
@@ -150,16 +150,19 @@ public class VentanaAdopcion : MonoBehaviour
         }
     }
 
+  
 
     public void CerrarVentanaAdopcion()
     {
         gameObject.SetActive(false);
-
+        GuardarNumeroAdopcionesDisponibles();
         if (AdopcionAbierta)
         {
             AdopcionManager.Instance.CrearMotivador(nombreInputField.text);
             animacionesAdoptado.gameObject.SetActive(false);
+            AdopcionAbierta = false;
         }
+   
     }
 
 }

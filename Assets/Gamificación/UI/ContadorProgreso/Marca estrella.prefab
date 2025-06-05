@@ -169,6 +169,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   BotonReclamarRecompensa: {fileID: 5134665233003442581}
   Tipo: 0
+  spriteEstrellaCompletada: {fileID: -114146705, guid: 5594546310a570645bc7c03a8460d167, type: 3}
+  fondoEstrella: {fileID: 558035493028721407}
 --- !u!1 &4173901983488129721
 GameObject:
   m_ObjectHideFlags: 0
@@ -252,7 +254,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 0
+  m_PresetInfoIsWorld: 1
 --- !u!114 &5610093608492448061
 MonoBehaviour:
   m_ObjectHideFlags: 0

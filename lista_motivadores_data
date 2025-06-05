@@ -2,27 +2,29 @@
     "motivadoresData": [
         {
             "Nombre": "Juan",
-            "Emocionalidad": 1.2083231210708619,
+            "Emocionalidad": 1.0729725360870362,
             "position": {
-                "x": -7.362483501434326,
-                "y": -0.8926201462745667,
-                "z": 0.8100000023841858
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
             },
+            "especie": "TiranosaurioRex",
+            "rareza": "Comun",
             "Exigencias": [
                 {
                     "dificultadValor": 0,
-                    "MetaTiempoProductivo": 21.07308006286621,
-                    "ProgresoMeta": 1.0
+                    "MetaTiempoProductivo": 1.0980772972106934,
+                    "ProgresoMeta": 0.0
                 },
                 {
                     "dificultadValor": 1,
-                    "MetaTiempoProductivo": 30.01634407043457,
-                    "ProgresoMeta": 1.0
+                    "MetaTiempoProductivo": 30.000072479248048,
+                    "ProgresoMeta": 0.0
                 },
                 {
                     "dificultadValor": 2,
-                    "MetaTiempoProductivo": 64.17251586914063,
-                    "ProgresoMeta": 1.0
+                    "MetaTiempoProductivo": 60.0,
+                    "ProgresoMeta": 0.0
                 }
             ]
         }
