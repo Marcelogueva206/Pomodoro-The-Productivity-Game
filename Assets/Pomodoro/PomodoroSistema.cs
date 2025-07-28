@@ -22,6 +22,9 @@ public class PomodoroSistema : MonoBehaviour
     [SerializeField] private static int numeroCicloActual = 0;
     [SerializeField] private static int numeroTempoActual = 0;
     [SerializeField] private static int numeroPomodoroActual = 0;
+
+    [SerializeField] private AudioClip sonidoTempoTerminado;
+    private AudioSource audioSource;
     #region UnityMethods
     private void Awake()
     {
@@ -31,6 +34,9 @@ public class PomodoroSistema : MonoBehaviour
         _sesionActual = new Sesion(new List<Pomodoro> { pomodoro1, pomodoro2 }, "Sesion de prueba");
 
         CargarDatosPomodoro();
+
+        audioSource = gameObject.AddComponent<AudioSource>();
+        // ...tu código existente
     }
 
     public static void ActualizarNuevoPomodoro(Pomodoro.PomodorosTipos pomodorosTipo)
@@ -165,7 +171,9 @@ public class PomodoroSistema : MonoBehaviour
                     //SI: entonces pasa el siguiente tempo
                 
                     TemposTerminado?.Invoke(_tempoActual);
+                    ReproducirAlarma();
                     ContadorProgreso.Instance.VerificarLogroDeEstrellas();
+                    ContadorProgreso.Instance.IntentarGuardarProgreso(null);
                     numeroTempoActual++;
                     if (_cicloActual.TemposCiclo[numeroTempoActual] == null)
                     {
@@ -214,6 +222,35 @@ public class PomodoroSistema : MonoBehaviour
     {
         Contador.AsignarContador(tempo.TiempoTotal);
 
+    }
+
+    void OnApplicationFocus(bool tieneFoco)
+    {
+        if (tieneFoco)
+        {
+            DetenerAlarma();
+        }
+    }
+
+    private bool alarmaActiva = false;
+
+    private void ReproducirAlarma()
+    {
+        if (sonidoTempoTerminado != null && audioSource != null)
+        {
+            audioSource.loop = true; // Para que repita el sonido si quieres que sea insistente
+            audioSource.clip = sonidoTempoTerminado;
+            audioSource.Play();
+            alarmaActiva = true;
+        }
+    }
+    private void DetenerAlarma()
+    {
+        if (audioSource != null && alarmaActiva)
+        {
+            audioSource.Stop();
+            alarmaActiva = false;
+        }
     }
 }
 

@@ -105,5 +105,12 @@ public class AdopcionManager : MonoBehaviour
         EstadisticasManager.Instance.GuardarInformarciónMotivadores();
     }
 
+    public void CrearMotivador(string nombre, Especie especie, Rareza rareza)
+    {
+        GameObject motivadorNuevo = Instantiate(MotivadorPrefab);
+        motivadorNuevo.GetComponent<Dinosaurio>().SerAdoptado(especie, rareza, nombre);
+        motivadorNuevo.transform.position = new Vector3(0, 0, 1);
+        EstadisticasManager.Instance.GuardarInformarciónMotivadores();
+    }
 }
 

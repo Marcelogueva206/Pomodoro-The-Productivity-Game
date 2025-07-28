@@ -153,7 +153,7 @@ public class ContadorProgreso : MonoBehaviour
 
         PomodoroSistema.TemposTerminado += ActualizarProgresoEnEvento;
         PomodoroSistema.TemposTerminado += ActualizarMostrarReclamarRecompensa;
-
+       
 
     }
 
@@ -194,14 +194,14 @@ public class ContadorProgreso : MonoBehaviour
         ProgresoUsuario = (float)Gamificacion.Instance.ProgresoTotalMetaDiarioPor / 100f;
     }
 
-    void OnApplicationQuit()
-    {
-        IntentarGuardarProgreso();
-    }
-    void OnApplicationPause()
-    {
-        IntentarGuardarProgreso();
-    }
+    //void OnApplicationQuit()
+    //{
+    //    IntentarGuardarProgreso();
+    //}
+    //void OnApplicationPause()
+    //{
+    //    IntentarGuardarProgreso();
+    //}
 
 
     private void VerificarLogrosDeMarcas()
@@ -219,7 +219,7 @@ public class ContadorProgreso : MonoBehaviour
         }
     }
 
-    public void IntentarGuardarProgreso()
+    public void IntentarGuardarProgreso(Tempos tempo)
     {
         StartCoroutine(EsperarYGuardarProgreso());
 
@@ -351,6 +351,7 @@ public class ContadorProgreso : MonoBehaviour
 
         }
         MostrarProgresoUI();
+        ContadorProgreso.Instance.ActualizarMostrarReclamarRecompensa(null);
     }
     public void VerificarLogroDeEstrellas()
     {
@@ -409,11 +410,24 @@ public class ContadorProgreso : MonoBehaviour
 
     public void MostrarProgresoUI()
     {
-        TextoPPsAcumulados.text = Gamificacion.Instance.TiempoAcumuladoHoy.ToString("F0");
-        TextoPPsTotales.text = Gamificacion.Instance.TiempoTotalAcumulado.ToString("F0");
+        TextoPPsAcumulados.text = ((int)Gamificacion.Instance.TiempoAcumuladoHoy).ToString();
+        TextoPPsTotales.text = ((int)Gamificacion.Instance.TiempoTotalAcumulado).ToString();
         sliderBarraProgreso.value = ProgresoUsuario;
+        Debug.Log($"PuntuacionTempo: {Contador.PuntuacionTempo}");
+        Debug.Log($"MetaSuperacion: {GestorMetas.Instance.GetMetaSuperaciónValor()}");
 
-        sliderBarraProgresoAcumulado.value = ProgresoUsuario + (Contador.PuntuacionTempo / GestorMetas.Instance.GetMetaSuperaciónValor());
+
+        float metaSuperacion = GestorMetas.Instance.GetMetaSuperaciónValor();
+        float progresoExtra = 0f;
+
+        if (metaSuperacion != 0f&& Contador.FaseActual != Contador.FasesContador.Inicio)
+        {
+            progresoExtra = Contador.PuntuacionTempo / metaSuperacion;
+        }
+
+        sliderBarraProgresoAcumulado.value = ProgresoUsuario + progresoExtra;
+
+        //sliderBarraProgresoAcumulado.value = ProgresoUsuario + (Contador.PuntuacionTempo / GestorMetas.Instance.GetMetaSuperaciónValor());
     }
 
     public bool ComprobarEsOtroDia()

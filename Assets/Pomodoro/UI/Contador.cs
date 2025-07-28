@@ -110,6 +110,11 @@ public class Contador : MonoBehaviour
         {
             PuntuacionTempo += Time.deltaTime * (1f / 60f);
         }
+
+        if(Contador.FaseActual == FasesContador.Inicio)
+        {
+            PuntuacionTempo = 0;
+        }
      
         float value = Mathf.Floor(PuntuacionTempo);
         textoPuntuacionTempo.text = value.ToString();

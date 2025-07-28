@@ -102,9 +102,31 @@ public class Gamificacion : MonoBehaviour
 
     private void Start()
     {
-       
+        Screen.SetResolution(960, 540, false); // false = ventana
+
+        StartCoroutine(VerificarPrimerInicioConDelay());
 
 
+    }
+
+
+    IEnumerator VerificarPrimerInicioConDelay()
+    {
+        yield return new WaitForSeconds(2f); // espera 2 segundos
+
+        if (!PlayerPrefs.HasKey("PrimerInicio"))
+        {
+            // Ejecuta el método solo una vez
+            AdopcionManager.Instance.CrearMotivador(
+                "Lucho",
+                AdopcionManager.Instance.GetRandomEspecie(),
+                AdopcionManager.Instance.GetRandomRareza()
+            );
+
+            // Marcamos que ya no es la primera vez
+            PlayerPrefs.SetInt("PrimerInicio", 1);
+            PlayerPrefs.Save();
+        }
     }
 
     void AsignarValoresPredeterminadosPuntuacion()
@@ -138,6 +160,13 @@ public class Gamificacion : MonoBehaviour
         TiempoAcumuladoHoy += (float)(tempo.TiempoTotal.TotalSeconds) * (1f / 60f);
         GuardarTiempo();
     }
+
+    public void GanarMonedas(int minutos)
+    {
+        TiempoAcumuladoHoy += minutos;
+        GuardarTiempo();
+    }
+
     private void AumentarProgresoDiarioTiempo(Tempos tempo)
     {
         if(tempo.tiposTempos == TiposTempos.productivo)

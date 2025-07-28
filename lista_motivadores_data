@@ -1,11 +1,11 @@
 {
     "motivadoresData": [
         {
-            "Nombre": "Juan",
-            "Emocionalidad": 1.0729725360870362,
+            "Nombre": "Alex",
+            "Emocionalidad": 0.8510163426399231,
             "position": {
-                "x": 0.0,
-                "y": 0.0,
+                "x": 3.233076333999634,
+                "y": 2.0488779544830324,
                 "z": 1.0
             },
             "especie": "TiranosaurioRex",
@@ -13,17 +13,144 @@
             "Exigencias": [
                 {
                     "dificultadValor": 0,
-                    "MetaTiempoProductivo": 1.0980772972106934,
+                    "completado": false,
+                    "MetaTiempoProductivo": 1.0,
                     "ProgresoMeta": 0.0
                 },
                 {
                     "dificultadValor": 1,
-                    "MetaTiempoProductivo": 30.000072479248048,
+                    "completado": false,
+                    "MetaTiempoProductivo": 5.76416540145874,
                     "ProgresoMeta": 0.0
                 },
                 {
                     "dificultadValor": 2,
-                    "MetaTiempoProductivo": 60.0,
+                    "completado": false,
+                    "MetaTiempoProductivo": 10.791112899780274,
+                    "ProgresoMeta": 0.0
+                }
+            ]
+        },
+        {
+            "Nombre": "MARCELO",
+            "Emocionalidad": 0.5656248331069946,
+            "position": {
+                "x": 4.089264392852783,
+                "y": -2.0915346145629885,
+                "z": 1.0
+            },
+            "especie": "Stegosaurus",
+            "rareza": "Comun",
+            "Exigencias": [
+                {
+                    "dificultadValor": 0,
+                    "completado": false,
+                    "MetaTiempoProductivo": 1.0008704662322999,
+                    "ProgresoMeta": 0.0
+                },
+                {
+                    "dificultadValor": 1,
+                    "completado": false,
+                    "MetaTiempoProductivo": 5.0,
+                    "ProgresoMeta": 0.0
+                },
+                {
+                    "dificultadValor": 2,
+                    "completado": false,
+                    "MetaTiempoProductivo": 10.00003433227539,
+                    "ProgresoMeta": 0.0
+                }
+            ]
+        },
+        {
+            "Nombre": "Lucho",
+            "Emocionalidad": 0.1932680606842041,
+            "position": {
+                "x": -3.123927116394043,
+                "y": -0.7146499156951904,
+                "z": 1.0
+            },
+            "especie": "Stegosaurus",
+            "rareza": "Comun",
+            "Exigencias": [
+                {
+                    "dificultadValor": 0,
+                    "completado": true,
+                    "MetaTiempoProductivo": 1.0000001192092896,
+                    "ProgresoMeta": 1.0000001192092896
+                },
+                {
+                    "dificultadValor": 1,
+                    "completado": true,
+                    "MetaTiempoProductivo": 5.06957483291626,
+                    "ProgresoMeta": 5.06957483291626
+                },
+                {
+                    "dificultadValor": 2,
+                    "completado": true,
+                    "MetaTiempoProductivo": 10.000765800476075,
+                    "ProgresoMeta": 10.000765800476075
+                }
+            ]
+        },
+        {
+            "Nombre": "Romeo",
+            "Emocionalidad": 0.24904051423072816,
+            "position": {
+                "x": -4.54601526260376,
+                "y": -1.9295964241027833,
+                "z": 1.0
+            },
+            "especie": "Espinosaurio",
+            "rareza": "Rara",
+            "Exigencias": [
+                {
+                    "dificultadValor": 0,
+                    "completado": false,
+                    "MetaTiempoProductivo": 1.5794755220413209,
+                    "ProgresoMeta": 0.0
+                },
+                {
+                    "dificultadValor": 1,
+                    "completado": false,
+                    "MetaTiempoProductivo": 5.005071640014648,
+                    "ProgresoMeta": 0.0
+                },
+                {
+                    "dificultadValor": 2,
+                    "completado": false,
+                    "MetaTiempoProductivo": 10.000051498413086,
+                    "ProgresoMeta": 0.0
+                }
+            ]
+        },
+        {
+            "Nombre": "Jose",
+            "Emocionalidad": 0.2537364065647125,
+            "position": {
+                "x": -6.565046787261963,
+                "y": -1.3483935594558716,
+                "z": 1.0
+            },
+            "especie": "Stegosaurus",
+            "rareza": "Rara",
+            "Exigencias": [
+                {
+                    "dificultadValor": 0,
+                    "completado": false,
+                    "MetaTiempoProductivo": 1.047317624092102,
+                    "ProgresoMeta": 0.0
+                },
+                {
+                    "dificultadValor": 1,
+                    "completado": false,
+                    "MetaTiempoProductivo": 5.015941619873047,
+                    "ProgresoMeta": 0.0
+                },
+                {
+                    "dificultadValor": 2,
+                    "completado": false,
+                    "MetaTiempoProductivo": 10.480031967163086,
                     "ProgresoMeta": 0.0
                 }
             ]

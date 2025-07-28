@@ -99,7 +99,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 51accf65c578b7146a9d6af38f916ead, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  satisfacionTiempo: 6
+  satisfacionTiempo: 30
   TiposComida: 0
   tiempoEspera: 10
 --- !u!70 &9166037224602459993
@@ -134,8 +134,8 @@ CapsuleCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.02, y: -0.03}
-  m_Size: {x: 0.4, y: 0.4}
+  m_Offset: {x: -0.01, y: 0}
+  m_Size: {x: 0.25, y: 0.2}
   m_Direction: 0
 --- !u!95 &5259626587080598927
 Animator:

@@ -115,7 +115,8 @@ public class Comida : MonoBehaviour
                 if (consumidor.PuedoComerlo())
                 {
                     consumidor.CambiarComportamiento(Comportamiento.Comer);
-                    consumidor.AlterarEmocionalidad(satisfacionTiempo);
+                    
+                    consumidor.AlterarEmocionalidadEnPorcentaje(satisfacionTiempo);
                     EstadisticasManager.Instance.GuardarInformarciónMotivadores();
 
                     foreach (ExigenciaTiempoProductivo exigencia in consumidor.exigencias)
@@ -138,5 +139,9 @@ public class Comida : MonoBehaviour
 
            
     }
+
+
+    
+
 
 }

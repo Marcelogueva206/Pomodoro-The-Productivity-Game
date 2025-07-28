@@ -8,7 +8,7 @@ public class AdopcionBoton : MonoBehaviour
 
     public  void AbrirCofirrmarAdopcion()
     {
-        LogicaVentanaConfirmacion.Instance.ShowPopup("Estas seguro de querer adoptar un nuevo motivador?", "Al adoptar un nuevo motivador, tus metas diarias seran mas exigentes. Ten en cuenta que puedes perderlo si no le dedica el tiempo necesario. ",() => { AdopcionManager.Instance.ProcesoAdoptarBotón(); },() => { Debug.Log("Cancelado"); });
+        LogicaVentanaConfirmacion.Instance.ShowPopup("Adoptar", "Hay cuatro tipos de rareza y especie. A mayor rareza, mayores son las recompensas que dan al igual que sus exigencias. Si no los cuidas, pueden morir.", () => { AdopcionManager.Instance.ProcesoAdoptarBotón(); },() => { Debug.Log("Cancelado"); });
     }
 
 

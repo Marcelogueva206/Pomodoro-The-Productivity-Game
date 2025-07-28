@@ -34,7 +34,9 @@ public class SistemaRecompensa : MonoBehaviour
         if(RuletaRecompensa.Instancia.GetResultado() == "Adopción")
         {
             TextoMostrarResultado.text = "¡Ganaste!";
-        }else
+            ControladorSonidos.Instancia.ReproducirSonidoGanarRuleta();
+        }
+        else
         {
             TextoMostrarResultado.text = "¡Perdiste!";
         }
@@ -87,13 +89,20 @@ public class SistemaRecompensa : MonoBehaviour
         ActualizarMostrarIntentosUI();
     }
 
-
+    public void BotonAbrirVentanaSistemaRecompensa()
+    {
+        LogicaVentanaConfirmacion.Instance.ShowPopup("Ruleta", "Toca las estrellas completadas o alimenta a tus mascotas para reclamar boletos.", () => { AbrirVentanaSistemaRecompensa(); }, () => { Debug.Log("Cancelado"); });
+    }
 
 
 
     public void CerrarVentanaSistemaRecompensa()
     {
-        gameObject.SetActive(false);
+        if(RuletaRecompensa.Instancia.girando == false)
+        {
+            gameObject.SetActive(false);
+        }
+        
     }
     private string keyIntentosRuleta = "intentosRuleta";
     public void GuardarRecompensas()

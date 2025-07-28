@@ -74,15 +74,56 @@ public class Dinosaurio : MonoBehaviour
         // 1 horas = 1.04 % tristeza
         // 5 minuto = 0.086% tristeza 
 
-        AlterarEmocionalidad(-consumoBaseDiarioEmocionalidad * (1f / 24f) * (1f / 60f) * (5f) * sensibilidad);
-        Debug.Log("porcentaje de depresión generadoa por el tiempo transcurrido durante la aplicación: " + -consumoBaseDiarioEmocionalidad * (1f / 24f) * (1f / 60f) * (5f) * sensibilidad);
+        AlterarEmocionalidadEnPorcentaje(-consumoBaseDiarioEmocionalidad * (1f / 24f) * (1f / 60f) * (5f) * sensibilidad*100);
+        Debug.Log("porcentaje de depresión generadoa por el tiempo transcurrido durante la aplicación: " + -consumoBaseDiarioEmocionalidad * (1f / 24f) * (1f / 60f) * (5f) * sensibilidad*100 + "%");
     }
 
 
     public void AplicarDepresionPorTiempo(float TiempoTranscurrido)
     {
-        AlterarEmocionalidad(-TiempoTranscurrido * sensibilidad * (1f / 60f) * (1f / 60f) * (25f / 24f));
-        Debug.Log("porcentaje de depresión generadoa por el tiempo transcurrido fuera de la palicación: " + -TiempoTranscurrido * sensibilidad * (1f / 60f) * (1f / 60f) * (25f / 24f));
+        switch (rareza)
+        {
+            case Rareza.Comun:
+                consumoBaseDiarioEmocionalidad = 0.15f;
+                break;
+            case Rareza.Rara:
+                consumoBaseDiarioEmocionalidad = 0.25f;
+                break;
+            case Rareza.SuperRara:
+                consumoBaseDiarioEmocionalidad = 0.50f;
+                break;
+            case Rareza.Legendaria:
+                consumoBaseDiarioEmocionalidad = 0.75f;
+                break;
+        }
+
+
+        // Cálculo exacto de cuánto debería perder según el tiempo transcurrido en segundos
+        float porcentajePorSegundo = (consumoBaseDiarioEmocionalidad / (24f * 60f * 60f)) * sensibilidad;
+        float variacion = -TiempoTranscurrido * porcentajePorSegundo;
+
+        variacion = Mathf.Max(variacion, -2f); // límite de -200% para evitar locuras
+
+        AlterarEmocionalidadEnPorcentaje(variacion*100);
+
+
+        //float variacion = -TiempoTranscurrido * sensibilidad * (1f / 60f) * (1f / 60f) * (25f / 24f);
+
+        //AlterarEmocionalidadEnPorcentaje(Mathf.Max(variacion, -200f));
+
+        //float porcentajePorSegundo = (consumoBaseDiarioEmocionalidad / (24f * 60f * 60f)) * sensibilidad;
+        Debug.Log(
+     "🧠 DEPRESIÓN FUERA DE LA APP\n" +
+     "- Tiempo transcurrido (s): " + TiempoTranscurrido + "\n" +
+     "- Consumo base diario: " + consumoBaseDiarioEmocionalidad + "\n" +
+     "- Sensibilidad: " + sensibilidad + "\n" +
+     "- Porcentaje por segundo: " + (porcentajePorSegundo * 100f) + "%\n" +
+     "- Porcentaje total restado: " + (variacion * 100f) + "%\n" +
+     "- Nombre: " + Nombre
+ );
+
+
+
     }
 
 
@@ -149,19 +190,31 @@ public class Dinosaurio : MonoBehaviour
         return estadoAnimo;
     }
 
-    public void AlterarEmocionalidad(float variacionEnPorcentaje)
+    public void AlterarEmocionalidadEnPorcentaje(float variacionEnPorcentaje)
     {
 
-        //50% = 0.5f
-        Emocionalidad += (variacionEnPorcentaje / 100f) * sensibilidad;
+        ////50% = 0.5f
+        //Emocionalidad += (variacionEnPorcentaje / 100f) * sensibilidad;
+        Debug.Log("Nueva emocionalidad antes del cambio: " + emocionalidad + "para: " + Nombre);
+
+        emocionalidad += (variacionEnPorcentaje / 100f) * sensibilidad;
+        if (interactuador != null)
+        {
+            interactuador.ActualizarMostrarEmocionalidad();
+            interactuador.ActualizarMostrarDescripcionEmocionalidad();
+        }
+
         ActualizarEstadoDeAnimo();
 
+        Debug.Log("Nueva emocionalidad luego del cambio: " + emocionalidad + "para: " + Nombre);
     }
 
     #endregion
     #region Sistema de exigencias
 
     [SerializeField] public List<Exigencia> exigencias;
+    public GameObject vfxBoletoPrefab;
+    public GameObject vfxAdopcionPrefab;
     public float GetTiempoTotalExigido()
     {
         float tiempoTotal = 0;
@@ -173,6 +226,30 @@ public class Dinosaurio : MonoBehaviour
         }
         return tiempoTotal;
     }
+
+    public void MostrarVFXBoleto()
+    {
+        MostrarVFX(vfxBoletoPrefab);
+        //SONIDO XD
+    }
+    public void MostrarVFXAdopcion()
+    {
+        MostrarVFX(vfxAdopcionPrefab);
+        //SONIDO XD
+    }
+
+    private void MostrarVFX(GameObject prefab)
+    {
+        // Instanciamos como hijo del motivador (este script debe estar en el motivador)
+        GameObject efecto = Instantiate(prefab, transform);
+
+        // Posicionamos localmente 1.5 unidades sobre su cabeza
+        efecto.transform.localPosition = Vector3.up * 1.5f;
+
+        // Limpiamos el efecto después de 2 segundos
+        Destroy(efecto, 2f);
+    }
+
     //public float TiempoMinimoExigido()
     //{
 
@@ -227,9 +304,26 @@ public class Dinosaurio : MonoBehaviour
         PosicionOriginalTextoDeDialogo = RectTransformTextoDialogo.anchoredPosition;
         PanelDialogo.gameObject.SetActive(false);
 
+        //ComprobarEliminarPorDepresion();
+        switch (rareza)
+        {
+            case Rareza.Comun:
+                consumoBaseDiarioEmocionalidad = 0.15f;
+                break;
+            case Rareza.Rara:
+                consumoBaseDiarioEmocionalidad = 0.25f;
+                break;
+            case Rareza.SuperRara:
+                consumoBaseDiarioEmocionalidad = 0.50f;
+                break;
+            case Rareza.Legendaria:
+                consumoBaseDiarioEmocionalidad = 0.75f;
+                break;
+        }
         InvokeRepeating("AplicarDepresionPorTiempo", 0f, 300f);
-        AplicarDepresionPorTiempo(ObtenerTiempoTranscurrido());
-        ComprobarEliminarPorDepresion();
+
+        //AplicarDepresionPorTiempo(ObtenerTiempoTranscurrido());
+
 
         SetEspecieYRareza();
 
@@ -316,7 +410,7 @@ public class Dinosaurio : MonoBehaviour
         this.rareza = rareza;
         Nombre = nombre;
         ActualizarAspectoMotivador();
-        emocionalidad = UnityEngine.Random.Range(0.3f, 1f);
+        emocionalidad = UnityEngine.Random.Range(0.1f, 0.4f);
     }
 
     public void ActualizarAspectoMotivador()
@@ -372,6 +466,18 @@ public class Dinosaurio : MonoBehaviour
     private Dialogo dialogoActualPorDecir;
     [HideInInspector] private bool PensandoDialogo = false;
     private bool dialogoActivo = false;
+    private Dialogo dialogoPendienteAUsuario = null;
+
+
+
+    void OnApplicationFocus(bool hasFocus)
+    {
+        if (hasFocus && dialogoPendienteAUsuario != null)
+        {
+            StartCoroutine(ProcesoDeFecilitación(dialogoPendienteAUsuario));
+            dialogoPendienteAUsuario = null; // Limpiamos para que no se repita
+        }
+    }
 
     private void Felicitar(Tempos tempos)
     {
@@ -379,14 +485,18 @@ public class Dinosaurio : MonoBehaviour
         {
             if (estadoAnimo != EstadoAnimo.Triste || estadoAnimo != EstadoAnimo.Deprimido)
             {
-                Dialogo dialogoNuevo = new Felicitacion(this, tempos); // Analizar la situación y pensar qué decir
+                dialogoPendienteAUsuario = new Felicitacion(this, tempos); // Guardamos pero NO ejecutamos aún
 
-                StartCoroutine(ProcesoDeFecilitación(dialogoNuevo)); // Iniciar la corrutina
+
             }
 
         }
     }
 
+    public void Celebrar()
+    {
+        StartCoroutine(ProcesoDeFecilitación(null));
+    }
 
     private IEnumerator ProcesoDeFecilitación(Dialogo dialogoNuevo)
     {
@@ -404,7 +514,7 @@ public class Dinosaurio : MonoBehaviour
                 break;
             case EstadoAnimo.Euforia:
                 TiempoDeCelebracion = UnityEngine.Random.Range(3f, 9f);
-                ProbabilidadExtraDeHablar = 0.2f;
+                ProbabilidadExtraDeHablar = 0.01f;
                 break;
             case EstadoAnimo.Deprimido:
                 TiempoDeCelebracion = 0f;
@@ -414,8 +524,18 @@ public class Dinosaurio : MonoBehaviour
         yield return new WaitForSeconds(TiempoDeCelebracion);
         CambiarComportamiento(Comportamiento.Merodear);
         //RECORDATORIO MENTAL QUE ESTO DE AQUI ELIMINA EL COMPORTAMIENTO DE CELEBRAR Y SOLO POR AHORA LO DEJARË COMO UN COMENTARI
-        //float probabilidadHablar = Mathf.Max(0.05f, 0.5f - 0.1f * EstadisticasManager.Instance.getCaracteresMotivadoresEnSistema().Count + ProbabilidadExtraDeHablar);
-        float probabilidadHablar = 0f; //ELIMINAR ESTO Y REEMPALZA CON LO DE ARRIBA
+        float probabilidadHablar = 0f;
+        if (ConexionInternetManager.HayInternet() == true && dialogoNuevo != null)
+        {
+            //probabilidadHablar = Mathf.Max(0.05f, 0.5f - 0.1f * EstadisticasManager.Instance.getCaracteresMotivadoresEnSistema().Count + ProbabilidadExtraDeHablar);
+            probabilidadHablar = 0.01f + ProbabilidadExtraDeHablar;
+        }
+        else
+        {
+            probabilidadHablar = 0;
+        }
+
+        //float probabilidadHablar = 0f; //ELIMINAR ESTO Y REEMPALZA CON LO DE ARRIBA
         if (UnityEngine.Random.value <= probabilidadHablar)
         {
             IniciarComportamientoHablar(dialogoNuevo); // Iniciar el diálogo después de celebrar
@@ -461,10 +581,15 @@ public class Dinosaurio : MonoBehaviour
     public IEnumerator IncluirDialogosPorDecir(Dialogo dialogo)
     {
         PensandoDialogo = true;
-        yield return StartCoroutine(TestAI.Gemini.UseGeminiAI(dialogo.Prompt));
+        yield return StartCoroutine(TestAI.Instance.UseGeminiAI(dialogo.Prompt));
 
 
-        dialogo.mensajeFinal = TestAI.Gemini.response;
+        dialogo.mensajeFinal = TestAI.Instance.response;
+
+
+        //dialogo.mensajeFinal = TestAI.Instance.response.candidates[0].content.parts[0].text;
+
+
 
 
         dialogosPorDecir.Add(dialogo);
@@ -584,25 +709,35 @@ public class Dinosaurio : MonoBehaviour
     [HideInInspector] private Vector2 Position2D;
     private void Comportarse(Comportamiento comportamiento)
     {
-        switch (comportamiento)
+        if(emocionalidad >= 0f) //O SEA ESTA DEPRIMIDO Y POR ENDE NO DEBERIA AHCER NINGUNA DE LAS ANIMACIONES
         {
-            case Comportamiento.Merodear:
-                MovimientoMerodear();
-                break;
-            case Comportamiento.Hablar:
-                DetenerseInstantaneamente();
-                MirarAlJugadorAlHablar();
-                break;
-            case Comportamiento.Celebrar:
-                DetenerseInstantaneamente();
-                break;
-            case Comportamiento.Deprimirse:
-                DetenerseInstantaneamente();
-                break;
-            case Comportamiento.Comer:
-                DetenerseInstantaneamente();
-                break;
+            switch (comportamiento)
+            {
+                case Comportamiento.Merodear:
+                    MovimientoMerodear();
+                    break;
+                case Comportamiento.Hablar:
+                    DetenerseInstantaneamente();
+                    MirarAlJugadorAlHablar();
+                    break;
+                case Comportamiento.Celebrar:
+                    DetenerseInstantaneamente();
+                    break;
+                case Comportamiento.Deprimirse:
+                    DetenerseInstantaneamente();
+                    break;
+                case Comportamiento.Comer:
+                    DetenerseInstantaneamente();
+                    break;
+            }
         }
+        else
+        {
+            CambiarComportamiento(Comportamiento.Deprimirse);
+            DetenerseInstantaneamente();
+        }
+
+      
 
     }
 
@@ -655,7 +790,7 @@ public class Dinosaurio : MonoBehaviour
 
         float TiempoDeDuraciónDeComer = ObtenerDuracionAnimacion(NombreAnimacion);
 
-        Debug.Log("Tiempo de duración de comer: "+TiempoDeDuraciónDeComer);
+        Debug.Log("Tiempo de duración de comer: " + TiempoDeDuraciónDeComer);
         switch (estadoAnimo)
         {
             case EstadoAnimo.Triste:
@@ -673,7 +808,7 @@ public class Dinosaurio : MonoBehaviour
                 break;
         }
         Debug.Log("Tiempo total de espera: " + (TiempoDeDuraciónDeComer + TiempoDeCelebracionPorComer));
-        yield return new WaitForSeconds(TiempoDeDuraciónDeComer+TiempoDeCelebracionPorComer);
+        yield return new WaitForSeconds(TiempoDeDuraciónDeComer + TiempoDeCelebracionPorComer);
         CambiarComportamiento(Comportamiento.Merodear);
     }
 
@@ -777,7 +912,11 @@ public class Dinosaurio : MonoBehaviour
 
     public void CambiarComportamiento(Comportamiento comportamiento)
     {
+        //if (emocionalidad >= 0f)
+        //{
 
+
+        //}
         if (comportamiento == Comportamiento.Hablar)
         {
             if (OtroEstaHablando() == true)
@@ -798,10 +937,16 @@ public class Dinosaurio : MonoBehaviour
                 AnimadorCaracter.SetTrigger("DeprimirseTrigger");
             }
 
+            if(this.comportamiento != Comportamiento.Deprimirse)
+            {
+                LogicaVentanaConfirmacion.Instance.ShowPopup("Modo depresivo", "Alguna de tus mascotas ha entrado en modo depresivo. Hoy es tu oportunidad final para salvarlo subiendo su vida. Si abandonas la aplicación en este modo, lo puedes perder", () => { Debug.Log("Cancelado"); }, () => { Debug.Log("Cancelado"); });
+            }
+
         }
         else
         if (comportamiento == Comportamiento.Comer && estadoAnimo != EstadoAnimo.Deprimido)
         {
+            StartCoroutine(ReproducirSonidoComerConRetraso());
             StartCoroutine(ProcesoDeComer());
         }
 
@@ -810,7 +955,11 @@ public class Dinosaurio : MonoBehaviour
         this.comportamiento = comportamiento;
 
     }
-
+    private IEnumerator ReproducirSonidoComerConRetraso()
+    {
+        yield return new WaitForSeconds(0.1f);
+        ControladorSonidos.Instancia.ReproducirSonidoComer();
+    }
     public void MovimientoMerodear()
     {
         if (Destino == Vector2.zero)
@@ -906,13 +1055,14 @@ public class Dinosaurio : MonoBehaviour
     {
         EstadisticasManager.Instance.EliminarCaracterMotivadorDelSistema(this);
         Destroy(gameObject);
+        EstadisticasManager.Instance.GuardarInformarciónMotivadores();
     }
 
-    private void ComprobarEliminarPorDepresion()
+    public void ComprobarEliminarPorDepresion()
     {
         if (estadoAnimo == EstadoAnimo.Deprimido)
         {
-            Debug.Log($"{name} se deprimió por la falta de atención y cariño");
+            LogicaVentanaConfirmacion.Instance.ShowPopup("¡Escapó!", $"Alguno de tus fieles compañeros acaba de escapar debido al hambre. Recuerda siempre alimentarlos", () => Debug.Log("Cancelado"), () => Debug.Log("Cancelado"));
             EliminarMotivador();
         }
 
@@ -974,7 +1124,7 @@ public class Dialogo
     public string Prompt { get => contextoGeneral + contextoEspecifico + tarea; }
     public Dialogo(Dinosaurio emisor)
     {
-        contextoGeneral = "Interpretas a una mascota que acompaña al usario en su trabajo. Te comportas feliz o triste según la productividad del usuario. Tú output no debe superar los 200 caracteres";
+        contextoGeneral = "Interpretas a una mascota que acompaña al usario en su trabajo. Te comportas feliz o triste según la productividad del usuario. Tú output no debe superar los 150 caracteres";
         contextoGeneral += ".Eres un pequeño " + emisor._Especie.ToString();
         contextoGeneral += ".Estás " + emisor.getEstadoDeAnimo().ToString();
         this.animoDelDialogo = emisor.getEstadoDeAnimo();
@@ -986,6 +1136,29 @@ public class Felicitacion : Dialogo
 {
     public enum Rareza { nula, sencillo, desafiante, superior, Top }
     public Rareza rareza;
+
+    List<string> promptsMotivadores = new List<string>()
+{
+    "Imagina que eres un motivador digital muy leal y creativo. Tu usuario acaba de completar una sesión de trabajo productiva y tú, como su compañero de camino, quieres agradecerle profundamente. Exprésale tu orgullo como si fueras su mascota virtual favorita y comparte una reflexión motivadora sobre cómo las pequeñas acciones construyen grandes logros.",
+
+    "Tu usuario acaba de avanzar en su jornada de productividad. Eres su guía emocional en este viaje. Inspíralo con un mensaje emocional, con un toque filosófico, que lo haga sentir que su esfuerzo es parte de un propósito mayor. Evita lo genérico y conéctalo con la idea de transformación personal.",
+
+    "Escribe un mensaje motivacional como si fueras un mentor sabio y divertido, con un toque de humor inteligente. Tu misión es recordarle al usuario que incluso cuando no lo nota, está avanzando. Sé creativo, como un personaje de película animada que le habla directamente al corazón.",
+
+    "Finge ser un motivador raro y legendario, y dile al usuario que ha sido digno de tu atención. Exprésale admiración por su constancia y dile una frase digna de recordar, como si le estuvieras entregando un artefacto mágico con poder emocional.",
+
+    "Tu usuario ha vuelto a trabajar pese al cansancio. Exprésale tu gratitud como si fueras un compañero que ha visto todo su esfuerzo en silencio. Hazlo con palabras profundas y visuales, como si escribieras un poema breve que se convierte en mantra personal.",
+
+    "Sé un motivador con alma de cuentacuentos. Dile al usuario que cada sesión productiva es como un capítulo de su historia, y que hoy ha escrito una página valiente. Invítalo a seguir escribiendo su libro personal de logros.",
+
+    "Escribe un mensaje como si fueras el espíritu interior del propio usuario, que despierta solo cuando trabaja con propósito. Felicítalo y hazle ver lo lejos que ha llegado desde que empezó. Usa una metáfora poderosa (montaña, fuego, viaje, etc.).",
+
+    "Tu usuario acaba de dar un paso más en su meta. Sé un motivador con voz de ciencia ficción: dile que en una línea temporal alternativa, él o ella es una leyenda por su disciplina. Hazle sentir que está hackeando su destino.",
+
+    "Habla como un viejo sabio que ha acompañado a muchos grandes humanos. Felicita al usuario, pero hazlo con un mensaje que pueda quedarse en su mente todo el día. Evita clichés, busca profundidad y originalidad.",
+
+    "Crea un mensaje corto pero poderoso que inicie con: 'Hoy demostraste que...' y termina con una frase que haga sentir al usuario que es parte de un cambio grande en su vida."
+};
     public Felicitacion(Dinosaurio emisor, Tempos tempoTerminado) : base(emisor)
     {
         tarea = "Felicitalo por lo que logró el usuario, incluso si tu estadode ánimo es triste";
@@ -993,7 +1166,7 @@ public class Felicitacion : Dialogo
         if (tempoTerminado.tiposTempos == TiposTempos.productivo)
         {
             rareza = Rareza.sencillo;
-            contextoEspecifico += $".El usuario logró superar estar concentrado un total de {tempoTerminado.TiempoTotal.ToString(@"h\:mm\:ss")}";
+            contextoEspecifico += $".El usuario logró superar estar concentrado un total de {tempoTerminado.TiempoTotal.ToString(@"h\:mm\:ss")}" + promptsMotivadores[UnityEngine.Random.Range(0, promptsMotivadores.Count)];
             //Felicitar por superar de ser más productivo de lo normal
             //if (EstadisticasManager.TiempoTempoProductivoPromedio < tempoTerminado.TiempoTotal)
             //{
@@ -1003,12 +1176,12 @@ public class Felicitacion : Dialogo
 
 
             //Felicitar por superar tu tiempo de productividad muy larga
-            if (tempoTerminado.TiempoTotal >= new TimeSpan(1, 30, 0))
-            {
-                rareza = Rareza.superior;
-                contextoEspecifico += $".El usuario logró estar concentrado durante el largo periodo consecutivo de más 1 hora y 30 minutos. El usuario estuvo {tempoTerminado.TiempoTotal.ToString(@"h\:mm\:ss")} en total";
+            //////////if (tempoTerminado.TiempoTotal >= new TimeSpan(1, 30, 0))
+            //////////{
+            //////////    rareza = Rareza.superior;
+            //////////    contextoEspecifico += $".El usuario logró estar concentrado durante el largo periodo consecutivo de más 1 hora y 30 minutos. El usuario estuvo {tempoTerminado.TiempoTotal.ToString(@"h\:mm\:ss")} en total";
 
-            }
+            //////////}
             //else if (tempoTerminado.TiempoTotal >= new TimeSpan(0, 45, 0))    //Felicitar por terminar un tempo productivo de duración larga
             //{
             //    id = "004";
@@ -1171,7 +1344,7 @@ public class Exigencia : IMostrarIndicadorCompletado
 
     public Dificultad dificultad;
     public readonly Dinosaurio exigidor;
-    protected bool Completado;
+    public bool Completado;
     protected float tiempoAproximadoExigido;
 
     public virtual float GetMostrarTiempoAproximadoExigido()
@@ -1289,18 +1462,66 @@ public class ExigenciaTiempoProductivo : Exigencia//Exigencia por comida / exige
 
         if (metaProductiva <= 0)
         {
-            switch (dificultad)
+            switch (exigidor.GetRereza())
             {
-                case Dificultad.facil:
-                    metaTiempoProductivo = SelecionarMeta(1, 30);
-
+                case Rareza.Comun:
+                    switch (dificultad)
+                    {
+                        case Dificultad.facil:
+                            metaTiempoProductivo = SelecionarMeta(1, 5);
+                            break;
+                        case Dificultad.moderado:
+                            metaTiempoProductivo = SelecionarMeta(5, 10);
+                            break;
+                        case Dificultad.dificil:
+                            metaTiempoProductivo = SelecionarMeta(10, 15);
+                            break;
+                    }
                     break;
-                case Dificultad.moderado:
-                    metaTiempoProductivo = SelecionarMeta(30, 60);
 
+                case Rareza.Rara:
+                    switch (dificultad)
+                    {
+                        case Dificultad.facil:
+                            metaTiempoProductivo = SelecionarMeta(5, 10);
+                            break;
+                        case Dificultad.moderado:
+                            metaTiempoProductivo = SelecionarMeta(10, 20);
+                            break;
+                        case Dificultad.dificil:
+                            metaTiempoProductivo = SelecionarMeta(20, 35);
+                            break;
+                    }
                     break;
-                case Dificultad.dificil:
-                    metaTiempoProductivo = SelecionarMeta(60, 120);
+
+                case Rareza.SuperRara:
+                    switch (dificultad)
+                    {
+                        case Dificultad.facil:
+                            metaTiempoProductivo = SelecionarMeta(10, 15);
+                            break;
+                        case Dificultad.moderado:
+                            metaTiempoProductivo = SelecionarMeta(15, 30);
+                            break;
+                        case Dificultad.dificil:
+                            metaTiempoProductivo = SelecionarMeta(30, 90);
+                            break;
+                    }
+                    break;
+
+                case Rareza.Legendaria:
+                    switch (dificultad)
+                    {
+                        case Dificultad.facil:
+                            metaTiempoProductivo = SelecionarMeta(15, 20);
+                            break;
+                        case Dificultad.moderado:
+                            metaTiempoProductivo = SelecionarMeta(20, 60);
+                            break;
+                        case Dificultad.dificil:
+                            metaTiempoProductivo = SelecionarMeta(60, 240);
+                            break;
+                    }
                     break;
             }
 
@@ -1323,10 +1544,8 @@ public class ExigenciaTiempoProductivo : Exigencia//Exigencia por comida / exige
         float numeroSesgado = Mathf.Pow(aleatorioNormalizado, 1 / rareza);
         return min + (numeroSesgado * (max - min));
     }
-    public void ExigenciaCompletadaEfectos()
+    public void ExigenciaCompletadaEfectos() // Se invoca cada vez que se logra una exigencia
     {
-
-
         float proporciónDificultad = 0f;
         switch (dificultad)
         {
@@ -1342,9 +1561,101 @@ public class ExigenciaTiempoProductivo : Exigencia//Exigencia por comida / exige
         }
 
         //consumo de emocionalidad diario 0.3 - 241.5 pp lo calculé viendo el promedio entre los pp de una exigencia facil, que se supone que es quien regula
-        exigidor.AlterarEmocionalidad(10f * proporciónDificultad);
+        //exigidor.AlterarEmocionalidad(10f * proporciónDificultad);
+        exigidor.Celebrar();
         Debug.Log("la exigencia a sido completada");
+
+
+
+
+
+
+
+
+
+
+        //SistemaRecompensa.Instancia.IntentoRuletaGanado();
+        ////Crear una animación en su cabeza indicando que sa adquirido un boleto extra
+
+        //VentanaAdopcion.Instance.GanarUnaAdopción();
+        ////Crear animación de adopción adquirida
+
+
+
+
+
+
+        // 🎲 Recompensa opcional: adopción gratuita
+        float rareza = (float)valoresRareza[exigidor.GetRereza()]; // Asegúrate que va de 0.5 a 2.0, por ejemplo
+
+
+        // Fórmula con mezcla de rareza y dificultad
+        float probabilidad = ObtenerProbabilidadAdopcionGratuita(exigidor.Rareza, dificultad);
+
+        float dado = UnityEngine.Random.Range(0f, 1f);
+
+        if (dado <= probabilidad)
+        {
+            VentanaAdopcion.Instance.GanarUnaAdopción();
+            exigidor.MostrarVFXAdopcion();
+            ControladorSonidos.Instancia.ReproducirSonidoAdopcion();
+            //TODO: Animación de adopción brillante y mística
+            Debug.Log("¡Has ganado una adopción gratuita!");
+        }
+        else
+        {
+
+            // 🎯 Recompensa fija: intento de ruleta
+            SistemaRecompensa.Instancia.IntentoRuletaGanado();
+            exigidor.MostrarVFXBoleto();
+            ControladorSonidos.Instancia.ReproducirSonidoBoleto();
+            Debug.Log("¡Has ganado una ruleta extra!");
+            //TODO: Animación de ruleta sobre la cabeza
+
+        }
+
+
+
     }
+
+    public float ObtenerProbabilidadAdopcionGratuita(Rareza rareza, Dificultad dificultad)
+    {
+        switch (rareza)
+        {
+            case Rareza.Comun:
+                return dificultad == Dificultad.dificil ? 0.05f : 0f;
+
+            case Rareza.Rara:
+                switch (dificultad)
+                {
+                    case Dificultad.facil: return 0.01f;
+                    case Dificultad.moderado: return 0.05f;
+                    case Dificultad.dificil: return 0.10f;
+                }
+                break;
+
+            case Rareza.SuperRara:
+                switch (dificultad)
+                {
+                    case Dificultad.facil: return 0.05f;
+                    case Dificultad.moderado: return 0.15f;
+                    case Dificultad.dificil: return 0.30f;
+                }
+                break;
+
+            case Rareza.Legendaria:
+                switch (dificultad)
+                {
+                    case Dificultad.facil: return 0.10f;
+                    case Dificultad.moderado: return 0.30f;
+                    case Dificultad.dificil: return 0.50f;
+                }
+                break;
+        }
+
+        return 0f; // Por si acaso explota el universo
+    }
+
 
     public static Dificultad DificultadAleatoria() // se rompe si añades más dificultades de lo normal (3)
     {

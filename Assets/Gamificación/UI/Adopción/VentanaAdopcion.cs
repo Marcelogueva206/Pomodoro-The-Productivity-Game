@@ -14,7 +14,7 @@ public class VentanaAdopcion : MonoBehaviour
    public TMP_Text MostrarNumeroAdopcionDisponibleUI;          // Texto para la rareza del premio
     public TMP_InputField nombreInputField; // InputField para colocar el nombre del premio
     public Button confirmarButton; // Botón para confirmar y cerrar la ventana
-    public int AdopcionesDisponibles = 0;
+    public int AdopcionesDisponibles = 1;
     public GameObject animacionesHuevo;
     public GameObject animacionesEfectos;
     public GameObject animacionesAdoptado;
@@ -43,7 +43,7 @@ public class VentanaAdopcion : MonoBehaviour
     void Start()
     {
         // Configurar el botón para llamar al método ConfirmarRecompensa
-        confirmarButton.onClick.AddListener(Adoptar);
+        confirmarButton.onClick.AddListener(IntentarAdoptar);
         animacionesAdoptado.SetActive(false);
         gameObject.SetActive(false);
         CargarNumeroAdopcionesDisponibles();
@@ -60,36 +60,39 @@ public class VentanaAdopcion : MonoBehaviour
     /// <summary>
     /// Lógica para confirmar el premio y cerrar la ventana.
     /// </summary>
-    private void Adoptar()
+    /// 
+
+    public void TryAdoptarSoborno(int precio)
+    {
+        if (Gamificacion.Instance.TryConsumirTiempo(precio))
+        {
+            EjecutarAdopción();
+
+        }
+    }
+    private void IntentarAdoptar()
     {
         if(AdopcionAbierta == false)
         {
             string nombreElegidoMotivador = nombreInputField.text;
 
-            if (AdopcionesDisponibles == 0)
-            {
-                LogicaVentanaConfirmacion.Instance.ShowPopup("No posees ninguna adoción disponible", "Debes adquirirlas en al ruleta al completar las estrellas dirias", () => Debug.Log("advertencia avisada"), () => Debug.Log("advertencia avisada"));
-                return;
-            }
+        
+
+            int cantidadMotivadores = EstadisticasManager.Instance.getCaracteresMotivadoresEnSistema().Count;
+            int precioSoborno = (int) (50f * Mathf.Pow(1.3f, cantidadMotivadores)); // Aumenta un 20% aprox por motivador
 
 
             if (string.IsNullOrEmpty(nombreElegidoMotivador))
             {
                 LogicaVentanaConfirmacion.Instance.ShowPopup("Debes poner un nombre al motivador", "No colocaste ningún tipo de nombre al motivador. Escribe un nombre para poder reclamar al motivador.", () => Debug.Log("advertencia avisada"), () => Debug.Log("advertencia avisada"));
                 return;
+            }else if (AdopcionesDisponibles == 0)
+            {
+                LogicaVentanaConfirmacion.Instance.ShowPopup("No posees ninguna adopción disponible", $"Completa las estrellas dirias o paga {precioSoborno} minutos",  () => TryAdoptarSoborno(precioSoborno), () => Debug.Log("Cancelado"));
+                return;
             }
 
-            AdopcionesDisponibles--;
-            AdopcionAbierta = true;
-            animacionesHuevo.GetComponent<Animator>().SetBool("HuevoAbierto",true);
-            animacionesEfectos.GetComponent<Animator>().SetInteger("Rareza", (int)AdopcionManager.Instance.adoptadoRareza);
-            animacionesAdoptado.gameObject.SetActive(true);
-            animacionesAdoptado.GetComponent<Animator>().SetInteger("Rareza", (int)AdopcionManager.Instance.adoptadoRareza);
-            animacionesAdoptado.GetComponent<Animator>().SetInteger("Especie", (int)AdopcionManager.Instance.adoptadoEspecie);
-            ActualizarMostrarNumeroAdopcionDisponibleUI();
-
-
-
+            EjecutarAdopción();
 
         }
         else
@@ -97,6 +100,21 @@ public class VentanaAdopcion : MonoBehaviour
             Debug.Log("Ya tienes una adopción abieta");
         }
        
+    }
+
+    private void EjecutarAdopción()
+    {
+        if(AdopcionesDisponibles != 0)
+        {
+            AdopcionesDisponibles--;
+        }
+        AdopcionAbierta = true;
+        animacionesHuevo.GetComponent<Animator>().SetBool("HuevoAbierto", true);
+        animacionesEfectos.GetComponent<Animator>().SetInteger("Rareza", (int)AdopcionManager.Instance.adoptadoRareza);
+        animacionesAdoptado.gameObject.SetActive(true);
+        animacionesAdoptado.GetComponent<Animator>().SetInteger("Rareza", (int)AdopcionManager.Instance.adoptadoRareza);
+        animacionesAdoptado.GetComponent<Animator>().SetInteger("Especie", (int)AdopcionManager.Instance.adoptadoEspecie);
+        ActualizarMostrarNumeroAdopcionDisponibleUI();
     }
 
 
@@ -122,6 +140,8 @@ public class VentanaAdopcion : MonoBehaviour
     /// Método para guardar AdopcionesDisponibles en PlayerPrefs.
     /// </summary>
      private const string AdopcionesKey = "AdopcionesDisponibles";
+    private const string TutorialAdopcionKey = "AdopcionTutorialEntregada";
+
     public void GanarUnaAdopción()
     {
         AdopcionesDisponibles++;
@@ -140,13 +160,21 @@ public class VentanaAdopcion : MonoBehaviour
     /// </summary>
     private void CargarNumeroAdopcionesDisponibles()
     {
-        if (PlayerPrefs.HasKey(AdopcionesKey))
+        if (!PlayerPrefs.HasKey(TutorialAdopcionKey))
+        {
+            // Primera vez: entrega la adopción de regalo
+            AdopcionesDisponibles = 1;
+            PlayerPrefs.SetInt(AdopcionesKey, AdopcionesDisponibles);
+            PlayerPrefs.SetInt(TutorialAdopcionKey, 1);
+            PlayerPrefs.Save();
+        }
+        else if (PlayerPrefs.HasKey(AdopcionesKey))
         {
             AdopcionesDisponibles = PlayerPrefs.GetInt(AdopcionesKey);
         }
         else
         {
-            AdopcionesDisponibles = 0; // Valor por defecto si no existe la clave
+            AdopcionesDisponibles = 0; // Si por alguna razón no hay registro, no regales más
         }
     }
 
@@ -161,8 +189,22 @@ public class VentanaAdopcion : MonoBehaviour
             AdopcionManager.Instance.CrearMotivador(nombreInputField.text);
             animacionesAdoptado.gameObject.SetActive(false);
             AdopcionAbierta = false;
+            EstadisticasManager.Instance.GuardarInformarciónMotivadores();
+            animacionesEfectos.GetComponent<Animator>().Play("Vacio", -1, 0f);
+            animacionesEfectos.GetComponent<Animator>().Update(0f);
+
+
+
+            Invoke(nameof(RegenerarMetasConDelay), 0.1f);
+            ContadorProgreso.Instance.GuardarProgreso();
         }
    
+    }
+
+
+    private void RegenerarMetasConDelay()
+    {
+        GestorMetas.Instance.EjecutarRegenerarMetas();
     }
 
 }

@@ -16,6 +16,7 @@ public class ProductividadManager : MonoBehaviour
     private const double LAMBDA = 0.1; // Controla la rapidez con la que baja el promedio
     private List<RegistroProductividad> registros = new List<RegistroProductividad>();
     private string filePath; // Ruta del archivo JSON
+    public GameObject panelTutorial; // Panel del tutorial
 
     void Start()
     {
@@ -121,6 +122,16 @@ public class ProductividadManager : MonoBehaviour
         }
 
         Debug.Log("🔄 Registro de productividad reiniciado. Ahora es como si el usuario ingresara por primera vez.");
+    }
+
+    public void MostrarTutorial()
+    {
+        panelTutorial.SetActive(true);
+    }
+
+    public void CerrarTutorial()
+    {
+        panelTutorial.SetActive(false);
     }
 }
 

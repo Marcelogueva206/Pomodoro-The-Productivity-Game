@@ -147,6 +147,11 @@ public class EstadisticasManager : MonoBehaviour
 
         //Debug.Log("Cnaitdad de motivadores:"+PlayerPrefs.GetInt(keyCantidadMotivadores));
         CargarInformaciónMotivadores();
+        //foreach (Dinosaurio motivador in CaracteresMotivadoresEnSistema)
+        //{
+        //    motivador.AplicarDepresionPorTiempo(ObtenerTiempoTranscurrido());
+        //}
+
         PlayerPrefs.Save(); // Asegura que los datos se guarden en disco
 
         // Ejemplo de uso:
@@ -307,6 +312,7 @@ public class EstadisticasManager : MonoBehaviour
                             exigenciaTiempoProductivoDataPorGuardar.ProgresoMeta = exigenciaTiempoProductivo.ProgresoMeta;
                             exigenciaTiempoProductivoDataPorGuardar.MetaTiempoProductivo = exigenciaTiempoProductivo.metaTiempoProductivo;
                             exigenciaTiempoProductivoDataPorGuardar.dificultadValor = (int)exigenciaTiempoProductivo.dificultad;
+                            exigenciaTiempoProductivoDataPorGuardar.completado = exigenciaTiempoProductivo.Completado; // Guardamos si la exigencia esta completada o no
 
                             // Agregamos al motivador
                             motivadorDataPorGuardar.Exigencias.Add(exigenciaTiempoProductivoDataPorGuardar);
@@ -357,6 +363,8 @@ public class EstadisticasManager : MonoBehaviour
                         // Le brindamos todas las propiedades del nuevo motivador del motivador guaraddo en archivos
                         componenteDinosaurioNuevo.Nombre = motivadorCargado.Nombre;
                         componenteDinosaurioNuevo.Emocionalidad = motivadorCargado.Emocionalidad;
+                        
+
                         componenteDinosaurioNuevo.gameObject.transform.position = motivadorCargado.position;
                         componenteDinosaurioNuevo._Especie = (Especie)System.Enum.Parse(typeof(Especie), motivadorCargado.especie);
                         componenteDinosaurioNuevo.Rareza = (Rareza)System.Enum.Parse(typeof(Rareza), motivadorCargado.rareza);
@@ -365,7 +373,8 @@ public class EstadisticasManager : MonoBehaviour
                         {
                             componenteDinosaurioNuevo.gameObject.transform.position += new Vector3(0, 0, 1);
                         }
-                       
+                        componenteDinosaurioNuevo.ComprobarEliminarPorDepresion(); // comprobamos si el motivador nuevo debe ser eliminado por depresión, caso contrario no debería eliminarse
+                        componenteDinosaurioNuevo.AplicarDepresionPorTiempo(ObtenerTiempoTranscurrido()); //aplicamos la depresión por tiempo al motivador nuevo
                     }
 
                     if (ComprobarEsOtroDia()) //comprubea si es otro día para no cargarlo. caso contrario no debería cargar los respectivos datos
@@ -389,6 +398,7 @@ public class EstadisticasManager : MonoBehaviour
                                         ExigenciasTiempoProductivoDinosaurioNuevo.dificultad = (Exigencia.Dificultad)ExigenciaCargadaTiempoProductivo.dificultadValor;
                                         ExigenciasTiempoProductivoDinosaurioNuevo.metaTiempoProductivo = ExigenciaCargadaTiempoProductivo.MetaTiempoProductivo;
                                         ExigenciasTiempoProductivoDinosaurioNuevo.progresoMeta = ExigenciaCargadaTiempoProductivo.ProgresoMeta;
+                                        ExigenciasTiempoProductivoDinosaurioNuevo.Completado = exigenciaCargada.completado; // Guardamos si la exigencia esta completada o no
 
                                     }
 
@@ -401,6 +411,7 @@ public class EstadisticasManager : MonoBehaviour
                                         ExigenciasTiempoProductivoDinosaurioNuevo.dificultad = (Exigencia.Dificultad)ExigenciaCargadaTiempoProductivo.dificultadValor;
                                         ExigenciasTiempoProductivoDinosaurioNuevo.metaTiempoProductivo = ExigenciaCargadaTiempoProductivo.MetaTiempoProductivo;
                                         ExigenciasTiempoProductivoDinosaurioNuevo.progresoMeta = ExigenciaCargadaTiempoProductivo.ProgresoMeta;
+                                        ExigenciasTiempoProductivoDinosaurioNuevo.Completado = exigenciaCargada.completado; // Guardamos si la exigencia esta completada o no
                                     }
                                     break;
                                 case (int)Exigencia.Dificultad.dificil:
@@ -411,6 +422,7 @@ public class EstadisticasManager : MonoBehaviour
                                         ExigenciasTiempoProductivoDinosaurioNuevo.dificultad = (Exigencia.Dificultad)ExigenciaCargadaTiempoProductivo.dificultadValor;
                                         ExigenciasTiempoProductivoDinosaurioNuevo.metaTiempoProductivo = ExigenciaCargadaTiempoProductivo.MetaTiempoProductivo;
                                         ExigenciasTiempoProductivoDinosaurioNuevo.progresoMeta = ExigenciaCargadaTiempoProductivo.ProgresoMeta;
+                                        ExigenciasTiempoProductivoDinosaurioNuevo.Completado = exigenciaCargada.completado; // Guardamos si la exigencia esta completada o no
                                     }
                                     break;
 
@@ -459,6 +471,18 @@ public class EstadisticasManager : MonoBehaviour
         return true;
 
     }
+    public float ObtenerTiempoTranscurrido()
+    {
+        // Recupera la última vez que se guardó el tiempo, si no existe, devuelve 0 segundos
+        string ultimaActualizacionStr = PlayerPrefs.GetString("UltimaActualizacion", DateTime.Now.ToString());
+        DateTime ultimaActualizacion = DateTime.Parse(ultimaActualizacionStr);
+
+        // Calcula el tiempo transcurrido
+        TimeSpan tiempoTranscurrido = DateTime.Now - ultimaActualizacion;
+
+        return (float)tiempoTranscurrido.TotalSeconds;
+    }
+
 }
 
 
@@ -483,6 +507,8 @@ public class DinosaurioData
 public class ExigenciaData
 {
     public int dificultadValor;
+    public bool completado;
+
 
 }
 
@@ -493,6 +519,7 @@ public class ExigenciaTiempoProductivoData : ExigenciaData
 
     public float MetaTiempoProductivo = 0;
     public float ProgresoMeta = 0;
+    
 
 
 }

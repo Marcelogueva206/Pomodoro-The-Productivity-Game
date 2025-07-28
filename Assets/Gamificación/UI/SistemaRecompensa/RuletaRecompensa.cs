@@ -1,17 +1,17 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class RuletaRecompensa : MonoBehaviour
 {
-    public static RuletaRecompensa Instancia { get; private set; } // Instancia estática de la clase
+    public static RuletaRecompensa Instancia { get; private set; } // Instancia estÃ¡tica de la clase
 
     public Image ruedaImage; // La imagen de la rueda
-    public Button girarButton; // El botón para girar
+    public Button girarButton; // El botÃ³n para girar
     public float velocidadGiro = 1000f; // Velocidad con la que gira la rueda
     public float tiempoGiro = 3f; // Tiempo en el que la rueda va a girar
-    private bool girando = false;
+    public bool girando = false;
     private string resultado = "";
    
 
@@ -85,39 +85,39 @@ public class RuletaRecompensa : MonoBehaviour
             yield return null;
         }
 
-        // Ajusta la posición final al rango de 0° a 360°
+        // Ajusta la posiciÃ³n final al rango de 0Â° a 360Â°
         float anguloFinal = giroFinal % 360f;
 
         // Determina el segmento ganador
         int segmentoGanador = CalcularSegmento(anguloFinal);
-        Debug.Log($"¡resultado: {premios[segmentoGanador]}!");
+        Debug.Log($"Â¡resultado: {premios[segmentoGanador]}!");
         resultado = premios[segmentoGanador];
         girando = false;
         SistemaRecompensa.Instancia.ActualizarMostrarResultadoUI();
         SistemaRecompensa.Instancia.ActualizarMostrarIntentosUI();
-        if (resultado == "Adopción")
+        if (resultado == "AdopciÃ³n")
         {
-            VentanaAdopcion.Instance.GanarUnaAdopción();
+            VentanaAdopcion.Instance.GanarUnaAdopciÃ³n();
         }
     }
 
-    // Método para calcular el segmento ganador
+    // MÃ©todo para calcular el segmento ganador
     int CalcularSegmento(float angulo)
     {
-        // Asegúrate de que el ángulo esté en el rango 0°-360°
+        // AsegÃºrate de que el Ã¡ngulo estÃ© en el rango 0Â°-360Â°
         angulo = angulo % 360f;
         if (angulo < 0f)
         {
             angulo += 360f;
         }
 
-        // Determina el número de segmentos
+        // Determina el nÃºmero de segmentos
         int numeroDeSegmentos = premios.Length;
 
-        // Calcula el tamaño de cada segmento
-        float tamañoSegmento = 360f / numeroDeSegmentos;
+        // Calcula el tamaÃ±o de cada segmento
+        float tamaÃ±oSegmento = 360f / numeroDeSegmentos;
 
-        // Calcula el índice del segmento ganador
-        return Mathf.FloorToInt(angulo / tamañoSegmento);
+        // Calcula el Ã­ndice del segmento ganador
+        return Mathf.FloorToInt(angulo / tamaÃ±oSegmento);
     }
 }

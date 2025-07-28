@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 public class InteraccionUsuario : MonoBehaviour
@@ -197,6 +198,7 @@ public class InteraccionUsuario : MonoBehaviour
         originalColor = spriteRenderer.color; // Guardar el color original
     }
 
+    public float margen = 50f;
     void Update()
     {
         Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -242,7 +244,7 @@ public class InteraccionUsuario : MonoBehaviour
         RectTransform rect = customMenu.GetComponent<RectTransform>();
         float panelWidth = rect.rect.width;
         float panelHeight = rect.rect.height;
-        float margin = 100f; // Ajusta según tu preferencia
+        float margin = margen; // Ajusta según tu preferencia
 
         // Calcula el centro de la pantalla
         float centerX = Screen.width / 2f;
@@ -292,6 +294,38 @@ public class InteraccionUsuario : MonoBehaviour
         // Asignar Pos X y Pos Y
         rectTransform.anchoredPosition = new Vector2(posX, posY);
     }
+
+
+
+    public void BotonVender()
+    {
+        float precioBase = 20f; // por ejemplo, un motivador común vale 100 monedas
+        float valorRareza = 1f / GetProbabilidadTotal(interactuado._Especie, interactuado.Rareza); // cuanto más raro, más caro
+        float precioBruto = precioBase * valorRareza;
+       
+        int montoVenta = (int) (interactuado.Emocionalidad * precioBruto);
+        if(montoVenta<0)
+        {
+            montoVenta = 0;
+        }
+        LogicaVentanaConfirmacion.Instance.ShowPopup("Vender", $"Puedes vender esta mascota a {montoVenta}. El precio depende de su rareza y felicidad", () => VenderMotivador(montoVenta), () => Debug.Log("advertencia avisada"));
+    }
+    public void VenderMotivador(int precio)
+    {
+        ControladorSonidos.Instancia.ReproducirSonidoVender();
+        Gamificacion.Instance.GanarMonedas(precio);
+        
+        LogicaVentanaConfirmacion.Instance.ShowPopup("Venta realizada", $"¡Has vendido a {interactuado.Nombre} por {precio} monedas!", () => Debug.Log("venta realizada"), () => Debug.Log("venta cancelada"));
+        interactuado.EliminarMotivador();
+
+    }
+
+
+
+
+
+
+
 
 
 
