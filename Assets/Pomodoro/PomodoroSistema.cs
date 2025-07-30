@@ -1,4 +1,4 @@
-using JetBrains.Annotations;
+Ôªøusing JetBrains.Annotations;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -36,7 +36,7 @@ public class PomodoroSistema : MonoBehaviour
         CargarDatosPomodoro();
 
         audioSource = gameObject.AddComponent<AudioSource>();
-        // ...tu cÛdigo existente
+        // ...tu c√≥digo existente
     }
 
     public static void ActualizarNuevoPomodoro(Pomodoro.PomodorosTipos pomodorosTipo)
@@ -112,18 +112,18 @@ public class PomodoroSistema : MonoBehaviour
         }
     }
 
-    public static event ProgresoUsuarioPomodoro PomodoroTerminado = Pomodoro => Debug.Log($"se terminÛ el pomodoro: {Pomodoro.Nombre}");
-    public static event ProgresoUsuarioPomodoro PomodoroIniciado = Pomodoro => Debug.Log($"se iniciÛ el pomodoro: {Pomodoro.Nombre}");
+    public static event ProgresoUsuarioPomodoro PomodoroTerminado = Pomodoro => Debug.Log($"se termin√≥ el pomodoro: {Pomodoro.Nombre}");
+    public static event ProgresoUsuarioPomodoro PomodoroIniciado = Pomodoro => Debug.Log($"se inici√≥ el pomodoro: {Pomodoro.Nombre}");
     //= delegate (Pomodoro pomodoro)
     //{
 
-    //    Debug.Log($"se terminÛ el pomodoro: {pomodoro.Nombre}");
+    //    Debug.Log($"se termin√≥ el pomodoro: {pomodoro.Nombre}");
     //};
-    public static event ProgresoUsuarioTempos TemposTerminado = Tempos => Debug.Log($"se terminÛ tempo: {Tempos.Nombre}");
-    public static event ProgresoUsuarioTempos TemposIniciado = Tempos => Debug.Log($"se iniciÛ tempo: {Tempos.Nombre}");
+    public static event ProgresoUsuarioTempos TemposTerminado = Tempos => Debug.Log($"se termin√≥ tempo: {Tempos.Nombre}");
+    public static event ProgresoUsuarioTempos TemposIniciado = Tempos => Debug.Log($"se inici√≥ tempo: {Tempos.Nombre}");
 
-    public static event ProgresoUsuarioCiclo CicloTerminado = Ciclo => Debug.Log($"se terminÛ ciclo: {Ciclo.Nombre}");
-    public static event ProgresoUsuarioCiclo CicloIniciado = Ciclo => Debug.Log($"se iniciÛ ciclo: {Ciclo.Nombre}");
+    public static event ProgresoUsuarioCiclo CicloTerminado = Ciclo => Debug.Log($"se termin√≥ ciclo: {Ciclo.Nombre}");
+    public static event ProgresoUsuarioCiclo CicloIniciado = Ciclo => Debug.Log($"se inici√≥ ciclo: {Ciclo.Nombre}");
 
 
 
@@ -142,7 +142,7 @@ public class PomodoroSistema : MonoBehaviour
         }
         else
         {
-            Debug.Log("SesiÛn terminada");
+            Debug.Log("Sesi√≥n terminada");
         }
     }
 
@@ -150,17 +150,17 @@ public class PomodoroSistema : MonoBehaviour
 
     public void EjecutarPomodoro(Pomodoro pomodoro, Sesion sesionPerteneciente)
     {
-        if (pomodoro.GetEstadoCompletado() == false) //øel pomodoro est· terminado?
+        if (pomodoro.GetEstadoCompletado() == false) //¬øel pomodoro est√° terminado?
         {
-            if (pomodoro.ciclosPomodoro[numeroCicloActual].TryGetEstadoCompletado() == false) //NO : el ciclo est· terminado?
+            if (pomodoro.ciclosPomodoro[numeroCicloActual].TryGetEstadoCompletado() == false) //NO : el ciclo est√° terminado?
             {
                 _cicloActual = pomodoro.ciclosPomodoro[numeroCicloActual];
 
-                if (_cicloActual.TemposCiclo[numeroTempoActual].GetEstadoCompletado() == false)// NO: el tempo est· terminado?
+                if (_cicloActual.TemposCiclo[numeroTempoActual].GetEstadoCompletado() == false)// NO: el tempo est√° terminado?
                 {
                     //NO: entonces usalo
                     _tempoActual = _cicloActual.TemposCiclo[numeroTempoActual];
-                    if (numeroTempoActual + 1 >= _cicloActual.TemposCiclo.Count) //el es ˙ltimo tempo de la lista
+                    if (numeroTempoActual + 1 >= _cicloActual.TemposCiclo.Count) //el es √∫ltimo tempo de la lista
                     {
                         ultimoTempoDeCiclo = _tempoActual;
                     }
@@ -177,7 +177,7 @@ public class PomodoroSistema : MonoBehaviour
                     numeroTempoActual++;
                     if (_cicloActual.TemposCiclo[numeroTempoActual] == null)
                     {
-                        //se ha terminado todos los tempos del ciclo, por ende debe elegir el primero del ciclo si a˙n se debe repetir
+                        //se ha terminado todos los tempos del ciclo, por ende debe elegir el primero del ciclo si a√∫n se debe repetir
                         _tempoActual = pomodoro.ciclosPomodoro[numeroCicloActual + 1].TemposCiclo[0];
                     }
                     else
@@ -196,7 +196,7 @@ public class PomodoroSistema : MonoBehaviour
             else
             {
                 TemposTerminado?.Invoke(ultimoTempoDeCiclo);
-                //sÌ: comienza el siguiente ciclo
+                //s√≠: comienza el siguiente ciclo
                 CicloTerminado.Invoke(_cicloActual);
                 numeroCicloActual++;
                 _cicloActual = pomodoro.ciclosPomodoro[numeroCicloActual];
@@ -222,6 +222,16 @@ public class PomodoroSistema : MonoBehaviour
     {
         Contador.AsignarContador(tempo.TiempoTotal);
 
+        // GUARDAR HORA DE INICIO EN FORMATO BINARY
+        PlayerPrefs.SetString("HoraInicioTempo", DateTime.Now.ToBinary().ToString());
+        PlayerPrefs.SetFloat("DuracionTempoSegundos", (float)tempo.TiempoTotal.TotalSeconds);
+        PlayerPrefs.Save();
+
+        // üîî Programar la notificaci√≥n al finalizar el tempo
+        if (NotificacionManager.Instance != null)
+        {
+            NotificacionManager.Instance.ProgramarNotificacion((int)tempo.TiempoTotal.TotalSeconds);
+        }
     }
 
     void OnApplicationFocus(bool tieneFoco)
@@ -229,9 +239,41 @@ public class PomodoroSistema : MonoBehaviour
         if (tieneFoco)
         {
             DetenerAlarma();
+            VerificarSiTempoTerminado();
         }
     }
 
+    private void VerificarSiTempoTerminado()
+    {
+        if (!PlayerPrefs.HasKey("HoraInicioTempo")) return;
+
+        long binary = Convert.ToInt64(PlayerPrefs.GetString("HoraInicioTempo"));
+        DateTime horaInicio = DateTime.FromBinary(binary);
+        TimeSpan duracion = TimeSpan.FromSeconds(PlayerPrefs.GetFloat("DuracionTempoSegundos"));
+
+        DateTime horaActual = DateTime.Now;
+        TimeSpan transcurrido = horaActual - horaInicio;
+
+        if (transcurrido >= duracion)
+        {
+            // ¬°Tempo finalizado mientras estaba minimizado!
+            Debug.Log("Tempo terminado mientras estabas fuera.");
+            TemposTerminado?.Invoke(_tempoActual); // evento
+            ReproducirAlarma();
+
+            // Lo que normalmente haces al terminar un tempo:
+            ContadorProgreso.Instance.VerificarLogroDeEstrellas();
+            ContadorProgreso.Instance.IntentarGuardarProgreso(null);
+            numeroTempoActual++;
+
+            // Prepara el siguiente tempo (opcional, ajusta seg√∫n l√≥gica)
+            // Aqu√≠ podr√≠as forzar que se cargue el siguiente tempo
+        }
+        else
+        {
+            Debug.Log("A√∫n no termina el tempo, quedan " + (duracion - transcurrido).TotalSeconds + " segundos");
+        }
+    }
     private bool alarmaActiva = false;
 
     private void ReproducirAlarma()
@@ -242,6 +284,14 @@ public class PomodoroSistema : MonoBehaviour
             audioSource.clip = sonidoTempoTerminado;
             audioSource.Play();
             alarmaActiva = true;
+        }
+    }
+
+    void OnApplicationPause(bool pauseStatus)
+    {
+        if (!pauseStatus) // volvi√≥ al frente
+        {
+            VerificarSiTempoTerminado();
         }
     }
     private void DetenerAlarma()

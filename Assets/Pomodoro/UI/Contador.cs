@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
@@ -7,6 +7,7 @@ using Unity.VisualScripting;
 using System;
 using UnityEngine.UI;
 using System.Runtime.CompilerServices;
+using Unity.Notifications.Android;
 
 public class Contador : MonoBehaviour
 {
@@ -39,9 +40,9 @@ public class Contador : MonoBehaviour
     public static int SegundosRestanteStatic;
     public static float TiempoTotalStatic;
 
-    public static event ProgresoUsuarioTempos TempoIniciadoPorUsuario = Tempo => Debug.Log($"se inici� tempo: {Tempo.Nombre}");
-    public static event ProgresoUsuarioCiclo CicloIniciadoPorUsuario = Ciclo => Debug.Log($"se inici� tempo: {Ciclo.Nombre}");
-    public static event ProgresoUsuarioPomodoro PomodoroIniciadoPorUsuario = Pomodoro => Debug.Log($"se inici� tempo: {Pomodoro.Nombre}");
+    public static event ProgresoUsuarioTempos TempoIniciadoPorUsuario = Tempo => Debug.Log($"se inició tempo: {Tempo.Nombre}");
+    public static event ProgresoUsuarioCiclo CicloIniciadoPorUsuario = Ciclo => Debug.Log($"se inició tempo: {Ciclo.Nombre}");
+    public static event ProgresoUsuarioPomodoro PomodoroIniciadoPorUsuario = Pomodoro => Debug.Log($"se inició tempo: {Pomodoro.Nombre}");
 
     private void Awake()
     {
@@ -53,7 +54,7 @@ public class Contador : MonoBehaviour
         //PomodoroSistema.TemposIniciado += MostrarNombreTempoUI;
         //PomodoroSistema.CicloIniciado += MostrarNombreCicloUI;
         //PomodoroSistema.PomodoroIniciado += MostrarNombrePomodoroUI;
-        OnTerminadoContador = ReiniciarPuntuaci�nTempo;
+        OnTerminadoContador = ReiniciarPuntuaciónTempo;
         CargarTiempoRestante();
 
     }
@@ -126,7 +127,45 @@ public class Contador : MonoBehaviour
         IniciarEnfoqueCorto();
         BotonPausar.SetActive(false);
 
-      
+        if (PlayerPrefs.HasKey("pomodoro_fase"))
+        {
+            string faseGuardada = PlayerPrefs.GetString("pomodoro_fase");
+
+            if (faseGuardada == "Progreso" && PlayerPrefs.HasKey("pomodoro_fin"))
+            {
+                long binary = Convert.ToInt64(PlayerPrefs.GetString("pomodoro_fin"));
+                DateTime horaFin = DateTime.FromBinary(binary);
+
+                double segundosRestantes = (horaFin - DateTime.Now).TotalSeconds;
+
+                if (segundosRestantes <= 0)
+                {
+                    // ⏰ Ya terminó
+                    CambiarFaseContador(FasesContador.Terminado);
+                }
+                else
+                {
+                    // 🔁 Continuar Pomodoro
+                    contador.IniciarConTiempoRestante((float)segundosRestantes);
+                    CambiarFaseContador(FasesContador.Progeso);
+                }
+            }
+            else if (faseGuardada == "Detenido")
+            {
+                // Si estaba en pausa, solo restaura el tiempo restante
+                float segundosGuardados = PlayerPrefs.GetFloat("pomodoro_tiempo_restante");
+                contador.IniciarConTiempoRestante(segundosGuardados);
+                CambiarFaseContador(FasesContador.Detenido);
+            }
+        }
+
+
+    }
+
+    public void IniciarConTiempoRestante(float segundos)
+    {
+        TiempoRestanteStatic = segundos;
+        MostrarTiempoUI();
     }
 
     public void AsignarContadorGUI()
@@ -188,6 +227,11 @@ public class Contador : MonoBehaviour
                 ContandoActivo = false;
                 contador.BotonPausar.SetActive(false); // <- Esto debe estar en false
                 contador.BotonIniciar.SetActive(true);  // <- Este en true
+
+                if (NotificacionManager.Instance != null)
+                {
+                    NotificacionManager.Instance.CancelarTodasNotificaciones();
+                }
                 break;
             case FasesContador.Inicio:
                 OnInicioContador.Invoke();
@@ -197,26 +241,42 @@ public class Contador : MonoBehaviour
                 contador.BotonPausar.SetActive(false);
                 contador.BotonIniciar.SetActive(true);
 
+                if (NotificacionManager.Instance != null)
+                {
+                    NotificacionManager.Instance.CancelarTodasNotificaciones();
+                }
+
+                PlayerPrefs.SetString("pomodoro_fin", DateTime.Now.AddSeconds((int)TiempoRestanteStatic).ToBinary().ToString());
+                PlayerPrefs.SetString("pomodoro_fase", FaseActual.ToString());
+                PlayerPrefs.Save();
+
                 break;
             case FasesContador.Progeso:
                 OnProgresoContador.Invoke();
                 ContandoActivo = true;
                 contador.BotonPausar.SetActive(true);
                 contador.BotonIniciar.SetActive(false);
-
+                // ✅ Cancelar notificaciones anteriores
+                if (NotificacionManager.Instance != null)
+                {
+                    NotificacionManager.Instance.CancelarTodasNotificaciones();
+                    NotificacionManager.Instance?.ProgramarNotificacion((int)TiempoRestanteStatic);  //NO TE DICE CUANTO FALTA, SINO CUANDO ESTABA PROGRESANDO ANTES DE CERRAR
+                }
                 break;
             case FasesContador.Terminado:
                 OnTerminadoContador.Invoke();
                 ContandoActivo = false;
                 PomodoroSistema._tempoActual.AsignarEstadoCompletado(true);
                 CambiarFaseContador(FasesContador.Inicio);
+
+
                 break;
         }
 
 
     }
 
-    private void ReiniciarPuntuaci�nTempo()
+    private void ReiniciarPuntuaciónTempo()
     {
         PuntuacionTempo = 0;
     }
@@ -255,7 +315,11 @@ public class Contador : MonoBehaviour
 
         }
 
+
+      
+
     }
+
 
 
     private static Ciclo cicloReciente;
